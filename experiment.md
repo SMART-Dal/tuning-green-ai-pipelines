@@ -54,15 +54,3 @@ results/
 experiment.md       # ← you are here
 ```
 
----
-
-### 5  Changelog
-
-| Date | Change |
-|------|--------|
-| 2025‑04‑29 | Initial matrix & mapping |
-
----
-
-*Keep this document in sync with the code – it is used by the analysis scripts to auto‑discover experiment metadata.*
-
