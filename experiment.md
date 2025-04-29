@@ -31,7 +31,7 @@ Each variant directory under `variants/` runs *both* tasks in sequence (T1 → 
 |---------|-----|------------|-------------|----------------|--------------|-----------------|
 | **Baseline** | `V0_baseline` | Regular tokenizer • batch 32 | FP32 weights | SGD / AdamW FP32 | Default power | Full layers |
 | **Data‑Only** | `V1_data` | **Rust tokenizer** ✅ • batch {16,32,64} sweep | — | — | — | — |
-| **Training‑Only** | `V2_training` | — | — | **GradAccum + AMP** ✅ | — | — |
+| **Training‑Only** | `V2_training` | — | — | **GradAccum + AMP(mixed prec.)** ✅ | — | — |
 | **Inference‑Only** | `V3_inference` | — | — | — | — | **Layer skipping** ✅ |
 | **Architecture‑Only** | `V4_architecture` | — | **INT8 / FP8 quant** ✅ | — | — | — |
 | **Data + Training** | `V5_data_training` | Rust tokenizer ✅ | — | GradAccum + AMP ✅ | — | — |
