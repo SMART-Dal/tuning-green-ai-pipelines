@@ -12,7 +12,7 @@ This file is the single source‑of‑truth that links **pipeline variants ↔ t
 | Task ID | Task Description | Dataset | Split Notes |
 |---------|-----------------|---------|-------------|
 | **T1**  | Software generation – *code‑to‑code translation* | CodexGLUE `icse24-lost-in-translation` | Use authors’ default train / valid / test splits |
-| **T2**  | Vulnerability classification | BigVul | Random 80 / 10 / 10 split; dedup before split |
+| **T2**  | Vulnerability classification | BigVul(https://dl.acm.org/doi/pdf/10.1145/3379597.3387501) | Random 80 / 10 / 10 split; dedup before split |
 
 
 ## 2  Models

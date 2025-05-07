@@ -3,4 +3,4 @@
 set -euo pipefail
 
 echo "▶ Running pipeline variant: V0_baseline"
-# TODO: invoke your pipeline driver (e.g. python ../run_pipeline.py --config config.yaml)
+python ../../run_pipeline.py V0_baseline
