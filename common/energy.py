@@ -1,91 +1,124 @@
+import os
 import time
-from contextlib import contextmanager
-import pynvml
-from codecarbon import EmissionsTracker
 import logging
+from datetime import datetime
+import psutil
+import GPUtil
+from codecarbon import EmissionsTracker
 
 logger = logging.getLogger(__name__)
 
 class EnergyMonitor:
-    def __init__(self):
-        """Initialize energy monitoring for both GPU and CPU/system."""
-        self.stage_metrics = {
-            "data": 0.0,
-            "architecture": 0.0,
-            "training": 0.0,
-            "system": 0.0,
-            "inference": 0.0,
-            "total": 0.0
-        }
-        
-        # Initialize NVIDIA monitoring if GPU is available
-        self.has_gpu = False
-        try:
-            pynvml.nvmlInit()
-            self.has_gpu = True
-            self.gpu_handle = pynvml.nvmlDeviceGetHandleByIndex(0)
-        except Exception as e:
-            logger.warning(f"GPU monitoring not available: {e}")
-        
-        # Initialize CodeCarbon for CPU/system monitoring
-        self.carbon_tracker = EmissionsTracker(
-            tracking_mode="process",
-            log_level="error",
-            measure_power_secs=1,
-            save_to_file=False
-        )
-
-    @contextmanager
-    def measure(self, stage_name):
-        """Context manager to measure energy consumption for a pipeline stage.
+    """Monitor energy consumption during model training and inference."""
+    
+    def __init__(self, save_traces=True, trace_interval=1.0):
+        """Initialize the energy monitor.
         
         Args:
-            stage_name (str): Name of the pipeline stage being measured
+            save_traces (bool): Whether to save detailed traces
+            trace_interval (float): Interval between trace measurements in seconds
         """
-        if stage_name not in self.stage_metrics:
-            raise ValueError(f"Unknown stage: {stage_name}")
+        self.save_traces = save_traces
+        self.trace_interval = trace_interval
+        self.start_time = None
+        self.end_time = None
+        self.traces = []
+        self.tracker = None
         
-        # Start measurements
-        start_time = time.time()
-        gpu_start_energy = self._get_gpu_energy() if self.has_gpu else 0
-        self.carbon_tracker.start()
+    def start(self):
+        """Start monitoring energy consumption."""
+        self.start_time = time.time()
+        self.traces = []
         
-        try:
-            yield
-        finally:
-            # End measurements
-            self.carbon_tracker.stop()
-            gpu_end_energy = self._get_gpu_energy() if self.has_gpu else 0
-            end_time = time.time()
-            
-            # Calculate energy consumption
-            gpu_energy = (gpu_end_energy - gpu_start_energy) / 3600  # Convert to kWh
-            cpu_energy = self.carbon_tracker.final_emissions_data.get("energy_consumed", 0) / 3600  # Convert to kWh
-            
-            # Store total energy for this stage
-            self.stage_metrics[stage_name] = gpu_energy + cpu_energy
-            self.stage_metrics["total"] += self.stage_metrics[stage_name]
-            
-            logger.info(f"Stage '{stage_name}' completed in {end_time - start_time:.2f}s")
-            logger.info(f"Energy consumption: {self.stage_metrics[stage_name]:.4f} kWh")
-
-    def _get_gpu_energy(self):
-        """Get total energy consumption from GPU in joules."""
-        try:
-            return pynvml.nvmlDeviceGetTotalEnergyConsumption(self.gpu_handle)
-        except Exception as e:
-            logger.warning(f"Failed to get GPU energy: {e}")
-            return 0
-
-    def get_metrics(self):
-        """Get the current energy metrics for all stages.
+        # Create energy_logs directory if it doesn't exist
+        os.makedirs("energy_logs", exist_ok=True)
+        
+        # Initialize CodeCarbon tracker
+        self.tracker = EmissionsTracker(
+            project_name="greenai-pipeline",
+            output_dir="energy_logs",
+            log_level="error"
+        )
+        self.tracker.start()
+        
+        if self.save_traces:
+            self._start_tracing()
+    
+    def stop(self):
+        """Stop monitoring and return energy statistics.
         
         Returns:
-            dict: Dictionary containing energy consumption per stage in kWh
+            dict: Energy consumption statistics
         """
-        return self.stage_metrics.copy()
-
-    def reset(self):
-        """Reset all energy metrics to zero."""
-        for key in self.stage_metrics:
-            self.stage_metrics[key] = 0.0
+        if self.tracker:
+            self.tracker.stop()
+        
+        self.end_time = time.time()
+        duration = self.end_time - self.start_time
+        
+        # Get final system stats
+        cpu_percent = psutil.cpu_percent()
+        memory = psutil.virtual_memory()
+        gpu_stats = []
+        
+        if GPUtil.getGPUs():
+            for gpu in GPUtil.getGPUs():
+                gpu_stats.append({
+                    "id": gpu.id,
+                    "name": gpu.name,
+                    "memory_used": gpu.memoryUsed,
+                    "memory_total": gpu.memoryTotal,
+                    "temperature": gpu.temperature,
+                    "load": gpu.load * 100
+                })
+        
+        stats = {
+            "duration_seconds": duration,
+            "cpu_percent": cpu_percent,
+            "memory_used_gb": memory.used / (1024**3),
+            "memory_total_gb": memory.total / (1024**3),
+            "gpu_stats": gpu_stats,
+            "traces": self.traces if self.save_traces else None
+        }
+        
+        return stats
+    
+    def _start_tracing(self):
+        """Start periodic tracing of system stats."""
+        def trace_worker():
+            while self.start_time and not self.end_time:
+                try:
+                    # Get CPU stats
+                    cpu_percent = psutil.cpu_percent()
+                    memory = psutil.virtual_memory()
+                    
+                    # Get GPU stats
+                    gpu_stats = []
+                    if GPUtil.getGPUs():
+                        for gpu in GPUtil.getGPUs():
+                            gpu_stats.append({
+                                "id": gpu.id,
+                                "name": gpu.name,
+                                "memory_used": gpu.memoryUsed,
+                                "memory_total": gpu.memoryTotal,
+                                "temperature": gpu.temperature,
+                                "load": gpu.load * 100
+                            })
+                    
+                    # Record trace
+                    self.traces.append({
+                        "timestamp": datetime.now().isoformat(),
+                        "cpu_percent": cpu_percent,
+                        "memory_used_gb": memory.used / (1024**3),
+                        "memory_total_gb": memory.total / (1024**3),
+                        "gpu_stats": gpu_stats
+                    })
+                    
+                    time.sleep(self.trace_interval)
+                except Exception as e:
+                    logger.error(f"Error in trace worker: {str(e)}")
+                    break
+        
+        import threading
+        self.trace_thread = threading.Thread(target=trace_worker, daemon=True)
+        self.trace_thread.start()

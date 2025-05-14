@@ -24,6 +24,9 @@ def load_codexglue_dataset(split_ratio=(0.8, 0.1, 0.1)):
     # Load the dataset
     dataset = load_dataset("google/code_x_glue_cc_code_to_code_trans")
     
+    # Print column names for debugging
+    logger.info(f"Dataset columns: {dataset['train'].column_names}")
+    
     # Get the splits
     train_dataset = dataset["train"]
     val_dataset = dataset["validation"]
@@ -87,14 +90,15 @@ def prepare_dataset_for_model(dataset, tokenizer, max_length=512, task_type="tra
     def tokenize_function(examples):
         if task_type == "translation":
             # For code-to-code translation
+            # The CodeXGLUE dataset uses 'java' and 'cs' as column names
             inputs = tokenizer(
-                examples["source_code"],
+                examples["java"],  # Java source code
                 max_length=max_length,
                 padding="max_length",
                 truncation=True
             )
             targets = tokenizer(
-                examples["target_code"],
+                examples["cs"],  # C# target code
                 max_length=max_length,
                 padding="max_length",
                 truncation=True

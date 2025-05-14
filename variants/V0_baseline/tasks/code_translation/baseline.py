@@ -1,0 +1,304 @@
+#!/usr/bin/env python3
+import os
+import sys
+import json
+import logging
+from pathlib import Path
+from datetime import datetime
+import torch
+from torch.optim import AdamW
+from omegaconf import DictConfig, OmegaConf
+from transformers import AutoModelForCausalLM, AutoTokenizer, get_scheduler
+from torch.utils.data import DataLoader
+import psutil
+import GPUtil
+import time
+
+# Add the project root to Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+sys.path.insert(0, project_root)
+
+from common.data import load_codexglue_dataset, prepare_dataset_for_model
+from common.energy import EnergyMonitor
+from common.models import get_model, get_optimizer, get_scheduler, save_checkpoint
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def get_system_info():
+    """Get current system information."""
+    system_info = {
+        "cpu": {
+            "count": psutil.cpu_count(),
+            "physical_count": psutil.cpu_count(logical=False),
+            "frequency": {
+                "current": psutil.cpu_freq().current if psutil.cpu_freq() else None,
+                "min": psutil.cpu_freq().min if psutil.cpu_freq() else None,
+                "max": psutil.cpu_freq().max if psutil.cpu_freq() else None
+            },
+            "usage_percent": psutil.cpu_percent(interval=1)
+        },
+        "memory": {
+            "total": psutil.virtual_memory().total,
+            "available": psutil.virtual_memory().available,
+            "used": psutil.virtual_memory().used,
+            "percent": psutil.virtual_memory().percent
+        },
+        "gpu": []
+    }
+    
+    if torch.cuda.is_available():
+        try:
+            gpus = GPUtil.getGPUs()
+            for gpu in gpus:
+                system_info["gpu"].append({
+                    "id": gpu.id,
+                    "name": gpu.name,
+                    "memory_total": gpu.memoryTotal,
+                    "memory_used": gpu.memoryUsed,
+                    "memory_free": gpu.memoryFree,
+                    "temperature": gpu.temperature,
+                    "load": gpu.load * 100
+                })
+        except Exception as e:
+            logger.warning(f"Failed to get GPU information: {str(e)}")
+    
+    return system_info
+
+def fine_tune_model(model, train_loader, val_loader, optimizer, scheduler, num_epochs, device):
+    """Fine-tune a model and return training metrics."""
+    model.train()
+    best_val_loss = float('inf')
+    training_metrics = {
+        "train_losses": [],
+        "val_losses": [],
+        "best_epoch": 0,
+        "learning_rates": []
+    }
+    
+    for epoch in range(num_epochs):
+        # Training
+        model.train()
+        total_loss = 0
+        
+        for batch in train_loader:
+            try:
+                batch = {k: v.to(device) for k, v in batch.items()}
+                outputs = model(**batch)
+                loss = outputs.loss
+                loss.backward()
+                optimizer.step()
+                scheduler.step()
+                optimizer.zero_grad()
+                
+                total_loss += loss.item()
+            except RuntimeError as e:
+                if "out of memory" in str(e):
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                    logger.warning(f"GPU OOM in batch. Skipping batch. Error: {str(e)}")
+                    continue
+                raise e
+        
+        avg_train_loss = total_loss / len(train_loader)
+        training_metrics["train_losses"].append(avg_train_loss)
+        training_metrics["learning_rates"].append(scheduler.get_last_lr()[0])
+        
+        # Validation
+        model.eval()
+        val_loss = 0
+        with torch.no_grad():
+            for batch in val_loader:
+                try:
+                    batch = {k: v.to(device) for k, v in batch.items()}
+                    outputs = model(**batch)
+                    val_loss += outputs.loss.item()
+                except RuntimeError as e:
+                    if "out of memory" in str(e):
+                        if torch.cuda.is_available():
+                            torch.cuda.empty_cache()
+                        logger.warning(f"GPU OOM in validation batch. Skipping batch. Error: {str(e)}")
+                        continue
+                    raise e
+        
+        avg_val_loss = val_loss / len(val_loader)
+        training_metrics["val_losses"].append(avg_val_loss)
+        
+        if avg_val_loss < best_val_loss:
+            best_val_loss = avg_val_loss
+            training_metrics["best_epoch"] = epoch + 1
+            
+        logger.info(f"Epoch {epoch + 1}/{num_epochs} - "
+                   f"Train Loss: {avg_train_loss:.4f} - "
+                   f"Val Loss: {avg_val_loss:.4f} - "
+                   f"LR: {scheduler.get_last_lr()[0]:.2e}")
+    
+    return training_metrics
+
+def evaluate_model(model, test_loader, device):
+    """Evaluate a model and return inference metrics."""
+    model.eval()
+    total_loss = 0
+    total_samples = 0
+    inference_times = []
+    
+    with torch.no_grad():
+        for batch in test_loader:
+            try:
+                batch = {k: v.to(device) for k, v in batch.items()}
+                
+                # Measure inference time
+                if torch.cuda.is_available():
+                    start_time = torch.cuda.Event(enable_timing=True)
+                    end_time = torch.cuda.Event(enable_timing=True)
+                    start_time.record()
+                
+                outputs = model(**batch)
+                
+                if torch.cuda.is_available():
+                    end_time.record()
+                    torch.cuda.synchronize()
+                    inference_times.append(start_time.elapsed_time(end_time) / 1000)  # Convert to seconds
+                
+                loss = outputs.loss
+                total_loss += loss.item()
+                total_samples += batch["input_ids"].size(0)
+                
+            except RuntimeError as e:
+                if "out of memory" in str(e):
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                    logger.warning(f"GPU OOM in inference batch. Skipping batch. Error: {str(e)}")
+                    continue
+                raise e
+    
+    metrics = {
+        "avg_loss": total_loss / len(test_loader),
+        "avg_inference_time": sum(inference_times) / len(inference_times) if inference_times else None,
+        "total_samples": total_samples
+    }
+    
+    return metrics
+
+def run_baseline_pipeline(output_dir: Path, cfg: DictConfig) -> None:
+    """Run complete baseline pipeline for code translation task.
+    
+    Args:
+        output_dir: Directory to save results
+        cfg: Configuration containing parameters for all stages
+    """
+    # Create output directory
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    stage_dir = output_dir / f"baseline_{timestamp}"
+    stage_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Save configuration
+    with open(stage_dir / "config.json", "w") as f:
+        json.dump(OmegaConf.to_container(cfg), f, indent=2)
+    
+    # Initialize energy monitor
+    energy_monitor = EnergyMonitor()
+    energy_monitor.start()
+    
+    try:
+        # Determine device
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        logger.info(f"Using device: {device}")
+        
+        # 1. Data Stage
+        logger.info("Loading CodeXGLUE dataset...")
+        data_cfg = cfg.data.versions.default
+        train_dataset, val_dataset, test_dataset = load_codexglue_dataset()
+        
+        # Prepare datasets for model
+        tokenizer = AutoTokenizer.from_pretrained(cfg.model.name)
+        train_dataset = prepare_dataset_for_model(train_dataset, tokenizer, max_length=data_cfg.max_length, task_type="translation")
+        val_dataset = prepare_dataset_for_model(val_dataset, tokenizer, max_length=data_cfg.max_length, task_type="translation")
+        test_dataset = prepare_dataset_for_model(test_dataset, tokenizer, max_length=data_cfg.max_length, task_type="translation")
+        
+        # Save dataset statistics
+        stats = {
+            "train_size": len(train_dataset),
+            "val_size": len(val_dataset),
+            "test_size": len(test_dataset)
+        }
+        with open(stage_dir / "dataset_stats.json", "w") as f:
+            json.dump(stats, f, indent=2)
+        
+        # 2. Architecture Stage
+        logger.info("Loading and preparing model for fine-tuning...")
+        model, tokenizer = get_model(cfg.model.name, task_type="translation", device=device)
+        
+        # Save model statistics
+        stats = {
+            "name": cfg.model.name,
+            "type": cfg.model.type,
+            "parameters": sum(p.numel() for p in model.parameters()),
+            "precision": "fp32",
+            "device": device
+        }
+        with open(stage_dir / "model_stats.json", "w") as f:
+            json.dump(stats, f, indent=2)
+        
+        # 3. Training Stage
+        logger.info("Starting fine-tuning...")
+        training_cfg = cfg.training.versions.default
+        train_loader = DataLoader(train_dataset, batch_size=training_cfg.batch_size, shuffle=True)
+        val_loader = DataLoader(val_dataset, batch_size=training_cfg.batch_size)
+        
+        optimizer = get_optimizer(model, optimizer_name=training_cfg.optimizer, learning_rate=training_cfg.learning_rate)
+        num_training_steps = len(train_loader) * training_cfg.num_epochs
+        scheduler = get_scheduler(optimizer, scheduler_name=training_cfg.scheduler, num_training_steps=num_training_steps)
+        
+        training_metrics = fine_tune_model(
+            model, train_loader, val_loader, optimizer, scheduler,
+            training_cfg.num_epochs, device
+        )
+        
+        # Save model and training metrics
+        model_path = stage_dir / "model"
+        model.save_pretrained(model_path)
+        tokenizer.save_pretrained(model_path)
+        with open(stage_dir / "training_metrics.json", "w") as f:
+            json.dump(training_metrics, f, indent=2)
+        
+        # 4. Inference Stage
+        logger.info("Running inference...")
+        inference_cfg = cfg.inference.versions.default
+        test_loader = DataLoader(test_dataset, batch_size=inference_cfg.batch_size)
+        inference_metrics = evaluate_model(model, test_loader, device)
+        with open(stage_dir / "inference_metrics.json", "w") as f:
+            json.dump(inference_metrics, f, indent=2)
+        
+        # 5. System Stage
+        logger.info("Collecting system information...")
+        system_info = get_system_info()
+        with open(stage_dir / "system_info.json", "w") as f:
+            json.dump(system_info, f, indent=2)
+        
+        # Get and save energy consumption
+        energy_stats = energy_monitor.stop()
+        with open(stage_dir / "energy_stats.json", "w") as f:
+            json.dump(energy_stats, f, indent=2)
+        
+        logger.info(f"Baseline pipeline completed successfully. Results saved to {stage_dir}")
+        
+    except Exception as e:
+        energy_stats = energy_monitor.stop()
+        logger.error(f"Baseline pipeline failed: {str(e)}")
+        raise
+
+if __name__ == "__main__":
+    # Set environment variable for project root
+    os.environ["PROJECT_ROOT"] = project_root
+    
+    # Create output directory
+    output_dir = Path("./results")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Load configuration
+    config_path = os.path.join(os.path.dirname(__file__), "config", "config.yaml")
+    cfg = OmegaConf.load(config_path)
+    
+    # Run pipeline
+    run_baseline_pipeline(output_dir, cfg) 
