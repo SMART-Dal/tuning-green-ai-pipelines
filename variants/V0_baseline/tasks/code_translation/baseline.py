@@ -187,9 +187,10 @@ def run_baseline_pipeline(output_dir: Path, cfg: DictConfig) -> None:
         output_dir: Directory to save results
         cfg: Configuration containing parameters for all stages
     """
-    # Create output directory
+    # Create output directory with dummy indicator if in dummy mode
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    stage_dir = output_dir / f"baseline_{timestamp}"
+    prefix = "dummy" if cfg.dummy_mode.enabled else "baseline"
+    stage_dir = output_dir / f"{prefix}_{timestamp}"
     stage_dir.mkdir(parents=True, exist_ok=True)
     
     # Save configuration
@@ -197,7 +198,7 @@ def run_baseline_pipeline(output_dir: Path, cfg: DictConfig) -> None:
         json.dump(OmegaConf.to_container(cfg), f, indent=2)
     
     # Initialize energy monitor
-    energy_monitor = EnergyMonitor()
+    energy_monitor = EnergyMonitor(timestamp=timestamp)
     energy_monitor.start()
     
     try:
@@ -205,10 +206,21 @@ def run_baseline_pipeline(output_dir: Path, cfg: DictConfig) -> None:
         device = "cuda" if torch.cuda.is_available() else "cpu"
         logger.info(f"Using device: {device}")
         
+        # Select configuration version based on dummy mode
+        config_version = "dummy" if cfg.dummy_mode.enabled else "default"
+        logger.info(f"Using configuration version: {config_version}")
+        
         # 1. Data Stage
         logger.info("Loading CodeXGLUE dataset...")
-        data_cfg = cfg.data.versions.default
+        data_cfg = cfg.data.versions[config_version]
         train_dataset, val_dataset, test_dataset = load_codexglue_dataset()
+        
+        # If in dummy mode, take only a small sample
+        if cfg.dummy_mode.enabled:
+            train_dataset = train_dataset.select(range(cfg.dummy_mode.sample_size))
+            val_dataset = val_dataset.select(range(cfg.dummy_mode.sample_size // 2))
+            test_dataset = test_dataset.select(range(cfg.dummy_mode.sample_size // 2))
+            logger.info(f"Using dummy sample sizes - Train: {len(train_dataset)}, Val: {len(val_dataset)}, Test: {len(test_dataset)}")
         
         # Prepare datasets for model
         tokenizer = AutoTokenizer.from_pretrained(cfg.model.name)

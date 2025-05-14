@@ -14,7 +14,6 @@ source slurm_config.sh
 
 # Parameters
 TASK=${1:-"code_translation"}  # Default to code_translation if no task specified
-REPO_URL="https://github.com/yourusername/greenai-pipeline-empirical-study.git"
 BRANCH="main"
 VENV_NAME="greenai_venv"
 
@@ -37,7 +36,7 @@ git config --global user.name "$GIT_NAME"
 git config --global user.email "$GIT_EMAIL"
 
 # Clone repository
-git clone $REPO_URL
+git clone ${REPO_URL}
 cd greenai-pipeline-empirical-study
 git checkout $BRANCH
 

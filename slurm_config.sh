@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Repository configuration
-export REPO_URL="https://github.com/yourusername/greenai-pipeline-empirical-study.git"
+export REPO_URL="git@github.com:SMART-Dal/greenai-pipeline-empirical-study.git"
 export BRANCH="main"
 
 # Git configuration
-export GIT_NAME="Your Name"
-export GIT_EMAIL="your.email@example.com"
+export GIT_NAME="Saurabhsingh Rajput"
+export GIT_EMAIL="saurabh@dal.ca"
 
 # SLURM configuration
 export SLURM_JOB_TIME="24:00:00"

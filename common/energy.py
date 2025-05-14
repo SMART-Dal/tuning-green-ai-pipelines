@@ -11,15 +11,17 @@ logger = logging.getLogger(__name__)
 class EnergyMonitor:
     """Monitor energy consumption during model training and inference."""
     
-    def __init__(self, save_traces=True, trace_interval=1.0):
+    def __init__(self, save_traces=True, trace_interval=1.0, timestamp=None):
         """Initialize the energy monitor.
         
         Args:
             save_traces (bool): Whether to save detailed traces
             trace_interval (float): Interval between trace measurements in seconds
+            timestamp (str): Timestamp to use for naming output files
         """
         self.save_traces = save_traces
         self.trace_interval = trace_interval
+        self.timestamp = timestamp
         self.start_time = None
         self.end_time = None
         self.traces = []
@@ -33,11 +35,14 @@ class EnergyMonitor:
         # Create energy_logs directory if it doesn't exist
         os.makedirs("energy_logs", exist_ok=True)
         
-        # Initialize CodeCarbon tracker
+        # Initialize CodeCarbon tracker with timestamp-based output file if provided
+        output_file = f"emissions_{self.timestamp}.csv" if self.timestamp else "emissions.csv"
+        
         self.tracker = EmissionsTracker(
             project_name="greenai-pipeline",
             output_dir="energy_logs",
-            log_level="error"
+            log_level="error",
+            output_file=output_file
         )
         self.tracker.start()
         

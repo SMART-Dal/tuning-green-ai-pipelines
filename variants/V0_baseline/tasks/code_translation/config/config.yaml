@@ -1,5 +1,14 @@
 # Configuration for code translation task
 task: code_translation
+
+# Dummy mode configuration for testing
+dummy_mode:
+  enabled: true  # Set to true to use dummy configurations for testing
+  sample_size: 100  # Number of examples to use in dummy mode
+  num_epochs: 1
+  batch_size: 8
+  max_length: 128
+
 model:
   name: Qwen/Qwen2.5-Coder-0.5B
   type: causal_lm
@@ -17,6 +26,16 @@ data:
       cache_dir: ${oc.env:PROJECT_ROOT}/cache
       use_cache: true
       max_length: 512
+      truncation: true
+      padding: max_length
+    dummy:  # Dummy version for quick testing
+      batch_size: 8
+      shuffle: true
+      num_workers: 2
+      pin_memory: true
+      cache_dir: ${oc.env:PROJECT_ROOT}/cache
+      use_cache: false
+      max_length: 128
       truncation: true
       padding: max_length
     large_batch:
@@ -76,6 +95,28 @@ training:
       gradient_checkpointing: true  # Enable gradient checkpointing for memory efficiency
       fp16: false  # Mixed precision training
       bf16: false  # BFloat16 training
+    dummy:  # Dummy version for quick testing
+      learning_rate: 1e-4
+      num_epochs: 1
+      optimizer: adamw
+      scheduler: linear
+      gradient_accumulation_steps: 1
+      weight_decay: 0.01
+      warmup_ratio: 0.1
+      max_grad_norm: 1.0
+      logging_steps: 10
+      save_steps: 50
+      eval_steps: 50
+      evaluation_strategy: steps
+      save_strategy: steps
+      load_best_model_at_end: true
+      metric_for_best_model: loss
+      lr_scheduler_type: linear
+      per_device_train_batch_size: 8
+      per_device_eval_batch_size: 8
+      gradient_checkpointing: false
+      fp16: false
+      bf16: false
     high_lr:
       learning_rate: 5e-5
       num_epochs: 3
