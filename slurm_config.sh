@@ -9,14 +9,19 @@ export GIT_NAME="Saurabhsingh Rajput"
 export GIT_EMAIL="saurabh@dal.ca"
 
 # SLURM configuration
+export SLURM_ACCOUNT="rrg-mrdal22"
 export SLURM_JOB_TIME="24:00:00"
-export SLURM_CPUS_PER_TASK=8
+export SLURM_MAIL_USER="mootez@dal.ca"
+export SLURM_MAIL_TYPE="ALL"
+export SLURM_CPUS_PER_TASK=4
 export SLURM_MEM="0"
-export SLURM_GPU="gpu:1"
+export SLURM_GPU="gpu:a100:1"
 
 # Python/CUDA versions
 export PYTHON_VERSION="python/3.11"
 export CUDA_VERSION="cuda/12.1"
+export STD_ENV_MODULE="StdEnv/2023"
+export ARROW_MODULE="arrow/18.1.0"
 
 # Virtual environment name
 export VENV_NAME="greenai_venv" 

@@ -120,7 +120,7 @@ class EnergyMonitor:
                     })
                     
                     time.sleep(self.trace_interval)
-                except Exception as e:
+        except Exception as e:
                     logger.error(f"Error in trace worker: {str(e)}")
                     break
         
