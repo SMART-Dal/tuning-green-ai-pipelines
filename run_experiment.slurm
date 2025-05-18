@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Source configuration
+source slurm_config.sh
+
 #SBATCH --account=${SLURM_ACCOUNT}
 #SBATCH --mail-user=${SLURM_MAIL_USER}
 #SBATCH --mail-type=${SLURM_MAIL_TYPE}
@@ -10,9 +14,6 @@
 #SBATCH --gres=${SLURM_GPU}
 #SBATCH --mem=${SLURM_MEM}
 #SBATCH --exclusive
-
-# Source configuration
-source slurm_config.sh
 
 # Clean environment and load required modules
 module purge
@@ -39,6 +40,7 @@ echo "Original PWD: $ORIGINAL_PWD"
 echo "Project Name: $PROJECT_NAME"
 echo "SLURM_TMPDIR: $SLURM_TMPDIR"
 echo "Project dir in SLURM_TMPDIR: $PROJECT_DIR_IN_TMPDIR"
+echo "SLURM_MAIL_TYPE: $SLURM_MAIL_TYPE"
 
 # Copy project to SLURM_TMPDIR and cd into it
 echo "Copying project from $ORIGINAL_PWD to $PROJECT_DIR_IN_TMPDIR..."
