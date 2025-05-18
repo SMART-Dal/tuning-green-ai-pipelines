@@ -1,26 +1,23 @@
 #!/bin/bash
 
-# Source configuration
-source slurm_config.sh
-
-#SBATCH --account=${SLURM_ACCOUNT}
-#SBATCH --mail-user=${SLURM_MAIL_USER}
-#SBATCH --mail-type=${SLURM_MAIL_TYPE}
+#SBATCH --account=def-tusharma
+#SBATCH --mail-user=saurabh@dal.ca
+#SBATCH --mail-type=ALL
 #SBATCH --job-name=greenai-exp
 #SBATCH --output=greenai-%j.out
 #SBATCH --error=greenai-%j.err
-#SBATCH --time=${SLURM_JOB_TIME}
+#SBATCH --time=8:00:00
 #SBATCH --nodes=1
-#SBATCH --gres=${SLURM_GPU}
-#SBATCH --mem=${SLURM_MEM}
+#SBATCH --gres=gpu:a100:1
+#SBATCH --mem=0
 #SBATCH --exclusive
 
 # Clean environment and load required modules
 module purge
-module load ${STD_ENV_MODULE}
-module load ${PYTHON_VERSION}
-module load ${CUDA_VERSION}
-module load ${ARROW_MODULE}
+module load StdEnv/2023
+module load python/3.11
+module load cuda/12.1
+module load arrow/18.1.0
 module load git
 
 # Store original location and project name
@@ -117,9 +114,9 @@ echo "Results copied back."
 cd "$ORIGINAL_PWD"
 echo "Changed back to original directory: $(pwd)"
 
-# Set up Git configuration for pushing results (ensure GIT_NAME and GIT_EMAIL are in slurm_config.sh)
-git config --global user.name "$GIT_NAME"
-git config --global user.email "$GIT_EMAIL"
+# Set up Git configuration for pushing results
+git config --global user.name "Saurabhsingh Rajput"
+git config --global user.email "saurabh@dal.ca"
 
 # Add and commit results
 echo "Committing results to Git..."
