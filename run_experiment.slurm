@@ -8,7 +8,8 @@
 #SBATCH --error=greenai-%j.err
 #SBATCH --nodes=1
 #SBATCH --time=8:00:00
-#SBATCH --gres=gpu:a100:1
+#SBATCH --gres=gpu:v100:1
+#SBATCH --cpus-per-task=3
 #SBATCH --exclusive
 #SBATCH --mem=0
 
