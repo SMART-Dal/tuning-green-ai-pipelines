@@ -6,8 +6,10 @@
 #SBATCH --job-name=greenai-exp
 #SBATCH --output=greenai-%j.out
 #SBATCH --error=greenai-%j.err
+#SBATCH --nodes=1
 #SBATCH --time=8:00:00
 #SBATCH --gres=gpu:a100:1
+#SBATCH --exclusive
 #SBATCH --mem=0
 
 # Clean environment and load required modules
