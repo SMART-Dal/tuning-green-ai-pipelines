@@ -11,7 +11,7 @@
 #SBATCH --gres=gpu:v100:1
 #SBATCH --cpus-per-task=3
 #SBATCH --exclusive
-#SBATCH --mem=0
+#SBATCH --mem=150G
 
 # Clean environment and load required modules
 module purge
