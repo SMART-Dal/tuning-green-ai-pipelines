@@ -10,7 +10,6 @@
 #SBATCH --time=8:00:00
 #SBATCH --gres=gpu:v100:1
 #SBATCH --cpus-per-task=3
-#SBATCH --exclusive
 #SBATCH --mem=150G
 
 # Clean environment and load required modules
