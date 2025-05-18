@@ -1,0 +1,71 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) CCconfig        6)  ucx/1.14.1         11) flexiblas/3.3.1
+  2) gentoo/2023     7)  libfabric/1.18.0   12) imkl/2023.2.0
+  3) gcccore/.12.3   8)  pmix/4.2.4         13) StdEnv/2023
+  4) gcc/12.3        9)  ucc/1.2.0
+  5) hwloc/2.9.1     10) openmpi/4.1.5
+Lmod has detected the following error: The following module(s) are unknown:
+"cuda/12.1"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "cuda/12.1"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+Lmod has detected the following error: The following module(s) are unknown:
+"git"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "git"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+Job ID: 28704682
+Node: gra153
+Task: code_translation
+Original PWD: /home/srajput/projects/def-tusharma/srajput/greenai-pipeline-empirical-study
+Project Name: greenai-pipeline-empirical-study
+SLURM_TMPDIR: /localscratch/srajput.28704682.0
+Project dir in SLURM_TMPDIR: /localscratch/srajput.28704682.0/greenai-pipeline-empirical-study
+SLURM_MAIL_TYPE: ALL
+Copying project from /home/srajput/projects/def-tusharma/srajput/greenai-pipeline-empirical-study to /localscratch/srajput.28704682.0/greenai-pipeline-empirical-study...
+Current working directory: /localscratch/srajput.28704682.0/greenai-pipeline-empirical-study
+Creating virtual environment at ./greenai_venv...
+Virtual environment activated.
+Installing dependencies...
+Looking in links: /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo2023/x86-64-v3, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo2023/generic, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic
+Requirement already satisfied: pip in ./greenai_venv/lib/python3.11/site-packages (23.2.1)
+Collecting pip
+  Obtaining dependency information for pip from https://files.pythonhosted.org/packages/29/a2/d40fb2460e883eca5199c62cfc2463fd261f760556ae6290f88488c362c0/pip-25.1.1-py3-none-any.whl.metadata
+  Downloading pip-25.1.1-py3-none-any.whl.metadata (3.6 kB)
+Downloading pip-25.1.1-py3-none-any.whl (1.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.8/1.8 MB 14.1 MB/s eta 0:00:00
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 23.2.1
+    Uninstalling pip-23.2.1:
+      Successfully uninstalled pip-23.2.1
+Successfully installed pip-25.1.1
+Looking in links: /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo2023/x86-64-v3, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo2023/generic, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo2023/x86-64-v3/torch-2.6.0+computecanada-cp311-cp311-linux_x86_64.whl (from -r requirements.txt (line 1))
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/transformers-4.51.3+computecanada-py3-none-any.whl (from transformers[truststore]>=4.30.0->-r requirements.txt (line 2))
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/datasets-3.4.1+computecanada-py3-none-any.whl (from -r requirements.txt (line 3))
+Requirement already satisfied: numpy>=1.24.0 in /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v3/Compiler/gcccore/scipy-stack/2025a/lib/python3.11/site-packages (from -r requirements.txt (line 4)) (2.2.2+computecanada)
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/tqdm-4.67.1+computecanada-py3-none-any.whl (from -r requirements.txt (line 5))
+Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/pynvml-11.5.0+computecanada-py3-none-any.whl (from -r requirements.txt (line 6))
+ERROR: Could not find a version that satisfies the requirement codecarbon>=2.2.0 (from versions: none)
+ERROR: No matching distribution found for codecarbon>=2.2.0
+Dependencies installed.
+Results will be stored in /localscratch/srajput.28704682.0/greenai-pipeline-empirical-study/results/code_translation_20250518_135941
+Running experiment for task: code_translation...
+srun: Job 28704682 step creation temporarily disabled, retrying (Requested nodes are busy)
