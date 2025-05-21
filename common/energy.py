@@ -1,12 +1,13 @@
 import os
 import time
-import logging
 from datetime import datetime
 import psutil
 import GPUtil
 from codecarbon import EmissionsTracker
+from transformers.utils import logging
 
-logger = logging.getLogger(__name__)
+# Set logging verbosity
+logging.set_verbosity_info()
 
 class EnergyMonitor:
     """Monitor energy consumption during model training and inference."""
@@ -120,8 +121,8 @@ class EnergyMonitor:
                     })
                     
                     time.sleep(self.trace_interval)
-        except Exception as e:
-                    logger.error(f"Error in trace worker: {str(e)}")
+                except Exception as e:
+                    logging.error(f"Error in trace worker: {str(e)}")
                     break
         
         import threading

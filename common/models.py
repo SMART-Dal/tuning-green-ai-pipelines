@@ -1,81 +1,86 @@
+import os
+from pathlib import Path
 import torch
 from transformers import (
+    AutoTokenizer,
     AutoModelForCausalLM,
-    AutoModelForSequenceClassification,
-    AutoTokenizer
+    AutoModelForMaskedLM
 )
-import logging
+from transformers.utils import logging as transformers_logging
 
-logger = logging.getLogger(__name__)
+# Set logging verbosity
+transformers_logging.set_verbosity_info()
+logger = transformers_logging.get_logger(__name__)
 
-def get_model(model_name, task_type="translation", device=None):
-    """Get a model and its tokenizer for the specified task.
+def get_cache_dir():
+    """Get the path to the cache directory."""
+    cache_dir = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) / "cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    return cache_dir
+
+def get_model(task_type="translation", device="cuda"):
+    """Get model and tokenizer for the specified task.
     
     Args:
-        model_name (str): Name or path of the model
-        task_type (str): Either "translation" or "classification"
-        device (str, optional): Device to load the model on
+        task_type: Either "translation" or "classification"
+        device: Device to load the model on
         
     Returns:
         tuple: (model, tokenizer)
     """
-    if device is None:
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-    
-    logger.info(f"Loading {model_name} for {task_type} task on {device}")
-    
-    # Load tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    
-    # Load model based on task type
     if task_type == "translation":
+        logger.info("Loading Qwen model for code translation")
+        model_name = "Qwen/Qwen2.5-Coder-0.5B"
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = AutoModelForCausalLM.from_pretrained(model_name)
     else:  # classification
-        model = AutoModelForSequenceClassification.from_pretrained(
-            model_name,
-            num_labels=2  # Binary classification for vulnerability detection
-        )
+        logger.info("Loading ModernBERT model for classification")
+        model_name = "answerdotai/ModernBERT-base"
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForMaskedLM.from_pretrained(model_name)
     
     # Move model to specified device
-    model = model.to(device)
+    if device != "auto":
+        model = model.to(device)
     
     return model, tokenizer
 
 def get_optimizer(model, optimizer_name="adamw", learning_rate=5e-5):
-    """Get an optimizer for the model.
+    """Get optimizer for model training.
     
     Args:
         model: PyTorch model
-        optimizer_name (str): Name of the optimizer
-        learning_rate (float): Learning rate
+        optimizer_name: Name of the optimizer to use
+        learning_rate: Learning rate for the optimizer
         
     Returns:
-        torch.optim.Optimizer: Optimizer instance
+        Optimizer: PyTorch optimizer
     """
     if optimizer_name.lower() == "adamw":
         return torch.optim.AdamW(model.parameters(), lr=learning_rate)
-    elif optimizer_name.lower() == "sgd":
-        return torch.optim.SGD(model.parameters(), lr=learning_rate)
     else:
-        raise ValueError(f"Unknown optimizer: {optimizer_name}")
+        raise ValueError(f"Unsupported optimizer: {optimizer_name}")
 
-def get_scheduler(optimizer, scheduler_name="linear", num_training_steps=None):
-    """Get a learning rate scheduler.
+def get_scheduler(optimizer, scheduler_name="linear", num_training_steps=1000):
+    """Get learning rate scheduler.
     
     Args:
         optimizer: PyTorch optimizer
-        scheduler_name (str): Name of the scheduler
-        num_training_steps (int, optional): Number of training steps
+        scheduler_name: Name of the scheduler to use
+        num_training_steps: Total number of training steps
         
     Returns:
-        torch.optim.lr_scheduler._LRScheduler: Scheduler instance
+        Scheduler: PyTorch learning rate scheduler
     """
     if scheduler_name.lower() == "linear":
-        return torch.optim.lr_scheduler.LinearLR(optimizer)
-    elif scheduler_name.lower() == "cosine":
-        return torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=num_training_steps)
+        return torch.optim.lr_scheduler.LinearLR(
+            optimizer,
+            start_factor=1.0,
+            end_factor=0.0,
+            total_iters=num_training_steps
+        )
     else:
-        raise ValueError(f"Unknown scheduler: {scheduler_name}")
+        raise ValueError(f"Unsupported scheduler: {scheduler_name}")
 
 def save_checkpoint(model, optimizer, epoch, path):
     """Save a model checkpoint.

@@ -1,10 +1,13 @@
 import os
 from pathlib import Path
-from datasets import load_dataset, Dataset
+from datasets import load_dataset, Dataset, load_from_disk
 from transformers import AutoTokenizer
-import logging
+from transformers.utils import logging as transformers_logging
+import torch
 
-logger = logging.getLogger(__name__)
+# Set logging verbosity
+transformers_logging.set_verbosity_info()
+logger = transformers_logging.get_logger(__name__)
 
 def get_dataset_path():
     """Get the path to the datasets directory."""
@@ -21,11 +24,8 @@ def load_codexglue_dataset(split_ratio=(0.8, 0.1, 0.1)):
     """
     logger.info("Loading CodexGLUE dataset...")
     
-    # Load the dataset
+    # Load from HuggingFace
     dataset = load_dataset("google/code_x_glue_cc_code_to_code_trans")
-    
-    # Print column names for debugging
-    logger.info(f"Dataset columns: {dataset['train'].column_names}")
     
     # Get the splits
     train_dataset = dataset["train"]
@@ -49,7 +49,7 @@ def load_bigvul_dataset(split_ratio=(0.8, 0.1, 0.1)):
     """
     logger.info("Loading BigVul dataset...")
     
-    # Load the dataset
+    # Load from HuggingFace
     dataset = load_dataset("bstee615/bigvul")
     
     # Remove duplicates before splitting
@@ -122,8 +122,14 @@ def prepare_dataset_for_model(dataset, tokenizer, max_length=512, task_type="tra
                 "labels": examples["vul"]
             }
     
-    return dataset.map(
+    # Tokenize the dataset
+    tokenized_dataset = dataset.map(
         tokenize_function,
         batched=True,
         remove_columns=dataset.column_names
     )
+    
+    # Convert to PyTorch tensors
+    tokenized_dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
+    
+    return tokenized_dataset

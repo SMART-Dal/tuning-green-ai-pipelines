@@ -75,3 +75,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg 
+
+# Cache
+cache/
+
