@@ -1,0 +1,119 @@
+# Configuration for vulnerability detection task
+task: vulnerability_detection
+
+# Dummy mode configuration for testing
+dummy_mode:
+  enabled: true
+  sample_size: 100
+  num_epochs: 1
+  batch_size: 1
+  max_length: 8192
+
+model:
+  name: answerdotai/ModernBERT-base
+  type: sequence_classification
+  precision: fp32
+  device: auto
+  num_labels: 2
+
+# Data stage configurations
+data:
+  versions:
+    default:
+      batch_size: 4
+      shuffle: true
+      num_workers: 2
+      pin_memory: true
+      max_length: 8192
+      truncation: true
+      padding: max_length
+      label_column: vulnerability
+      text_column: code
+    dummy:
+      batch_size: 1
+      shuffle: true
+      num_workers: 1
+      pin_memory: true
+      max_length: 8192
+      truncation: true
+      padding: max_length
+      label_column: vulnerability
+      text_column: code
+
+# Training stage configurations
+training:
+  versions:
+    default:
+      learning_rate: 5e-5
+      num_epochs: 5
+      optimizer: adamw 
+      # adamw_torch_fused
+      scheduler: linear
+      gradient_accumulation_steps: 4
+      weight_decay: 0.01
+      warmup_ratio: 0.1
+      max_grad_norm: 1.0
+      logging_steps: 100
+      save_steps: 500
+      eval_steps: 500
+      evaluation_strategy: steps
+      save_strategy: steps
+      load_best_model_at_end: true
+      metric_for_best_model: accuracy
+      lr_scheduler_type: linear
+      batch_size: 4
+      eval_batch_size: 4
+      gradient_checkpointing: false
+      fp16: false
+      bf16: false
+    dummy:
+      learning_rate: 2e-4
+      num_epochs: 1
+      optimizer: adamw
+      scheduler: linear
+      gradient_accumulation_steps: 2
+      weight_decay: 0.01
+      warmup_ratio: 0.1
+      max_grad_norm: 1.0
+      logging_steps: 10
+      save_steps: 50
+      eval_steps: 50
+      evaluation_strategy: steps
+      save_strategy: steps
+      load_best_model_at_end: true
+      metric_for_best_model: accuracy
+      lr_scheduler_type: linear
+      batch_size: 4
+      eval_batch_size: 4
+      gradient_checkpointing: false
+      fp16: false
+      bf16: false
+
+# Inference stage configurations
+inference:
+  versions:
+    default:
+      batch_size: 8
+      num_workers: 2
+      pin_memory: true
+      max_length: 8192
+      return_tensors: pt
+      return_attention_mask: true
+      return_token_type_ids: true
+    dummy:
+      batch_size: 4
+      num_workers: 1
+      pin_memory: true
+      max_length: 8192
+      return_tensors: pt
+      return_attention_mask: true
+      return_token_type_ids: true
+
+# Energy monitoring configuration
+energy:
+  co2_conversion_factor: 0.233
+  monitor_gpu: true
+  monitor_cpu: true
+  monitor_memory: true
+  save_traces: true
+  trace_interval: 1.0 

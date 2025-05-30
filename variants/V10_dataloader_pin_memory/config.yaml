@@ -1,0 +1,70 @@
+# === Vulnerability detection on BigVul with ModernBERT ===
+task: vulnerability_detection
+
+dummy_mode:
+  enabled: true          # set true for smoke-tests
+  sample_size: 25
+  num_epochs: 1
+  batch_size: 1
+  max_length: 128
+
+model:
+  name: answerdotai/ModernBERT-base
+  type: sequence_classification
+  num_labels: 2
+
+
+data:
+  versions:
+    default:
+      batch_size: 4
+      max_length: 2048
+      text_column: func_before  # or func_before
+      label_column: vul        # binary label
+    dummy:
+      batch_size: 1
+      max_length: 128
+      text_column: func_before
+      label_column: vul
+
+training:
+  versions:
+    default:
+      learning_rate: 5e-5
+      num_epochs: 1
+      batch_size: 4
+      eval_batch_size: 4
+      gradient_accumulation_steps: 8   # ⇒ effective batch 32
+      weight_decay: 0.01
+      warmup_ratio: 0.1
+      logging_steps: 100
+      eval_strategy: epoch
+      save_strategy: epoch
+      metric_for_best_model: f1
+      gradient_checkpointing: false
+      save_total_limit: 2
+      fp16: true
+    dummy:
+      learning_rate: 5e-5
+      num_epochs: 1
+      batch_size: 1
+      eval_batch_size: 1
+      gradient_accumulation_steps: 1
+      weight_decay: 0.01
+      warmup_ratio: 0.1
+      logging_steps: 10
+      eval_strategy: "no"
+      save_strategy: "no"
+      metric_for_best_model: f1
+      gradient_checkpointing: false
+      fp16: false
+      save_total_limit: 2
+
+inference:
+  versions:
+    default:
+      batch_size: 4
+      max_length: 2048
+    dummy:
+      batch_size: 1
+      max_length: 128

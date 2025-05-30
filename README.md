@@ -118,6 +118,8 @@ All energy, carbon and performance numbers are printed to stdout **and** saved u
 
 Each stage starts an **energy session**; deltas are aggregated into the final CSV.
 
+
+https://huggingface.co/docs/transformers/en/perf_train_gpu_one
 ---
 
 ## Result Files
