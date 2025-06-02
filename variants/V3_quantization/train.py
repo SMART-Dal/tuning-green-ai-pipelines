@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fine-tune ModernBERT-base on the BigVul dataset (binary classification).
+Fine-tune ModernBERT-base on the BigVul dataset (binary classification) using Unsloth.
 
 Usage:
     python train_bigvul_modernbert.py --cfg config/config.yaml --out results/
@@ -20,6 +20,11 @@ from transformers import (
     logging as hf_logging,
 )
 from codecarbon import EmissionsTracker
+from transformers import BitsAndBytesConfig, AutoModelForSequenceClassification
+from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+
+
+# from unsloth import FastLanguageModel, FastModel
 
 # --------------------------------------------------------------------------- #
 # 1.  Logging
@@ -83,12 +88,17 @@ def main(cfg_path: Path, output_root: Path):
 
     try:
         # ---- Data
+        tracker.start_task("load_dataset")
         train_raw, val_raw, test_raw = load_bigvul()
         if cfg.dummy_mode.enabled:
             n = cfg.dummy_mode.sample_size
             train_raw, val_raw, test_raw = (train_raw.select(range(n)),
                                             val_raw.select(range(n//2)),
                                             test_raw.select(range(n//2)))
+        tracker.stop_task()
+        
+        # Initialize tokenizer and model using Unsloth
+        tracker.start_task("tokenize_dataset")
         tok = AutoTokenizer.from_pretrained(cfg.model.name, use_fast=False)
         vcfg = cfg.data.versions[variant]
         train_ds = prep_dataset(train_raw, tok, vcfg.text_column, vcfg.label_column, vcfg.max_length)
@@ -96,10 +106,50 @@ def main(cfg_path: Path, output_root: Path):
         test_ds  = prep_dataset(test_raw,  tok, vcfg.text_column, vcfg.label_column, vcfg.max_length)
 
         collator = DataCollatorWithPadding(tok, return_tensors="pt")  # dynamic padding
+        tracker.stop_task()
 
-        # ---- Model
+        tracker.start_task("load_model")
+        # Initialize model using Unsloth's FastModel without 4-bit quantization
+        bnb_cfg = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",          # QLoRA recipe
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,
+        )
+
         model = AutoModelForSequenceClassification.from_pretrained(
-                    cfg.model.name, num_labels=cfg.model.num_labels, attn_implementation="eager")
+                    cfg.model.name,
+                    quantization_config=bnb_cfg,
+                    device_map="auto",
+                    torch_dtype="auto",
+                    num_labels=cfg.model.num_labels,
+        )
+        
+        # # Print model structure to find correct module names
+        # print("\nModel structure:")
+        # for name, _ in model.named_modules():
+        #     print(name)
+        
+        # Prepare model for k-bit training
+        model = prepare_model_for_kbit_training(model)
+        
+        # Configure LoRA
+        lora_config = LoraConfig(
+            r=16,                     # rank
+            lora_alpha=32,           # alpha scaling
+            target_modules=["Wqkv", "Wo", "Wi", "Wo"],  # ModernBERT attention and MLP module names
+            lora_dropout=0.05,
+            bias="none",
+            task_type="SEQ_CLS"
+        )
+        
+        # Get PEFT model
+        model = get_peft_model(model, lora_config)
+        model.print_trainable_parameters()  # Print trainable parameters info
+        
+        tracker.stop_task()
+
+        
 
         # ---- TrainingArguments
         tcfg = cfg.training.versions[variant]
@@ -121,6 +171,9 @@ def main(cfg_path: Path, output_root: Path):
             load_best_model_at_end      = True,
             metric_for_best_model       = tcfg.metric_for_best_model,
             report_to                   = "none",
+            optim                       = "adamw_torch",
+            lr_scheduler_type          = "cosine",
+            group_by_length            = True,
         )
 
         # ---- Trainer
@@ -133,12 +186,19 @@ def main(cfg_path: Path, output_root: Path):
             compute_metrics     = compute_metrics,
         )
 
+        tracker.start_task("train_model")
         trainer.train()
+        tracker.stop_task()
+
+        tracker.start_task("save_model")
         trainer.save_model(output_root / run_name / "model")
         tok.save_pretrained(output_root / run_name / "model")
+        tracker.stop_task()
 
         # ---- Test set evaluation
+        tracker.start_task("evaluate_model")
         test_metrics = trainer.evaluate(test_ds)
+        tracker.stop_task()
         
         # Get emissions data
         emissions = tracker.stop()
@@ -147,7 +207,14 @@ def main(cfg_path: Path, output_root: Path):
         with open(output_root / run_name / "test_metrics.json", "w") as f:
             json.dump(test_metrics, f, indent=2)
             
+        # Save energy stats to file
+        with open(output_root / run_name / "energy_stats_train.json", "w") as f:
+            json.dump(json.loads(tracker.final_emissions_data.toJSON()), f, indent=2)
+            
         logger.info(f"Test metrics: {test_metrics}")
+        logger.info(f"Energy stats: {emissions}")
+        for task_name, task in tracker._tasks.items():
+            logger.info(f"Emissions for {task_name}: {1000 * task.emissions_data.emissions} g CO₂")
 
     except Exception as e:
         # Ensure we stop tracking even if there's an error

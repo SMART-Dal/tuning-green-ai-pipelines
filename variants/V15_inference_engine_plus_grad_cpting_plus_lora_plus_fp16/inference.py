@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Fine-tune ModernBERT-base on the BigVul dataset (binary classification).
+Run inference with ModernBERT-base on the BigVul dataset.
 
 Usage:
-    python train_bigvul_modernbert.py --cfg config/config.yaml --out results/
+    python inference_bigvul_modernbert.py --cfg config/config.yaml --out results/
 """
 import os, sys, time
 from pathlib import Path
@@ -57,7 +57,7 @@ def compute_metrics(eval_pred):
     return {"f1": f1_score(labels, preds, average="weighted")}   
 # --------------------------------------------------------------------------- #
 # 4.  Main
-def main(cfg_path: Path, output_root: Path):
+def main(cfg_path: Path, model_path: Path, output_root: Path):
     cfg = OmegaConf.load(cfg_path)
     variant = "dummy" if cfg.dummy_mode.enabled else "default"
 
@@ -72,7 +72,7 @@ def main(cfg_path: Path, output_root: Path):
 
     # Initialize CodeCarbon tracker
     tracker = EmissionsTracker(
-        project_name=f"{variant_name}_train",
+        project_name=f"{variant_name}_inference",
         output_dir=str(output_dir),
         log_level="error",
         save_to_file=True,
@@ -90,37 +90,22 @@ def main(cfg_path: Path, output_root: Path):
             train_raw, val_raw, test_raw = (train_raw.select(range(n)),
                                             val_raw.select(range(n//2)),
                                             test_raw.select(range(n//2)))
-        tok = AutoTokenizer.from_pretrained(cfg.model.name, use_fast=False)
+        tok = AutoTokenizer.from_pretrained(model_path, use_fast=False)
         vcfg = cfg.data.versions[variant]
-        train_ds = prep_dataset(train_raw, tok, vcfg.text_column, vcfg.label_column, vcfg.max_length)
-        val_ds   = prep_dataset(val_raw,   tok, vcfg.text_column, vcfg.label_column, vcfg.max_length)
         test_ds  = prep_dataset(test_raw,  tok, vcfg.text_column, vcfg.label_column, vcfg.max_length)
 
         collator = DataCollatorWithPadding(tok, return_tensors="pt")  # dynamic padding
 
         # ---- Model
-        model = AutoModelForSequenceClassification.from_pretrained(
-                    cfg.model.name, num_labels=cfg.model.num_labels, attn_implementation="eager")
+        model = AutoModelForSequenceClassification.from_pretrained(model_path)
 
         # ---- TrainingArguments
         tcfg = cfg.training.versions[variant]
         training_args = TrainingArguments(
             output_dir          = output_dir,
-            num_train_epochs    = tcfg.num_epochs,
-            per_device_train_batch_size = tcfg.batch_size,
             per_device_eval_batch_size  = tcfg.eval_batch_size,
-            gradient_accumulation_steps = tcfg.gradient_accumulation_steps,
-            learning_rate               = tcfg.learning_rate,
-            warmup_ratio                = tcfg.warmup_ratio,
-            weight_decay                = tcfg.weight_decay,
-            eval_strategy               = tcfg.eval_strategy,
-            save_strategy               = tcfg.save_strategy,
-            save_total_limit            = tcfg.save_total_limit,
-            logging_steps               = tcfg.logging_steps,
             fp16                        = tcfg.fp16,
             gradient_checkpointing      = tcfg.gradient_checkpointing,
-            load_best_model_at_end      = True,
-            metric_for_best_model       = tcfg.metric_for_best_model,
             report_to                   = "none",
         )
 
@@ -128,15 +113,9 @@ def main(cfg_path: Path, output_root: Path):
         trainer = Trainer(
             model               = model,
             args                = training_args,
-            train_dataset       = train_ds,
-            eval_dataset        = val_ds,
             data_collator       = collator,
             compute_metrics     = compute_metrics,
         )
-
-        trainer.train()
-        trainer.save_model(output_dir / "model")
-        tok.save_pretrained(output_dir / "model")
 
         # ---- Test set evaluation
         test_metrics = trainer.evaluate(test_ds)
@@ -150,7 +129,7 @@ def main(cfg_path: Path, output_root: Path):
             json.dump(test_metrics, f, indent=2)
             
         # Save energy stats to file
-        with open(output_dir / "energy_stats_train.json", "w") as f:
+        with open(output_dir / "energy_stats_inference.json", "w") as f:
             json.dump(json.loads(tracker.final_emissions_data.toJSON()), f, indent=2)
             
         logger.info(f"Test metrics: {test_metrics}")
@@ -172,4 +151,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     args.out.mkdir(parents=True, exist_ok=True)
-    main(args.cfg, args.out)
+    main(args.cfg, args.model, args.out) 

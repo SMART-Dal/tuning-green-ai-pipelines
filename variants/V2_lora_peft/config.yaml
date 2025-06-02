@@ -2,7 +2,7 @@
 task: vulnerability_detection
 
 dummy_mode:
-  enabled: true          # set true for smoke-tests
+  enabled: false
   sample_size: 25
   num_epochs: 1
   batch_size: 1
@@ -13,28 +13,36 @@ model:
   type: sequence_classification
   num_labels: 2
 
+# ----- LoRA / Unsloth hyper-params ---------------------------------
+lora:
+  r: 8            # rank
+  alpha: 16       # scaling
+  dropout: 0.05   # adapter dropout
+  load_in_4bit: false   # true → QLoRA (4-bit base weights)
 
+# ----- Data --------------------------------------------------------
 data:
   versions:
     default:
       batch_size: 4
       max_length: 2048
-      text_column: func_before  # or func_before
-      label_column: vul        # binary label
+      text_column: func_before
+      label_column: vul
     dummy:
       batch_size: 1
       max_length: 128
       text_column: func_before
       label_column: vul
 
+# ----- Training ----------------------------------------------------
 training:
   versions:
     default:
       learning_rate: 5e-5
       num_epochs: 1
-      batch_size: 4
-      eval_batch_size: 4
-      gradient_accumulation_steps: 8   # ⇒ effective batch 32
+      batch_size: 2
+      eval_batch_size: 2
+      gradient_accumulation_steps: 4
       weight_decay: 0.01
       warmup_ratio: 0.1
       logging_steps: 100
@@ -60,6 +68,7 @@ training:
       fp16: false
       save_total_limit: 2
 
+# ----- Inference ---------------------------------------------------
 inference:
   versions:
     default:

@@ -84,23 +84,30 @@ def main(cfg_path: Path, output_root: Path):
 
     try:
         # ---- Data
+        tracker.start_task("load_dataset")
         train_raw, val_raw, test_raw = load_bigvul()
         if cfg.dummy_mode.enabled:
             n = cfg.dummy_mode.sample_size
             train_raw, val_raw, test_raw = (train_raw.select(range(n)),
                                             val_raw.select(range(n//2)),
                                             test_raw.select(range(n//2)))
+        tracker.stop_task()
+
+        tracker.start_task("tokenize_dataset")
         tok = AutoTokenizer.from_pretrained(cfg.model.name, use_fast=False)
         vcfg = cfg.data.versions[variant]
         train_ds = prep_dataset(train_raw, tok, vcfg.text_column, vcfg.label_column, vcfg.max_length)
         val_ds   = prep_dataset(val_raw,   tok, vcfg.text_column, vcfg.label_column, vcfg.max_length)
         test_ds  = prep_dataset(test_raw,  tok, vcfg.text_column, vcfg.label_column, vcfg.max_length)
+        tracker.stop_task()
 
         collator = DataCollatorWithPadding(tok, return_tensors="pt")  # dynamic padding
 
         # ---- Model
+        tracker.start_task("load_model")
         model = AutoModelForSequenceClassification.from_pretrained(
-                    cfg.model.name, num_labels=cfg.model.num_labels, attn_implementation="flash_attention_2")
+                    cfg.model.name, num_labels=cfg.model.num_labels, attn_implementation="sdpa")
+        tracker.stop_task()
 
         # ---- TrainingArguments
         tcfg = cfg.training.versions[variant]
@@ -134,16 +141,22 @@ def main(cfg_path: Path, output_root: Path):
             compute_metrics     = compute_metrics,
         )
 
+        tracker.start_task("train_model")
         trainer.train()
+        tracker.stop_task()
+
+        tracker.start_task("save_model")
         trainer.save_model(output_dir / "model")
         tok.save_pretrained(output_dir / "model")
+        tracker.stop_task()
 
         # ---- Test set evaluation
+        tracker.start_task("evaluate_model")
         test_metrics = trainer.evaluate(test_ds)
+        tracker.stop_task()
         
         # Get emissions data
         emissions = tracker.stop()
-        
         
         # Save test metrics to file
         with open(output_dir / "test_metrics.json", "w") as f:
@@ -155,6 +168,8 @@ def main(cfg_path: Path, output_root: Path):
             
         logger.info(f"Test metrics: {test_metrics}")
         logger.info(f"Energy stats: {emissions}")
+        for task_name, task in tracker._tasks.items():
+            logger.info(f"Emissions for {task_name}: {1000 * task.emissions_data.emissions} g CO₂")
 
     except Exception as e:
         # Ensure we stop tracking even if there's an error

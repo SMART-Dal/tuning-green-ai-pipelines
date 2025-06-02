@@ -1,0 +1,12 @@
+Variant|TMUX Session|Status|Start Time|Log File
+----------------------------------------
+Starting training at Fri 30 May 2025 03:57:25 PM ADT
+Running all variants: variants/V0_baseline variants/V1_gradient_checkpointing variants/V2_lora_peft variants/V3_quantization variants/V4_tokenizer variants/V5_power_limit variants/V6_optimizer variants/V7_f16 variants/V8_sequence_length_trimming variants/V9_inference_engine variants/V10_dataloader_pin_memory variants/V12_attention variants/V13_gradient_accumulation variants/v11_torch_compile variants/v14_layer_pruning
+===============================================
+Starting training for variant: V0_baseline
+Time: Fri 30 May 2025 03:57:25 PM ADT
+Log file: /home/srajput/greenai-pipeline-empirical-study/logs/V0_baseline_20250530_155725.log
+TMUX session: exp_V0_baseline_20250530_155725
+===============================================
+V0_baseline|exp_V0_baseline_20250530_155725|Running|Fri 30 May 2025 03:57:25 PM ADT|/home/srajput/greenai-pipeline-empirical-study/logs/V0_baseline_20250530_155725.log
+Waiting 5 minutes before starting next variant...
