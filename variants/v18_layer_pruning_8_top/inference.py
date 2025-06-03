@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Fine-tune ModernBERT-base on the BigVul dataset (binary classification).
+Run inference with ModernBERT-base on the BigVul dataset.
 
 Usage:
-    python train_bigvul_modernbert.py --cfg config/config.yaml --out results/
+    python inference_bigvul_modernbert.py --cfg config/config.yaml --out results/
 """
 import os, sys, time
 from pathlib import Path
@@ -12,7 +12,6 @@ import json
 
 import torch, numpy as np
 from omegaconf import OmegaConf
-
 from datasets import load_dataset
 from sklearn.metrics import f1_score
 from transformers import (
@@ -22,6 +21,7 @@ from transformers import (
 )
 from codecarbon import EmissionsTracker
 from common import layer_drop
+
 
 # --------------------------------------------------------------------------- #
 # 1.  Logging
@@ -66,16 +66,17 @@ def main(cfg_path: Path, output_root: Path):
     # Get variant name from the directory structure
     variant_name = Path(__file__).parent.parent.name  
 
-    run_name = f"{variant}_{datetime.now():%Y%m%d_%H%M%S}" 
+    run_name = f"{variant}_{datetime.now():%Y%m%d_%H%M%S}" # Gets the variant folder name (e.g., V0_baseline)
 
     # Create output directory
     output_dir = output_root / run_name
     output_dir.mkdir(parents=True, exist_ok=True)
 
+
     # Initialize CodeCarbon tracker
     tracker = EmissionsTracker(
-        project_name=f"{variant_name}_train",
-        output_dir=str(output_dir),
+        project_name=f"{variant_name}_inference",
+        output_dir=str(output_root / run_name),
         log_level="error",
         save_to_file=True,
         measure_power_secs=1.0,
@@ -141,7 +142,7 @@ def main(cfg_path: Path, output_root: Path):
                 position=cfg.layer_pruning.position
                 )
             tracker.stop_task()
-            
+
         # ---- Trainer
         trainer = Trainer(
             model               = model,
@@ -152,15 +153,6 @@ def main(cfg_path: Path, output_root: Path):
             compute_metrics     = compute_metrics,
         )
 
-        tracker.start_task("train_model")
-        trainer.train()
-        tracker.stop_task()
-
-        tracker.start_task("save_model")
-        trainer.save_model(output_dir / "model")
-        tok.save_pretrained(output_dir / "model")
-        tracker.stop_task()
-
         # ---- Test set evaluation
         tracker.start_task("evaluate_model")
         test_metrics = trainer.evaluate(test_ds)
@@ -169,12 +161,13 @@ def main(cfg_path: Path, output_root: Path):
         # Get emissions data
         emissions = tracker.stop()
         
+        
         # Save test metrics to file
         with open(output_dir / "test_metrics.json", "w") as f:
             json.dump(test_metrics, f, indent=2)
             
         # Save energy stats to file
-        with open(output_dir / "energy_stats_train.json", "w") as f:
+        with open(output_dir / "energy_stats_inference.json", "w") as f:
             json.dump(json.loads(tracker.final_emissions_data.toJSON()), f, indent=2)
             
         logger.info(f"Test metrics: {test_metrics}")
@@ -198,4 +191,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     args.out.mkdir(parents=True, exist_ok=True)
-    main(args.cfg, args.out)
+    main(args.cfg, args.out) 

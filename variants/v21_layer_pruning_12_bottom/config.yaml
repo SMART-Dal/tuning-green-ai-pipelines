@@ -28,9 +28,9 @@ data:
       label_column: vul
 
 layer_pruning:
-  enabled: false
-  num_layers: -1
-  position: "top"
+  enabled: true
+  num_layers: 12
+  position: "bottom"
 
 training:
   versions:

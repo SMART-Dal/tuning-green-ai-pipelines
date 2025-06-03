@@ -28,8 +28,8 @@ data:
       label_column: vul
 
 layer_pruning:
-  enabled: false
-  num_layers: -1
+  enabled: true
+  num_layers: 8
   position: "top"
 
 training:
