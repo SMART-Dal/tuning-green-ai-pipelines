@@ -22,3 +22,4 @@ bitsandbytes>=0.41.0  # For quantization
 peft>=0.4.0  # For parameter efficient fine-tuning
 sentencepiece>=0.1.99  # For tokenization
 protobuf>=3.20.0  # Required by some transformers models 
+ruamel.yaml # For YAML manipulation
