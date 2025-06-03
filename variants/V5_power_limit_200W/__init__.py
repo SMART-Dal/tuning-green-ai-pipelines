@@ -1,1 +1,0 @@
-"""Baseline variant package for Green-Pipeline study.""" 

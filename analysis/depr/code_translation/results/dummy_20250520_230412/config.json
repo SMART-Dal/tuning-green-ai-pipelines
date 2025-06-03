@@ -1,0 +1,197 @@
+{
+  "task": "code_translation",
+  "dummy_mode": {
+    "enabled": true,
+    "sample_size": 10,
+    "num_epochs": 1,
+    "batch_size": 8,
+    "max_length": 128
+  },
+  "model": {
+    "name": "Qwen/Qwen2.5-Coder-0.5B",
+    "type": "causal_lm",
+    "precision": "fp32",
+    "device": "auto"
+  },
+  "data": {
+    "versions": {
+      "default": {
+        "batch_size": 32,
+        "shuffle": true,
+        "num_workers": 4,
+        "pin_memory": true,
+        "cache_dir": "${oc.env:PROJECT_ROOT}/cache",
+        "use_cache": true,
+        "max_length": 512,
+        "truncation": true,
+        "padding": "max_length"
+      },
+      "dummy": {
+        "batch_size": 8,
+        "shuffle": true,
+        "num_workers": 2,
+        "pin_memory": true,
+        "cache_dir": "${oc.env:PROJECT_ROOT}/cache",
+        "use_cache": false,
+        "max_length": 128,
+        "truncation": true,
+        "padding": "max_length"
+      },
+      "large_batch": {
+        "batch_size": 64,
+        "shuffle": true,
+        "num_workers": 8,
+        "pin_memory": true,
+        "cache_dir": "${oc.env:PROJECT_ROOT}/cache",
+        "use_cache": true
+      },
+      "small_batch": {
+        "batch_size": 16,
+        "shuffle": true,
+        "num_workers": 2,
+        "pin_memory": true,
+        "cache_dir": "${oc.env:PROJECT_ROOT}/cache",
+        "use_cache": true
+      }
+    }
+  },
+  "architecture": {
+    "versions": {
+      "default": {
+        "precision": "fp32",
+        "device": "auto",
+        "load_in_8bit": false,
+        "load_in_4bit": false,
+        "bnb_4bit_compute_dtype": null,
+        "bnb_4bit_quant_type": null
+      },
+      "fp16": {
+        "precision": "fp16",
+        "device": "auto"
+      },
+      "int8": {
+        "precision": "int8",
+        "device": "auto"
+      }
+    }
+  },
+  "training": {
+    "versions": {
+      "default": {
+        "learning_rate": 1e-05,
+        "num_epochs": 1,
+        "optimizer": "adamw",
+        "scheduler": "linear",
+        "gradient_accumulation_steps": 1,
+        "weight_decay": 0.01,
+        "warmup_ratio": 0.1,
+        "max_grad_norm": 1.0,
+        "logging_steps": 100,
+        "save_steps": 500,
+        "eval_steps": 500,
+        "evaluation_strategy": "steps",
+        "save_strategy": "steps",
+        "load_best_model_at_end": true,
+        "metric_for_best_model": "loss",
+        "lr_scheduler_type": "linear",
+        "per_device_train_batch_size": 32,
+        "per_device_eval_batch_size": 32,
+        "gradient_checkpointing": true,
+        "fp16": false,
+        "bf16": false
+      },
+      "dummy": {
+        "learning_rate": 0.0001,
+        "num_epochs": 1,
+        "optimizer": "adamw",
+        "scheduler": "linear",
+        "gradient_accumulation_steps": 1,
+        "weight_decay": 0.01,
+        "warmup_ratio": 0.1,
+        "max_grad_norm": 1.0,
+        "logging_steps": 10,
+        "save_steps": 50,
+        "eval_steps": 50,
+        "evaluation_strategy": "steps",
+        "save_strategy": "steps",
+        "load_best_model_at_end": true,
+        "metric_for_best_model": "loss",
+        "lr_scheduler_type": "linear",
+        "per_device_train_batch_size": 8,
+        "per_device_eval_batch_size": 8,
+        "gradient_checkpointing": false,
+        "fp16": false,
+        "bf16": false
+      },
+      "high_lr": {
+        "learning_rate": 5e-05,
+        "num_epochs": 3,
+        "optimizer": "adamw",
+        "scheduler": "cosine",
+        "gradient_accumulation_steps": 1,
+        "warmup_ratio": 0.1,
+        "gradient_checkpointing": true
+      },
+      "gradient_accumulation": {
+        "learning_rate": 1e-05,
+        "num_epochs": 3,
+        "optimizer": "adamw",
+        "scheduler": "linear",
+        "gradient_accumulation_steps": 4,
+        "warmup_ratio": 0.1,
+        "gradient_checkpointing": true
+      }
+    }
+  },
+  "inference": {
+    "versions": {
+      "default": {
+        "batch_size": 32,
+        "num_workers": 4,
+        "pin_memory": true,
+        "max_length": 512,
+        "num_beams": 4,
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "do_sample": false
+      },
+      "fast": {
+        "batch_size": 64,
+        "num_workers": 8,
+        "pin_memory": true
+      },
+      "accurate": {
+        "batch_size": 16,
+        "num_workers": 2,
+        "pin_memory": true
+      }
+    }
+  },
+  "system": {
+    "versions": {
+      "default": {
+        "monitor_duration": 60,
+        "sample_interval": 1,
+        "power_limit": null,
+        "memory_limit": null,
+        "cpu_limit": null
+      },
+      "quick": {
+        "monitor_duration": 30,
+        "sample_interval": 2
+      },
+      "detailed": {
+        "monitor_duration": 120,
+        "sample_interval": 0.5
+      }
+    }
+  },
+  "energy": {
+    "co2_conversion_factor": 0.233,
+    "monitor_gpu": true,
+    "monitor_cpu": true,
+    "monitor_memory": true,
+    "save_traces": true,
+    "trace_interval": 1.0
+  }
+}
