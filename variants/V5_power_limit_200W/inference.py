@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Fine-tune ModernBERT-base on the BigVul dataset (binary classification).
+Run inference with ModernBERT-base on the BigVul dataset.
 
 Usage:
-    python train_bigvul_modernbert.py --cfg config/config.yaml --out results/
+    python inference_bigvul_modernbert.py --cfg config/config.yaml --out results/
 """
 import os, sys, time
 from pathlib import Path
@@ -66,13 +66,9 @@ def main(cfg_path: Path, output_root: Path):
 
     run_name = f"{variant}_{datetime.now():%Y%m%d_%H%M%S}" # Gets the variant folder name (e.g., V5_power_limit)
 
-    # Create output directory
-    output_dir = output_root / run_name
-    output_dir.mkdir(parents=True, exist_ok=True)
-
     # Initialize CodeCarbon tracker
     tracker = EmissionsTracker(
-        project_name=f"{variant_name}_train",
+        project_name=f"{variant_name}_inference",
         output_dir=str(output_root / run_name),
         log_level="error",
         save_to_file=True,
@@ -134,10 +130,6 @@ def main(cfg_path: Path, output_root: Path):
             compute_metrics     = compute_metrics,
         )
 
-        trainer.train()
-        trainer.save_model(output_root / run_name / "model")
-        tok.save_pretrained(output_root / run_name / "model")
-
         # ---- Test set evaluation
         test_metrics = trainer.evaluate(test_ds)
         
@@ -166,4 +158,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     args.out.mkdir(parents=True, exist_ok=True)
-    main(args.cfg, args.out)
+    main(args.cfg, args.out) 
