@@ -65,6 +65,12 @@ V8_sequence_length_trimming,009de35f-8d7f-4a08-9390-5864dadccdc9,load_model,2.94
 V8_sequence_length_trimming,009de35f-8d7f-4a08-9390-5864dadccdc9,train_model,0.248087833082601
 V8_sequence_length_trimming,009de35f-8d7f-4a08-9390-5864dadccdc9,save_model,4.006054227007061e-05
 V8_sequence_length_trimming,009de35f-8d7f-4a08-9390-5864dadccdc9,evaluate_model,0.0216394546693461
+v18_layer_pruning_8_top,625a87f3-91ca-4a14-b198-34c18a2556df,load_dataset,2.7768654928830155e-05
+v18_layer_pruning_8_top,625a87f3-91ca-4a14-b198-34c18a2556df,tokenize_dataset,4.653643501268901e-06
+v18_layer_pruning_8_top,625a87f3-91ca-4a14-b198-34c18a2556df,load_model,2.5233935558168933e-05
+v18_layer_pruning_8_top,625a87f3-91ca-4a14-b198-34c18a2556df,train_model,0.3100724564376129
+v18_layer_pruning_8_top,625a87f3-91ca-4a14-b198-34c18a2556df,save_model,3.114142186566582e-05
+v18_layer_pruning_8_top,625a87f3-91ca-4a14-b198-34c18a2556df,evaluate_model,0.0292799553116687
 V7_f16,15e4091a-3b9e-4057-9633-74ca73f26784,load_dataset,2.882142293339155e-05
 V7_f16,15e4091a-3b9e-4057-9633-74ca73f26784,tokenize_dataset,4.485186876113375e-06
 V7_f16,15e4091a-3b9e-4057-9633-74ca73f26784,load_model,2.3644151917353547e-05

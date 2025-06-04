@@ -1,78 +1,72 @@
 #!/bin/bash
 
-# Get the absolute path of the script's directory
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# List of variants to run
+variants=(
+    "v16_layer_pruning_4_top"
+    "v17_layer_pruning_4_bottom"
+    "v18_layer_pruning_8_top"
+    "v19_layer_pruning_8_bottom"
+    "v20_layer_pruning_12_top"
+    "v21_layer_pruning_12_bottom"
+    "v22_layer_pruning_16_top"
+    "v23_layer_pruning_16_bottom"
+    "v24_layer_pruning_20_top"
+    "v25_layer_pruning_20_bottom"
+    # Add more variants here
+)
 
-# Create logs and status directories
-mkdir -p "$SCRIPT_DIR/logs"
-mkdir -p "$SCRIPT_DIR/status"
+root_dir=~/greenai-pipeline-empirical-study/variants
 
-# Get the current timestamp
-TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-STATUS_FILE="$SCRIPT_DIR/status/experiment_status.txt"
-
-# Function to run training for a variant in tmux
-run_variant() {
-    local variant=$1
-    local variant_name=$(basename "$variant")
-    local log_file="$SCRIPT_DIR/logs/${variant_name}_${TIMESTAMP}.log"
-    local session_name="exp_${variant_name}_${TIMESTAMP}"
-    
-    echo "===============================================" | tee -a "$STATUS_FILE"
-    echo "Starting training for variant: $variant_name" | tee -a "$STATUS_FILE"
-    echo "Time: $(date)" | tee -a "$STATUS_FILE"
-    echo "Log file: $log_file" | tee -a "$STATUS_FILE"
-    echo "TMUX session: $session_name" | tee -a "$STATUS_FILE"
-    echo "===============================================" | tee -a "$STATUS_FILE"
-    
-    # Change to the variant directory and run in tmux
-    cd "$variant" || {
-        echo "Error: Could not change to directory $variant" | tee -a "$STATUS_FILE"
-        echo "Status: Failed - Directory not found" | tee -a "$STATUS_FILE"
-        return 1
-    }
-    
-    # Create new tmux session and run training
-    tmux new-session -d -s "$session_name" "python3 train.py 2>&1 | tee \"$log_file\""
-    
-    # Return to the original directory
-    cd "$SCRIPT_DIR"
-    
-    # Add to status file
-    echo "$variant_name|$session_name|Running|$(date)|$log_file" >> "$STATUS_FILE"
-    
-    # Wait for 5 minutes before starting next variant
-    echo "Waiting 5 minutes before starting next variant..." | tee -a "$STATUS_FILE"
-    sleep 300
+# Function to check if a process is still running
+check_process() {
+    local pid=$1
+    if ps -p $pid > /dev/null; then
+        return 0  # Process is running
+    else
+        return 1  # Process is not running
+    fi
 }
 
-# Initialize status file
-echo "Variant|TMUX Session|Status|Start Time|Log File" > "$STATUS_FILE"
-echo "----------------------------------------" >> "$STATUS_FILE"
+# Function to cleanup any existing processes
+cleanup() {
+    echo "Cleaning up processes..."
+    pkill -f "python3 train.py" || true
+    exit 1
+}
 
-# Main execution
-echo "Starting training at $(date)" | tee -a "$STATUS_FILE"
-
-VARIANTS_DIR="variants"
-
-# If specific variants are provided as arguments, use those
-if [ $# -gt 0 ]; then
-    variants=("$@")
-    echo "Running specified variants: ${variants[*]}" | tee -a "$STATUS_FILE"
-else
-    # Get all variant directories and sort them
-    variants=($(ls -d ${VARIANTS_DIR}/V* ${VARIANTS_DIR}/v* | sort -V))
-    echo "Running all variants: ${variants[*]}" | tee -a "$STATUS_FILE"
-fi
-
-echo "Found ${#variants[@]} variants"
+# Set up trap for cleanup
+trap cleanup SIGINT SIGTERM
 
 # Run each variant
 for variant in "${variants[@]}"; do
-    run_variant "$variant"
+    echo "Starting variant: $variant"
+    
+    # Change to variant directory
+    cd "$root_dir/$variant" || {
+        echo "Error: Could not change to directory $variant"
+        exit 1
+    }
+    
+    # Clean up any existing processes for this variant
+    pkill -f "python3 train.py" || true
+    
+    # Start the training process
+    python3 train.py > run_log.txt 2>&1
+    training_exit_code=$?
+    
+    if [ $training_exit_code -ne 0 ]; then
+        echo "Error: Training failed for variant $variant with exit code $training_exit_code"
+        cleanup
+    fi
+    
+    echo "Variant $variant completed"
+    
+    # Wait 60 seconds before starting the next variant
+    echo "Waiting 60 seconds before starting next variant..."
+    sleep 60
+    
+    # Go back to the original directory
+    cd "$root_dir"
 done
-echo "All training runs initiated at $(date)" | tee -a "$STATUS_FILE"
-echo "Check $STATUS_FILE for status updates"
-echo "Use 'tmux ls' to see active sessions"
-echo "Attach to session: tmux attach -t <session_name>"
-echo "Detach from session: Ctrl+B then D"
+
+echo "All variants have been processed"
