@@ -10,6 +10,10 @@ from pathlib import Path
 from datetime import datetime
 import json
 
+project_root = Path(__file__).parent.parent.parent
+sys.path.append(str(project_root))
+
+
 import torch, numpy as np
 from omegaconf import OmegaConf
 
@@ -109,7 +113,19 @@ def main(cfg_path: Path, output_root: Path):
         tracker.start_task("load_model")
         model = AutoModelForSequenceClassification.from_pretrained(
                     cfg.model.name, num_labels=cfg.model.num_labels, attn_implementation="eager")
-        tracker.stop_task()
+
+        # Debug: Print model structure
+        print("\nModel structure:")
+        print("Available attributes:", dir(model))
+        print("\nModel type:", type(model))
+        
+        # Try to find the layers
+        if hasattr(model, 'encoder'):
+            print("\nEncoder attributes:", dir(model.encoder))
+        if hasattr(model, 'bert'):
+            print("\nBERT attributes:", dir(model.bert))
+        if hasattr(model, 'transformer'):
+            print("\nTransformer attributes:", dir(model.transformer))
 
         # ---- TrainingArguments
         tcfg = cfg.training.versions[variant]
@@ -134,13 +150,12 @@ def main(cfg_path: Path, output_root: Path):
         )
         # ---- Layer pruning
         if cfg.layer_pruning.enabled:
-            tracker.start_task("apply_layer_pruning")
             layer_drop(
                 model.layers, 
                 N=cfg.layer_pruning.num_layers,
                 position=cfg.layer_pruning.position
                 )
-            tracker.stop_task()
+        tracker.stop_task()
             
         # ---- Trainer
         trainer = Trainer(

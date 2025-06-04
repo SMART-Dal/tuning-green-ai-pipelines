@@ -1,8 +1,7 @@
 import torch.nn as nn
 
-import torch.nn as nn
 
-def drop_layers(layer_list, N, position):
+def layer_drop(layer_list, N, position):
     """
     Drops a specified number of layers from a language model's layer list, either from the top or bottom.
     

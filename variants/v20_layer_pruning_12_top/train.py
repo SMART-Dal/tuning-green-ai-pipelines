@@ -109,7 +109,6 @@ def main(cfg_path: Path, output_root: Path):
         tracker.start_task("load_model")
         model = AutoModelForSequenceClassification.from_pretrained(
                     cfg.model.name, num_labels=cfg.model.num_labels, attn_implementation="eager")
-        tracker.stop_task()
 
         # ---- TrainingArguments
         tcfg = cfg.training.versions[variant]
@@ -134,7 +133,6 @@ def main(cfg_path: Path, output_root: Path):
         )
         # ---- Layer pruning
         if cfg.layer_pruning.enabled:
-            tracker.start_task("apply_layer_pruning")
             layer_drop(
                 model.layers, 
                 N=cfg.layer_pruning.num_layers,
