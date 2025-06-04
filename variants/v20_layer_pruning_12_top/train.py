@@ -21,7 +21,7 @@ from transformers import (
     logging as hf_logging,
 )
 from codecarbon import EmissionsTracker
-from common import layer_drop
+from common.layer_drop import layer_drop
 
 # --------------------------------------------------------------------------- #
 # 1.  Logging
@@ -134,11 +134,11 @@ def main(cfg_path: Path, output_root: Path):
         # ---- Layer pruning
         if cfg.layer_pruning.enabled:
             layer_drop(
-                model.layers, 
+                model.model.layers, 
                 N=cfg.layer_pruning.num_layers,
                 position=cfg.layer_pruning.position
                 )
-            tracker.stop_task()
+        tracker.stop_task()
             
         # ---- Trainer
         trainer = Trainer(

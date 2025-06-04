@@ -10,10 +10,6 @@ from pathlib import Path
 from datetime import datetime
 import json
 
-project_root = Path(__file__).parent.parent.parent
-sys.path.append(str(project_root))
-
-
 import torch, numpy as np
 from omegaconf import OmegaConf
 
@@ -25,7 +21,7 @@ from transformers import (
     logging as hf_logging,
 )
 from codecarbon import EmissionsTracker
-from common import layer_drop
+from common.layer_drop import layer_drop
 
 # --------------------------------------------------------------------------- #
 # 1.  Logging
@@ -114,19 +110,6 @@ def main(cfg_path: Path, output_root: Path):
         model = AutoModelForSequenceClassification.from_pretrained(
                     cfg.model.name, num_labels=cfg.model.num_labels, attn_implementation="eager")
 
-        # Debug: Print model structure
-        print("\nModel structure:")
-        print("Available attributes:", dir(model))
-        print("\nModel type:", type(model))
-        
-        # Try to find the layers
-        if hasattr(model, 'encoder'):
-            print("\nEncoder attributes:", dir(model.encoder))
-        if hasattr(model, 'bert'):
-            print("\nBERT attributes:", dir(model.bert))
-        if hasattr(model, 'transformer'):
-            print("\nTransformer attributes:", dir(model.transformer))
-
         # ---- TrainingArguments
         tcfg = cfg.training.versions[variant]
         training_args = TrainingArguments(
@@ -151,7 +134,7 @@ def main(cfg_path: Path, output_root: Path):
         # ---- Layer pruning
         if cfg.layer_pruning.enabled:
             layer_drop(
-                model.layers, 
+                model.model.layers, 
                 N=cfg.layer_pruning.num_layers,
                 position=cfg.layer_pruning.position
                 )

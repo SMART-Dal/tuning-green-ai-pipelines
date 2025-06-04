@@ -21,7 +21,7 @@ from transformers import (
     logging as hf_logging,
 )
 from codecarbon import EmissionsTracker
-from common import layer_drop
+from common.layer_drop import layer_drop
 
 # --------------------------------------------------------------------------- #
 # 1.  Logging
@@ -109,7 +109,6 @@ def main(cfg_path: Path, output_root: Path):
         tracker.start_task("load_model")
         model = AutoModelForSequenceClassification.from_pretrained(
                     cfg.model.name, num_labels=cfg.model.num_labels, attn_implementation="eager")
-        
 
         # ---- TrainingArguments
         tcfg = cfg.training.versions[variant]
@@ -135,7 +134,7 @@ def main(cfg_path: Path, output_root: Path):
         # ---- Layer pruning
         if cfg.layer_pruning.enabled:
             layer_drop(
-                model.layers, 
+                model.model.layers, 
                 N=cfg.layer_pruning.num_layers,
                 position=cfg.layer_pruning.position
                 )
