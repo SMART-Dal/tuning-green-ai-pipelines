@@ -28,31 +28,31 @@ STAGE_ORDER = [
 # Mapping of variant folder names to readable names
 VARIANT_NAMES = {
     "V0_baseline": "Baseline",
-    "V1_gradient_checkpointing": "Gradient Checkpointing",
-    "V2_lora_peft": "LoRA + PEFT",
-    "V3_quantization": "Quantization",
-    "V4_tokenizer": "Tokenizer Optimization",
-    "V5_power_limit_100W": "Power Limit (100W)",
-    "V6_optimizer": "Optimizer Tuning",
-    "V7_f16": "FP16 Precision",
-    "V8_sequence_length_trimming": "Sequence Length Trimming",
-    "V9_inference_engine": "Inference Engine",
-    "V10_dataloader_pin_memory": "Dataloader Pin Memory",
-    "v11_torch_compile": "Torch Compile",
-    "V12_attention": "Attention Optimization",
-    "V13_gradient_accumulation_plus_fp16_plus_checkpointing": "Grad Accum + FP16 + Checkpointing",
-    "v14_layer_pruning": "Layer Pruning",
-    "V15_inference_engine_plus_grad_cpting_plus_lora_plus_fp16": "Inference Engine + Grad Checkpointing + LoRA + FP16",
-    "v16_layer_pruning_4_top": "Layer Pruning (4 Top)",
-    "v17_layer_pruning_4_bottom": "Layer Pruning (4 Bottom)",
-    "v18_layer_pruning_8_top": "Layer Pruning (8 Top)",
-    "v19_layer_pruning_8_bottom": "Layer Pruning (8 Bottom)",
-    "v20_layer_pruning_12_top": "Layer Pruning (12 Top)",
-    "v21_layer_pruning_12_bottom": "Layer Pruning (12 Bottom)",
-    "v22_layer_pruning_16_top": "Layer Pruning (16 Top)",
-    "v23_layer_pruning_16_bottom": "Layer Pruning (16 Bottom)",
-    "v24_layer_pruning_20_top": "Layer Pruning (20 Top)",
-    "v25_layer_pruning_20_bottom": "Layer Pruning (20 Bottom)",
+    "V1_gradient_checkpointing": "Grad Check",
+    "V2_lora_peft": "LoRA",
+    "V3_quantization": "Quant",
+    "V4_tokenizer": "Tokenizer",
+    "V5_power_limit_100W": "100W Limit",
+    "V6_optimizer": "Optimizer",
+    "V7_f16": "FP16",
+    "V8_sequence_length_trimming": "Seq Trim",
+    "V9_inference_engine": "Inf Engine",
+    "V10_dataloader_pin_memory": "Pin Memory",
+    "v11_torch_compile": "Compile",
+    "V12_attention": "Attention",
+    "V13_gradient_accumulation_plus_fp16_plus_checkpointing": "Grad+FP16+Check",
+    "v14_layer_pruning": "Layer Prune",
+    "V15_inference_engine_plus_grad_cpting_plus_lora_plus_fp16": "Inf+Grad+LoRA+FP16",
+    "v16_layer_pruning_4_top": "4 Top",
+    "v17_layer_pruning_4_bottom": "4 Bottom",
+    "v18_layer_pruning_8_top": "8 Top",
+    "v19_layer_pruning_8_bottom": "8 Bottom",
+    "v20_layer_pruning_12_top": "12 Top",
+    "v21_layer_pruning_12_bottom": "12 Bottom",
+    "v22_layer_pruning_16_top": "16 Top",
+    "v23_layer_pruning_16_bottom": "16 Bottom",
+    "v24_layer_pruning_20_top": "20 Top",
+    "v25_layer_pruning_20_bottom": "20 Bottom",
 }
 
 def get_variant_name(variant: str) -> str:
@@ -87,7 +87,7 @@ def calculate_deltas(df: pd.DataFrame, baseline: str) -> pd.DataFrame:
     deltas = df.copy()
     
     # Calculate percentage changes
-    for col in ['total_kwh', 'runtime_s', 'train_energy', 'inference_energy']:
+    for col in ['total_kwh', 'runtime_s', 'train_energy', 'inference_energy', 'eval_time_s']:
         if col in df.columns:
             deltas[f'Δ{col}'] = ((deltas[col] - baseline_data[col]) / baseline_data[col] * 100) if baseline_data[col] != 0 else 0
             
@@ -95,6 +95,19 @@ def calculate_deltas(df: pd.DataFrame, baseline: str) -> pd.DataFrame:
     for col in ['f1', 'accuracy']:
         if col in df.columns:
             deltas[f'Δ{col}'] = deltas[col] - baseline_data[col]
+            
+    # Calculate percentage differences for key metrics
+    if 'total_kwh' in df.columns:
+        deltas['percent_diff_energy'] = ((deltas['total_kwh'] - baseline_data['total_kwh']) / baseline_data['total_kwh'] * 100) if baseline_data['total_kwh'] != 0 else 0
+    
+    if 'runtime_s' in df.columns:
+        deltas['percent_diff_time'] = ((deltas['runtime_s'] - baseline_data['runtime_s']) / baseline_data['runtime_s'] * 100) if baseline_data['runtime_s'] != 0 else 0
+    
+    if 'eval_time_s' in df.columns:
+        deltas['percent_diff_eval_time'] = ((deltas['eval_time_s'] - baseline_data['eval_time_s']) / baseline_data['eval_time_s'] * 100) if baseline_data['eval_time_s'] != 0 else 0
+    
+    if 'f1' in df.columns:
+        deltas['percent_diff_f1'] = ((deltas['f1'] - baseline_data['f1']) / baseline_data['f1'] * 100) if baseline_data['f1'] != 0 else 0
             
     # Calculate efficiency metrics
     if 'f1' in df.columns and 'total_kwh' in df.columns:
@@ -274,6 +287,7 @@ def aggregate(results_root: Path, baseline: str = "V0_baseline"):
                         "run_id": run["train_energy"].get("run_id", "unknown"),
                         "stage": stage_row['task_name'],
                         "kwh": stage_row['energy_consumed'],
+                        "duration": stage_row['duration']
                     })
 
         # Inference metrics per run
@@ -292,6 +306,15 @@ def aggregate(results_root: Path, baseline: str = "V0_baseline"):
     print("\nCreating DataFrames...")
     df_variant = pd.DataFrame(by_variant_rows)
     df_variant = df_variant.sort_values("variant")
+    
+    # Add evaluation time from stage data
+    if not by_stage_rows:
+        print("WARNING: No stage data collected!")
+    else:
+        df_stage = pd.DataFrame(by_stage_rows)
+        eval_times = df_stage[df_stage['stage'] == 'evaluate_model'].groupby('variant')['duration'].agg(['mean', 'std']).reset_index()
+        eval_times.columns = ['variant', 'eval_time_s', 'eval_time_std']
+        df_variant = df_variant.merge(eval_times, on='variant', how='left')
     
     # Calculate deltas relative to baseline
     df_variant = calculate_deltas(df_variant, baseline)
@@ -322,7 +345,6 @@ def aggregate(results_root: Path, baseline: str = "V0_baseline"):
             df_variant.at[idx, 'f1_p_value'] = p_value
             df_variant.at[idx, 'significant'] = p_value < 0.05
 
-    df_stage = pd.DataFrame(by_stage_rows) if by_stage_rows else pd.DataFrame()
     df_inference = pd.DataFrame(by_inference_rows) if by_inference_rows else pd.DataFrame()
     
     return df_variant, df_stage, df_inference
@@ -413,105 +435,8 @@ def plot_energy_tradeoff(df_variant: pd.DataFrame, baseline: str, out: Path):
     plt.savefig(out)
     plt.close()
 
-def plot_cascade_effect(df_variant: pd.DataFrame, variants: List[str], out: Path):
-    """Plot cumulative effect of optimizations"""
-    if not variants or df_variant.empty:
-        return
-        
-    # Select and order variants
-    plot_df = df_variant[df_variant['variant'].isin(variants)]
-    plot_df = plot_df.sort_values('total_kwh', ascending=False)
-    
-    # Calculate cumulative savings
-    baseline = plot_df.iloc[0]['total_kwh']
-    plot_df['cumulative_savings'] = baseline - plot_df['total_kwh']
-    
-    # Create figure
-    fig, ax1 = plt.subplots(figsize=(12, 6))
-    
-    # Bar plot for energy consumption
-    ax1.bar(
-        plot_df['variant'], 
-        plot_df['total_kwh'],
-        color='skyblue', 
-        label='Energy Consumption'
-    )
-    ax1.set_ylabel('Total Energy (kWh)')
-    ax1.set_xlabel('Variant')
-    ax1.tick_params(axis='y')
-    
-    # Line plot for cumulative savings
-    ax2 = ax1.twinx()
-    ax2.plot(
-        plot_df['variant'], 
-        plot_df['cumulative_savings'],
-        'r-o', 
-        linewidth=2,
-        label='Cumulative Savings'
-    )
-    ax2.set_ylabel('Cumulative Energy Savings (kWh)')
-    ax2.tick_params(axis='y', colors='red')
-    ax2.yaxis.label.set_color('red')
-    
-    # Formatting
-    plt.title('Cascade Effect of Optimizations')
-    fig.tight_layout()
-    plt.savefig(out)
-    plt.close()
-
-def plot_inference_tradeoffs(df: pd.DataFrame, out: Path):
-    """Plot 3D tradeoff between Energy, Latency, and Accuracy"""
-    if df.empty or len(df) < 3:
-        return
-        
-    fig = plt.figure(figsize=(12, 10))
-    ax = fig.add_subplot(111, projection='3d')
-    
-    # Normalize values for better visualization
-    df['energy_norm'] = (df['inference_energy'] - df['inference_energy'].min()) / \
-                        (df['inference_energy'].max() - df['inference_energy'].min())
-    df['latency_norm'] = (df['latency_ms'] - df['latency_ms'].min()) / \
-                        (df['latency_ms'].max() - df['latency_ms'].min())
-    df['f1_norm'] = (df['f1'] - df['f1'].min()) / \
-                   (df['f1'].max() - df['f1'].min())
-    
-    # Create scatter plot
-    sc = ax.scatter(
-        df['energy_norm'], 
-        df['latency_norm'], 
-        df['f1_norm'],
-        c=df['f1'], 
-        cmap='viridis',
-        s=100,
-        alpha=0.8
-    )
-    
-    # Annotate points
-    for _, row in df.iterrows():
-        ax.text(
-            row['energy_norm'], 
-            row['latency_norm'], 
-            row['f1_norm'],
-            row['variant'],
-            fontsize=9
-        )
-    
-    # Labels
-    ax.set_xlabel('Energy (Normalized)')
-    ax.set_ylabel('Latency (Normalized)')
-    ax.set_zlabel('F1 Score (Normalized)')
-    plt.title('3D Trade-off: Energy vs Latency vs Accuracy')
-    
-    # Colorbar
-    cbar = plt.colorbar(sc, pad=0.1)
-    cbar.set_label('F1 Score')
-    
-    plt.tight_layout()
-    plt.savefig(out)
-    plt.close()
-
 def plot_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
-    """Plot Pareto frontier for energy vs time trade-off"""
+    """Plot Pareto frontier for energy vs evaluation time trade-off"""
     if df.empty:
         return
         
@@ -522,12 +447,12 @@ def plot_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
     baseline_row = df[df['variant'] == baseline].iloc[0]
     plt.scatter(
         baseline_row['total_kwh'], 
-        baseline_row['runtime_s'],
+        baseline_row['eval_time_s'],
         s=200, c='red', marker='*', label=get_variant_name(baseline)
     )
     
     # Identify Pareto frontier
-    points = df[['total_kwh', 'runtime_s']].values
+    points = df[['total_kwh', 'eval_time_s']].values
     pareto_mask = np.ones(points.shape[0], dtype=bool)
     
     for i, point in enumerate(points):
@@ -543,7 +468,7 @@ def plot_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
     if not pareto_df.empty:
         plt.scatter(
             pareto_df['total_kwh'], 
-            pareto_df['runtime_s'],
+            pareto_df['eval_time_s'],
             s=100, c='green', marker='D', label='Pareto Frontier'
         )
         
@@ -551,7 +476,7 @@ def plot_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
         pareto_sorted = pareto_df.sort_values('total_kwh')
         plt.plot(
             pareto_sorted['total_kwh'], 
-            pareto_sorted['runtime_s'],
+            pareto_sorted['eval_time_s'],
             'g--', alpha=0.5
         )
     
@@ -560,7 +485,7 @@ def plot_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
     if not other_df.empty:
         plt.scatter(
             other_df['total_kwh'], 
-            other_df['runtime_s'],
+            other_df['eval_time_s'],
             s=80, c='blue', alpha=0.7, label='Other Variants'
         )
     
@@ -570,15 +495,15 @@ def plot_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
             continue
         plt.annotate(
             get_variant_name(row['variant']), 
-            (row['total_kwh'], row['runtime_s']),
+            (row['total_kwh'], row['eval_time_s']),
             xytext=(5, 5), textcoords='offset points',
             fontsize=9
         )
     
     # Formatting
     plt.xlabel("Total Energy Consumption (kWh)")
-    plt.ylabel("Runtime (seconds)")
-    plt.title("Energy-Time Trade-off")
+    plt.ylabel("Evaluation Time (seconds)")
+    plt.title("Energy-Evaluation Time Trade-off")
     plt.grid(True, linestyle='--', alpha=0.3)
     plt.legend()
     plt.tight_layout()
@@ -586,7 +511,7 @@ def plot_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
     plt.close()
 
 def plot_delta_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
-    """Plot Pareto frontier for delta energy vs delta time trade-off"""
+    """Plot Pareto frontier for delta energy vs delta evaluation time trade-off"""
     if df.empty:
         return
         
@@ -597,8 +522,8 @@ def plot_delta_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
     max_delta = max(
         abs(df['Δtotal_kwh'].min()),
         abs(df['Δtotal_kwh'].max()),
-        abs(df['Δruntime_s'].min()),
-        abs(df['Δruntime_s'].max())
+        abs(df['Δeval_time_s'].min()),
+        abs(df['Δeval_time_s'].max())
     )
     limit = max_delta * 1.1  # Add 10% padding
     ax.set_xlim(-limit, limit)
@@ -616,7 +541,7 @@ def plot_delta_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
     plt.scatter(0, 0, s=200, c='red', marker='*', label=get_variant_name(baseline), zorder=5)
     
     # Identify Pareto frontier
-    points = df[['Δtotal_kwh', 'Δruntime_s']].values
+    points = df[['Δtotal_kwh', 'Δeval_time_s']].values
     pareto_mask = np.ones(points.shape[0], dtype=bool)
     
     for i, point in enumerate(points):
@@ -634,7 +559,7 @@ def plot_delta_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
         for _, row in pareto_df.iterrows():
             plt.scatter(
                 row['Δtotal_kwh'], 
-                row['Δruntime_s'],
+                row['Δeval_time_s'],
                 s=100, c='green', marker='D', label=get_variant_name(row['variant']), zorder=4
             )
         
@@ -642,7 +567,7 @@ def plot_delta_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
         pareto_sorted = pareto_df.sort_values('Δtotal_kwh')
         plt.plot(
             pareto_sorted['Δtotal_kwh'], 
-            pareto_sorted['Δruntime_s'],
+            pareto_sorted['Δeval_time_s'],
             'g--', alpha=0.5, zorder=3
         )
     
@@ -650,39 +575,39 @@ def plot_delta_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
     other_df = df[~pareto_mask & (df['variant'] != baseline)]
     if not other_df.empty:
         # Group variants by quadrant
-        better_both = other_df[(other_df['Δtotal_kwh'] < 0) & (other_df['Δruntime_s'] < 0)]
-        worse_both = other_df[(other_df['Δtotal_kwh'] > 0) & (other_df['Δruntime_s'] > 0)]
-        mixed = other_df[~((other_df['Δtotal_kwh'] < 0) & (other_df['Δruntime_s'] < 0)) & 
-                        ~((other_df['Δtotal_kwh'] > 0) & (other_df['Δruntime_s'] > 0))]
+        better_both = other_df[(other_df['Δtotal_kwh'] < 0) & (other_df['Δeval_time_s'] < 0)]
+        worse_both = other_df[(other_df['Δtotal_kwh'] > 0) & (other_df['Δeval_time_s'] > 0)]
+        mixed = other_df[~((other_df['Δtotal_kwh'] < 0) & (other_df['Δeval_time_s'] < 0)) & 
+                        ~((other_df['Δtotal_kwh'] > 0) & (other_df['Δeval_time_s'] > 0))]
         
         # Plot each group with different markers
         for _, row in better_both.iterrows():
             plt.scatter(
                 row['Δtotal_kwh'], 
-                row['Δruntime_s'],
+                row['Δeval_time_s'],
                 s=80, c='green', marker='o', label=get_variant_name(row['variant']), zorder=4
             )
             
         for _, row in worse_both.iterrows():
             plt.scatter(
                 row['Δtotal_kwh'], 
-                row['Δruntime_s'],
+                row['Δeval_time_s'],
                 s=80, c='red', marker='s', label=get_variant_name(row['variant']), zorder=4
             )
             
         for _, row in mixed.iterrows():
             plt.scatter(
                 row['Δtotal_kwh'], 
-                row['Δruntime_s'],
+                row['Δeval_time_s'],
                 s=80, c='gray', marker='^', label=get_variant_name(row['variant']), zorder=4
             )
     
     # Add quadrant annotations with background
     annotations = [
-        (0.95, 0.95, 'Worse Energy\nWorse Time', 'right', 'top'),
-        (0.05, 0.95, 'Better Energy\nWorse Time', 'left', 'top'),
-        (0.95, 0.05, 'Worse Energy\nBetter Time', 'right', 'bottom'),
-        (0.05, 0.05, 'Better Energy\nBetter Time', 'left', 'bottom')
+        (0.95, 0.95, 'Worse Energy\nWorse Eval Time', 'right', 'top'),
+        (0.05, 0.95, 'Better Energy\nWorse Eval Time', 'left', 'top'),
+        (0.95, 0.05, 'Worse Energy\nBetter Eval Time', 'right', 'bottom'),
+        (0.05, 0.05, 'Better Energy\nBetter Eval Time', 'left', 'bottom')
     ]
     
     for x, y, text, ha, va in annotations:
@@ -710,7 +635,7 @@ def plot_delta_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
     
     # Formatting
     plt.xlabel("Δ Energy Consumption (%)", fontsize=12)
-    plt.ylabel("Δ Runtime (%)", fontsize=12)
+    plt.ylabel("Δ Evaluation Time (%)", fontsize=12)
     plt.grid(True, linestyle='--', alpha=0.3)
     
     plt.tight_layout()
@@ -810,6 +735,407 @@ def generate_pareto_analysis(df: pd.DataFrame, out: Path):
         print(f"- **{row['variant']}**: Best for {perf} scenarios "
               f"({row['total_kwh']:.1f} kWh, F1: {row['f1']:.3f})")
 
+def generate_comprehensive_report(df_variant: pd.DataFrame, df_stage: pd.DataFrame, df_inference: pd.DataFrame, baseline: str, out: Path):
+    """Generate a comprehensive report with detailed statistics and analysis"""
+    with open(out / "report.txt", "w") as f:
+        f.write("=== GREEN AI PIPELINE ANALYSIS REPORT ===\n\n")
+        
+        # 1. Overall Statistics
+        f.write("1. OVERALL STATISTICS\n")
+        f.write("===================\n")
+        f.write(f"Total number of variants analyzed: {len(df_variant)}\n")
+        f.write(f"Baseline variant: {baseline}\n\n")
+        
+        # 2. Individual Variant Analysis
+        f.write("2. INDIVIDUAL VARIANT ANALYSIS\n")
+        f.write("===========================\n")
+        for _, row in df_variant.iterrows():
+            f.write(f"\nVariant: {row['variant']}\n")
+            f.write("-" * (len(row['variant']) + 9) + "\n")
+            f.write(f"Total Energy: {row['total_kwh']:.6f} kWh (±{row['total_kwh_std']:.6f})\n")
+            f.write(f"Runtime: {row['runtime_s']:.6f} s (±{row['runtime_s_std']:.6f})\n")
+            f.write(f"F1 Score: {row['f1']:.6f} (±{row['f1_std']:.6f})\n")
+            f.write(f"Accuracy: {row['accuracy']:.6f}\n")
+            f.write(f"GPU Utilization: {row['avg_gpu_util']:.6f}%\n")
+            f.write(f"GPU Memory Utilization: {row['avg_gpu_mem_util']:.6f}%\n")
+            f.write(f"Peak Memory: {row['peak_mem_gb']:.6f} GB\n")
+            
+            # Percentage differences from baseline
+            f.write("\nDifferences from baseline:\n")
+            f.write(f"Energy: {row['percent_diff_energy']:.6f}%\n")
+            f.write(f"Time: {row['percent_diff_time']:.6f}%\n")
+            f.write(f"F1 Score: {row['percent_diff_f1']:.6f}%\n")
+            
+            # Statistical significance
+            if 'significant' in row:
+                f.write(f"Statistically significant: {'Yes' if row['significant'] else 'No'}\n")
+            f.write("\n")
+        
+        # 3. Combined Variants Analysis
+        f.write("3. COMBINED VARIANTS ANALYSIS\n")
+        f.write("===========================\n")
+        
+        # Define the mapping of combined variants to their individual components
+        combined_components = {
+            "V13_gradient_accumulation_plus_fp16_plus_checkpointing": {
+                "components": ["V1_gradient_checkpointing", "V7_f16", ],
+                "description": "Combines gradient accumulation, FP16 precision, and gradient checkpointing"
+            },
+            "v26_pruning_plus_seq_lngth_torch_compile": {
+                "components": ["v21_layer_pruning_12_bottom", "V8_sequence_length_trimming", "v11_torch_compile"],
+                "description": "Combines bottom 12 layer pruning, sequence length trimming, and torch compile"
+            },
+            "v27_torch_compile_plus_fp16": {
+                "components": ["v11_torch_compile", "V7_f16"],
+                "description": "Combines torch compile and FP16 precision"
+            },
+            "v28_pruning_plus_torch_compile_fp16": {
+                "components": ["v21_layer_pruning_12_bottom", "v11_torch_compile", "V7_f16"],
+                "description": "Combines bottom 12 layer pruning, torch compile, and FP16 precision"
+            },
+            "v29_attention_plus_pin_memory_optimizer_gradient_accumulation": {
+                "components": ["V12_attention", "V10_dataloader_pin_memory", "V6_optimizer"],
+                "description": "Combines attention optimization, pin memory, and optimizer improvements"
+            }
+        }
+
+        for combined_variant, info in combined_components.items():
+            if combined_variant not in df_variant['variant'].values:
+                continue
+
+            f.write(f"\nCombined Variant: {combined_variant}\n")
+            f.write("-" * (len(combined_variant) + 17) + "\n")
+            f.write(f"Description: {info['description']}\n\n")
+            
+            # Get combined variant data
+            combined_data = df_variant[df_variant['variant'] == combined_variant].iloc[0]
+            
+            f.write("Combined Variant Metrics:\n")
+            f.write(f"Total Energy: {combined_data['total_kwh']:.6f} kWh\n")
+            f.write(f"Runtime: {combined_data['runtime_s']:.6f} s\n")
+            f.write(f"F1 Score: {combined_data['f1']:.6f}\n")
+            f.write(f"Energy Savings vs Baseline: {combined_data['percent_diff_energy']:.6f}%\n")
+            f.write(f"Time Savings vs Baseline: {combined_data['percent_diff_time']:.6f}%\n")
+            f.write(f"F1 Impact vs Baseline: {combined_data['percent_diff_f1']:.6f}%\n\n")
+            
+            f.write("Comparison with Individual Components:\n")
+            f.write("---------------------------------\n")
+            
+            # Compare with each individual component
+            for component in info['components']:
+                if component not in df_variant['variant'].values:
+                    f.write(f"Component {component} not found in data\n")
+                    continue
+                    
+                component_data = df_variant[df_variant['variant'] == component].iloc[0]
+                
+                # Calculate relative differences
+                energy_diff = ((combined_data['total_kwh'] - component_data['total_kwh']) / component_data['total_kwh'] * 100) if component_data['total_kwh'] != 0 else 0
+                time_diff = ((combined_data['runtime_s'] - component_data['runtime_s']) / component_data['runtime_s'] * 100) if component_data['runtime_s'] != 0 else 0
+                f1_diff = combined_data['f1'] - component_data['f1']
+                
+                f.write(f"\nComponent: {component}\n")
+                f.write(f"Energy Impact: {energy_diff:.6f}%\n")
+                f.write(f"Time Impact: {time_diff:.6f}%\n")
+                f.write(f"F1 Score Impact: {f1_diff:.6f}\n")
+                
+                # Add interpretation
+                f.write("Interpretation:\n")
+                if energy_diff < 0:
+                    f.write(f"- Energy efficient compared to {component}\n")
+                if time_diff < 0:
+                    f.write(f"- Faster than {component}\n")
+                if f1_diff > 0:
+                    f.write(f"- Better F1 score than {component}\n")
+                elif f1_diff < 0:
+                    f.write(f"- Lower F1 score than {component}\n")
+                else:
+                    f.write(f"- Similar F1 score to {component}\n")
+            
+            # Add overall analysis
+            f.write("\nOverall Analysis:\n")
+            f.write("----------------\n")
+            
+            # Calculate average impact across components
+            energy_impacts = []
+            time_impacts = []
+            f1_impacts = []
+            
+            for component in info['components']:
+                if component in df_variant['variant'].values:
+                    component_data = df_variant[df_variant['variant'] == component].iloc[0]
+                    energy_impacts.append(((combined_data['total_kwh'] - component_data['total_kwh']) / component_data['total_kwh'] * 100) if component_data['total_kwh'] != 0 else 0)
+                    time_impacts.append(((combined_data['runtime_s'] - component_data['runtime_s']) / component_data['runtime_s'] * 100) if component_data['runtime_s'] != 0 else 0)
+                    f1_impacts.append(combined_data['f1'] - component_data['f1'])
+            
+            if energy_impacts:
+                avg_energy_impact = sum(energy_impacts) / len(energy_impacts)
+                avg_time_impact = sum(time_impacts) / len(time_impacts)
+                avg_f1_impact = sum(f1_impacts) / len(f1_impacts)
+                
+                f.write(f"Average Energy Impact: {avg_energy_impact:.6f}%\n")
+                f.write(f"Average Time Impact: {avg_time_impact:.6f}%\n")
+                f.write(f"Average F1 Impact: {avg_f1_impact:.6f}\n")
+                
+                # Add recommendation
+                f.write("\nRecommendation:\n")
+                if avg_energy_impact < 0 and avg_time_impact < 0 and avg_f1_impact >= 0:
+                    f.write("This combination is recommended as it improves both efficiency and performance\n")
+                elif avg_energy_impact < 0 and avg_time_impact < 0:
+                    f.write("This combination improves efficiency but may impact performance\n")
+                elif avg_f1_impact > 0:
+                    f.write("This combination improves performance but may impact efficiency\n")
+                else:
+                    f.write("Consider using individual components based on specific requirements\n")
+            
+            f.write("\n" + "="*50 + "\n")
+        
+        # 4. Stage-wise Analysis
+        if not df_stage.empty:
+            f.write("4. STAGE-WISE ANALYSIS\n")
+            f.write("=====================\n")
+            stage_stats = df_stage.groupby('stage').agg({
+                'kwh': ['mean', 'std', 'min', 'max'],
+                'duration': ['mean', 'std', 'min', 'max']
+            }).round(6)
+            
+            for stage in STAGE_ORDER:
+                if stage in stage_stats.index:
+                    stats = stage_stats.loc[stage]
+                    f.write(f"\nStage: {stage}\n")
+                    f.write("-" * (len(stage) + 7) + "\n")
+                    f.write(f"Average Energy: {stats[('kwh', 'mean')]:.6f} kWh\n")
+                    f.write(f"Std Dev: {stats[('kwh', 'std')]:.6f} kWh\n")
+                    f.write(f"Min Energy: {stats[('kwh', 'min')]:.6f} kWh\n")
+                    f.write(f"Max Energy: {stats[('kwh', 'max')]:.6f} kWh\n")
+                    f.write(f"Average Duration: {stats[('duration', 'mean')]:.6f} s\n")
+                    f.write(f"Duration Std Dev: {stats[('duration', 'std')]:.6f} s\n")
+                    f.write(f"Min Duration: {stats[('duration', 'min')]:.6f} s\n")
+                    f.write(f"Max Duration: {stats[('duration', 'max')]:.6f} s\n")
+            
+            # Stage-wise percentage of total energy
+            total_energy = df_stage['kwh'].sum()
+            f.write("\nStage-wise Energy Distribution:\n")
+            for stage in STAGE_ORDER:
+                if stage in stage_stats.index:
+                    stage_energy = stage_stats.loc[stage, ('kwh', 'mean')]
+                    percentage = (stage_energy / total_energy) * 100
+                    f.write(f"{stage}: {percentage:.6f}%\n")
+            
+            # Stage-wise percentage of total time
+            total_time = df_stage['duration'].sum()
+            f.write("\nStage-wise Time Distribution:\n")
+            for stage in STAGE_ORDER:
+                if stage in stage_stats.index:
+                    stage_time = stage_stats.loc[stage, ('duration', 'mean')]
+                    percentage = (stage_time / total_time) * 100
+                    f.write(f"{stage}: {percentage:.6f}%\n")
+        
+        # 5. Statistical Analysis
+        f.write("\n5. STATISTICAL ANALYSIS\n")
+        f.write("=====================\n")
+        
+        # Energy statistics
+        f.write("\nEnergy Consumption Statistics:\n")
+        f.write(f"Mean: {df_variant['total_kwh'].mean():.6f} kWh\n")
+        f.write(f"Median: {df_variant['total_kwh'].median():.6f} kWh\n")
+        f.write(f"Std Dev: {df_variant['total_kwh'].std():.6f} kWh\n")
+        f.write(f"Min: {df_variant['total_kwh'].min():.6f} kWh\n")
+        f.write(f"Max: {df_variant['total_kwh'].max():.6f} kWh\n")
+        
+        # Runtime statistics
+        f.write("\nRuntime Statistics:\n")
+        f.write(f"Mean: {df_variant['runtime_s'].mean():.6f} s\n")
+        f.write(f"Median: {df_variant['runtime_s'].median():.6f} s\n")
+        f.write(f"Std Dev: {df_variant['runtime_s'].std():.6f} s\n")
+        f.write(f"Min: {df_variant['runtime_s'].min():.6f} s\n")
+        f.write(f"Max: {df_variant['runtime_s'].max():.6f} s\n")
+        
+        # Evaluation time statistics
+        if 'eval_time_s' in df_variant.columns:
+            f.write("\nEvaluation Time Statistics:\n")
+            f.write(f"Mean: {df_variant['eval_time_s'].mean():.6f} s\n")
+            f.write(f"Median: {df_variant['eval_time_s'].median():.6f} s\n")
+            f.write(f"Std Dev: {df_variant['eval_time_s'].std():.6f} s\n")
+            f.write(f"Min: {df_variant['eval_time_s'].min():.6f} s\n")
+            f.write(f"Max: {df_variant['eval_time_s'].max():.6f} s\n")
+        
+        # F1 score statistics
+        f.write("\nF1 Score Statistics:\n")
+        f.write(f"Mean: {df_variant['f1'].mean():.6f}\n")
+        f.write(f"Median: {df_variant['f1'].median():.6f}\n")
+        f.write(f"Std Dev: {df_variant['f1'].std():.6f}\n")
+        f.write(f"Min: {df_variant['f1'].min():.6f}\n")
+        f.write(f"Max: {df_variant['f1'].max():.6f}\n")
+        
+        # 6. Best Performers
+        f.write("\n6. BEST PERFORMERS\n")
+        f.write("================\n")
+        
+        # Best energy efficiency
+        best_energy = df_variant.loc[df_variant['percent_diff_energy'].idxmin()]
+        f.write(f"\nMost Energy Efficient: {best_energy['variant']}\n")
+        f.write(f"Energy Savings: {best_energy['percent_diff_energy']:.6f}%\n")
+        f.write(f"F1 Impact: {best_energy['percent_diff_f1']:.6f}%\n")
+        
+        # Best runtime
+        best_time = df_variant.loc[df_variant['percent_diff_time'].idxmin()]
+        f.write(f"\nFastest Runtime: {best_time['variant']}\n")
+        f.write(f"Time Savings: {best_time['percent_diff_time']:.6f}%\n")
+        f.write(f"F1 Impact: {best_time['percent_diff_f1']:.6f}%\n")
+        
+        # Best evaluation time
+        if 'eval_time_s' in df_variant.columns:
+            best_eval_time = df_variant.loc[df_variant['percent_diff_eval_time'].idxmin()]
+            f.write(f"\nFastest Evaluation: {best_eval_time['variant']}\n")
+            f.write(f"Evaluation Time Savings: {best_eval_time['percent_diff_eval_time']:.6f}%\n")
+            f.write(f"F1 Impact: {best_eval_time['percent_diff_f1']:.6f}%\n")
+        
+        # Best F1 score
+        best_f1 = df_variant.loc[df_variant['f1'].idxmax()]
+        f.write(f"\nBest F1 Score: {best_f1['variant']}\n")
+        f.write(f"F1 Score: {best_f1['f1']:.6f}\n")
+        f.write(f"Energy Impact: {best_f1['percent_diff_energy']:.6f}%\n")
+        f.write(f"Time Impact: {best_f1['percent_diff_time']:.6f}%\n")
+        
+        # 7. Recommendations
+        f.write("\n7. RECOMMENDATIONS\n")
+        f.write("================\n")
+        
+        # Energy-focused recommendations
+        f.write("\nFor Energy Efficiency:\n")
+        energy_efficient = df_variant[df_variant['percent_diff_energy'] < 0].sort_values('percent_diff_energy')
+        for _, row in energy_efficient.head(3).iterrows():
+            f.write(f"- {row['variant']}: {row['percent_diff_energy']:.6f}% energy savings, F1 impact: {row['percent_diff_f1']:.6f}%\n")
+        
+        # Performance-focused recommendations
+        f.write("\nFor Performance:\n")
+        high_performance = df_variant[df_variant['f1'] > df_variant['f1'].median()].sort_values('f1', ascending=False)
+        for _, row in high_performance.head(3).iterrows():
+            f.write(f"- {row['variant']}: F1 score {row['f1']:.6f}, Energy impact: {row['percent_diff_energy']:.6f}%\n")
+        
+        # Balanced recommendations
+        f.write("\nFor Balanced Approach:\n")
+        balanced = df_variant[df_variant['on_pareto']].sort_values('total_kwh')
+        for _, row in balanced.iterrows():
+            f.write(f"- {row['variant']}: Energy {row['total_kwh']:.6f} kWh, F1: {row['f1']:.6f}\n")
+
+def generate_experiment_setup(df_variant: pd.DataFrame, df_stage: pd.DataFrame, df_inference: pd.DataFrame, baseline: str, out: Path):
+    """Generate experiment setup information including hardware and software configuration"""
+    with open(out / "experiment_setup.txt", "w") as f:
+        f.write("=== EXPERIMENT SETUP AND CONFIGURATION ===\n\n")
+        
+        # 1. Hardware Configuration
+        f.write("1. HARDWARE CONFIGURATION\n")
+        f.write("=======================\n")
+        
+        # GPU Information
+        f.write("\nGPU Information:\n")
+        f.write("----------------\n")
+        # Get GPU info from the first run that has it
+        gpu_info = next((r for r in df_variant.itertuples() if hasattr(r, 'gpu_info')), None)
+        if gpu_info:
+            f.write(f"GPU Model: {gpu_info.gpu_info.get('model', 'N/A')}\n")
+            f.write(f"GPU Memory: {gpu_info.gpu_info.get('memory', 'N/A')} GB\n")
+            f.write(f"GPU Driver: {gpu_info.gpu_info.get('driver', 'N/A')}\n")
+            f.write(f"CUDA Version: {gpu_info.gpu_info.get('cuda', 'N/A')}\n")
+        
+        # GPU Utilization Statistics
+        f.write("\nGPU Utilization Statistics:\n")
+        f.write(f"Average GPU Utilization: {df_variant['avg_gpu_util'].mean():.6f}%\n")
+        f.write(f"Average GPU Memory Utilization: {df_variant['avg_gpu_mem_util'].mean():.6f}%\n")
+        f.write(f"Peak GPU Memory Usage: {df_variant['peak_mem_gb'].max():.6f} GB\n")
+        
+        # CPU Information
+        f.write("\nCPU Information:\n")
+        f.write("----------------\n")
+        # Get CPU info from the first run that has it
+        cpu_info = next((r for r in df_variant.itertuples() if hasattr(r, 'cpu_info')), None)
+        if cpu_info:
+            f.write(f"CPU Model: {cpu_info.cpu_info.get('model', 'N/A')}\n")
+            f.write(f"CPU Cores: {cpu_info.cpu_info.get('cores', 'N/A')}\n")
+            f.write(f"CPU Memory: {cpu_info.cpu_info.get('memory', 'N/A')} GB\n")
+        
+        # 2. Software Configuration
+        f.write("\n2. SOFTWARE CONFIGURATION\n")
+        f.write("=======================\n")
+        
+        # Python and Framework Versions
+        f.write("\nPython and Framework Versions:\n")
+        f.write("----------------------------\n")
+        # Get version info from the first run that has it
+        version_info = next((r for r in df_variant.itertuples() if hasattr(r, 'version_info')), None)
+        if version_info:
+            f.write(f"Python Version: {version_info.version_info.get('python', 'N/A')}\n")
+            f.write(f"PyTorch Version: {version_info.version_info.get('pytorch', 'N/A')}\n")
+            f.write(f"CUDA Version: {version_info.version_info.get('cuda', 'N/A')}\n")
+            f.write(f"Other Dependencies: {version_info.version_info.get('dependencies', 'N/A')}\n")
+        
+        # 3. Model Configuration
+        f.write("\n3. MODEL CONFIGURATION\n")
+        f.write("====================\n")
+        f.write(f"Model Architecture: ModernBERT-base\n")
+        f.write(f"Model Type: Transformer-based\n")
+        f.write(f"Task: Vulnerability Detection\n")
+        f.write(f"Precision: Mixed (FP16/FP32)\n")
+        
+        # 4. Dataset Configuration
+        f.write("\n4. DATASET CONFIGURATION\n")
+        f.write("======================\n")
+        f.write(f"Dataset Name: BigVul\n")
+        f.write(f"Task Type: Vulnerability Detection\n")
+        f.write(f"Dataset Type: Code Analysis\n")
+        f.write(f"Language: Source Code\n")
+        
+        # 5. Training Configuration
+        f.write("\n5. TRAINING CONFIGURATION\n")
+        f.write("======================\n")
+        # Get training info from the first run that has it
+        training_info = next((r for r in df_variant.itertuples() if hasattr(r, 'training_info')), None)
+        if training_info:
+            f.write(f"Batch Size: {training_info.training_info.get('batch_size', 'N/A')}\n")
+            f.write(f"Learning Rate: {training_info.training_info.get('learning_rate', 'N/A')}\n")
+            f.write(f"Optimizer: {training_info.training_info.get('optimizer', 'N/A')}\n")
+            f.write(f"Number of Epochs: {training_info.training_info.get('epochs', 'N/A')}\n")
+            f.write(f"Training Time: {training_info.training_info.get('training_time', 'N/A')}\n")
+        
+        # 6. Measurement Configuration
+        f.write("\n6. MEASUREMENT CONFIGURATION\n")
+        f.write("=========================\n")
+        
+        # Energy Measurement
+        f.write("\nEnergy Measurement:\n")
+        f.write("------------------\n")
+        f.write(f"Energy Measurement Tool: CodeCarbon\n")
+        f.write(f"Measurement Frequency: Per Training Run\n")
+        
+        # Performance Metrics
+        f.write("\nPerformance Metrics:\n")
+        f.write("------------------\n")
+        f.write(f"Evaluation Metrics: F1 Score, Accuracy\n")
+        f.write(f"Hardware Metrics: GPU Utilization, Memory Usage\n")
+        f.write(f"Energy Metrics: Total Energy, CPU Energy, GPU Energy\n")
+        
+        # 7. Variant Information
+        f.write("\n7. VARIANT INFORMATION\n")
+        f.write("=====================\n")
+        f.write(f"Total Number of Variants: {len(df_variant)}\n")
+        f.write(f"Baseline Variant: {baseline}\n")
+        
+        # Split variants into individual and combined
+        individual_variants = df_variant[~df_variant['variant'].str.contains('plus')]['variant'].tolist()
+        combined_variants = df_variant[df_variant['variant'].str.contains('plus')]['variant'].tolist()
+        
+        f.write("\nVariant Types:\n")
+        f.write("-------------\n")
+        f.write("Individual Optimizations:\n")
+        for variant in sorted(individual_variants):
+            f.write(f"- {variant}\n")
+        
+        f.write("\nCombined Optimizations:\n")
+        for variant in sorted(combined_variants):
+            f.write(f"- {variant}\n")
+
 # ------------------------------------------------------------------
 # ------------------------------ main ------------------------------
 # ------------------------------------------------------------------
@@ -817,7 +1143,7 @@ def generate_pareto_analysis(df: pd.DataFrame, out: Path):
 def main():
     parser = argparse.ArgumentParser(description="Green AI Pipeline Analyzer")
     parser.add_argument("--results_dir", type=Path, default=Path("variants"))
-    parser.add_argument("--out_dir",     type=Path, default=Path("analysis"))
+    parser.add_argument("--out_dir",     type=Path, default=Path("analysis_results"))
     parser.add_argument("--baseline",    type=str,  default="V0_baseline")
     parser.add_argument("--cascade_variants", nargs='+', default=["V0_baseline", "V4_tokenizer", "V2_lora_peft", "V15_inference_engine_plus_grad_cpting_plus_lora_plus_fp16"])
     args = parser.parse_args()
@@ -837,17 +1163,16 @@ def main():
     # Generate reports
     generate_delta_table(df_variant, args.baseline, args.out_dir)
     generate_pareto_analysis(df_variant, args.out_dir)
+    generate_comprehensive_report(df_variant, df_stage, df_inference, args.baseline, args.out_dir)
+    generate_experiment_setup(df_variant, df_stage, df_inference, args.baseline, args.out_dir)
     
     # Create plots
     if not df_stage.empty:
         plot_stacked(df_stage, args.out_dir / "stage_energy.png")
     if not df_variant.empty:
         plot_energy_tradeoff(df_variant, args.baseline, args.out_dir / "energy_tradeoff.png")
-        plot_cascade_effect(df_variant, args.cascade_variants, args.out_dir / "cascade_effect.png")
         plot_energy_time_pareto(df_variant, args.baseline, args.out_dir / "energy_time_pareto.png")
         plot_delta_energy_time_pareto(df_variant, args.baseline, args.out_dir / "delta_energy_time_pareto.png")
-    if not df_inference.empty and len(df_inference) >= 3:
-        plot_inference_tradeoffs(df_variant, args.out_dir / "3d_tradeoff.png")
 
     print("\nAnalysis complete. Results saved to:", args.out_dir)
 

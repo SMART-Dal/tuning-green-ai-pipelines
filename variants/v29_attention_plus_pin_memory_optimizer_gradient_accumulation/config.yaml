@@ -30,9 +30,9 @@ training:
     default:
       learning_rate: 5e-5
       num_epochs: 1
-      batch_size: 2
-      eval_batch_size: 2
-      gradient_accumulation_steps: 4   # ⇒ effective batch 32
+      batch_size: 4
+      eval_batch_size: 4
+      gradient_accumulation_steps: 2   # ⇒ effective batch 8
       weight_decay: 0.01
       warmup_ratio: 0.1
       logging_steps: 100
@@ -42,6 +42,7 @@ training:
       gradient_checkpointing: false
       save_total_limit: 2
       fp16: false
+      optimizer: adamw_bnb_8bit  
     dummy:
       learning_rate: 5e-5
       num_epochs: 1
@@ -57,6 +58,7 @@ training:
       gradient_checkpointing: false
       fp16: false
       save_total_limit: 2
+      optimizer: adamw_bnb_8bit  
 
 inference:
   versions:

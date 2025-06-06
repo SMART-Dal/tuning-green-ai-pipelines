@@ -2,16 +2,10 @@
 
 # List of variants to run
 variants=(
-    "v16_layer_pruning_4_top"
-    "v17_layer_pruning_4_bottom"
-    "v18_layer_pruning_8_top"
-    "v19_layer_pruning_8_bottom"
-    "v20_layer_pruning_12_top"
-    "v21_layer_pruning_12_bottom"
-    "v22_layer_pruning_16_top"
-    "v23_layer_pruning_16_bottom"
-    "v24_layer_pruning_20_top"
-    "v25_layer_pruning_20_bottom"
+    "v11_torch_compile"
+    "v26_pruning_plus_seq_lngth_torch_compile"
+    "v28_pruning_plus_torch_compile_fp16"
+    "v29_attention_plus_pin_memory_optimizer_gradient_accumulation"
     # Add more variants here
 )
 

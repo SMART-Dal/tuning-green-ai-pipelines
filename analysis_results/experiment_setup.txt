@@ -1,0 +1,89 @@
+=== EXPERIMENT SETUP AND CONFIGURATION ===
+
+1. HARDWARE CONFIGURATION
+=======================
+
+GPU Information:
+----------------
+
+GPU Utilization Statistics:
+Average GPU Utilization: 0.000000%
+Average GPU Memory Utilization: 0.000000%
+Peak GPU Memory Usage: 0.000000 GB
+
+CPU Information:
+----------------
+
+2. SOFTWARE CONFIGURATION
+=======================
+
+Python and Framework Versions:
+----------------------------
+
+3. MODEL CONFIGURATION
+====================
+Model Architecture: ModernBERT-base
+Model Type: Transformer-based
+Task: Vulnerability Detection
+Precision: Mixed (FP16/FP32)
+
+4. DATASET CONFIGURATION
+======================
+Dataset Name: BigVul
+Task Type: Vulnerability Detection
+Dataset Type: Code Analysis
+Language: Source Code
+
+5. TRAINING CONFIGURATION
+======================
+
+6. MEASUREMENT CONFIGURATION
+=========================
+
+Energy Measurement:
+------------------
+Energy Measurement Tool: CodeCarbon
+Measurement Frequency: Per Training Run
+
+Performance Metrics:
+------------------
+Evaluation Metrics: F1 Score, Accuracy
+Hardware Metrics: GPU Utilization, Memory Usage
+Energy Metrics: Total Energy, CPU Energy, GPU Energy
+
+7. VARIANT INFORMATION
+=====================
+Total Number of Variants: 26
+Baseline Variant: V0_baseline
+
+Variant Types:
+-------------
+Individual Optimizations:
+- V0_baseline
+- V10_dataloader_pin_memory
+- V12_attention
+- V1_gradient_checkpointing
+- V3_quantization
+- V4_tokenizer
+- V5_power_limit_100W
+- V6_optimizer
+- V7_f16
+- V8_sequence_length_trimming
+- v11_torch_compile
+- v16_layer_pruning_4_top
+- v17_layer_pruning_4_bottom
+- v18_layer_pruning_8_top
+- v19_layer_pruning_8_bottom
+- v20_layer_pruning_12_top
+- v21_layer_pruning_12_bottom
+- v22_layer_pruning_16_top
+- v23_layer_pruning_16_bottom
+- v24_layer_pruning_20_top
+- v25_layer_pruning_20_bottom
+
+Combined Optimizations:
+- V13_gradient_accumulation_plus_fp16_plus_checkpointing
+- v26_pruning_plus_seq_lngth_torch_compile
+- v27_torch_compile_plus_fp16
+- v28_pruning_plus_torch_compile_fp16
+- v29_attention_plus_pin_memory_optimizer_gradient_accumulation
