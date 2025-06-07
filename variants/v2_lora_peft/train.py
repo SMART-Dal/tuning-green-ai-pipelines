@@ -181,7 +181,7 @@ def main(cfg_path: Path, out_root: Path):
             json.dump(test_metrics, f, indent=2)
         logger.info(f"Test metrics: {test_metrics}")
 
-         with open(output_dir / "energy_stats_train.json", "w") as f:
+        with open(output_dir / "energy_stats_train.json", "w") as f:
             json.dump(json.loads(tracker.final_emissions_data.toJSON()), f, indent=2)
 
         
