@@ -175,13 +175,16 @@ def main(cfg_path: Path, out_root: Path):
         test_metrics = trainer.evaluate(test_ds)
         tracker.stop_task()
 
+        emissions = tracker.stop()
+
         with open(out_dir / "test_metrics.json", "w") as f:
             json.dump(test_metrics, f, indent=2)
         logger.info(f"Test metrics: {test_metrics}")
 
-    finally:
-        tracker.stop()
+         with open(output_dir / "energy_stats_train.json", "w") as f:
+            json.dump(json.loads(tracker.final_emissions_data.toJSON()), f, indent=2)
 
+        
 # --------------------------------------------------------------------------- #
 if __name__ == "__main__":
     import argparse
