@@ -1,0 +1,146 @@
+{
+  "duration_seconds": 12.705844640731812,
+  "cpu_percent": 0.0,
+  "memory_used_gb": 8.398384094238281,
+  "memory_total_gb": 755.2154235839844,
+  "gpu_stats": [
+    {
+      "id": 0,
+      "name": "NVIDIA RTX 5000 Ada Generation",
+      "memory_used": 11218.0,
+      "memory_total": 32760.0,
+      "temperature": 37.0,
+      "load": 0.0
+    }
+  ],
+  "traces": [
+    {
+      "timestamp": "2025-05-21T01:08:12.165470",
+      "cpu_percent": 0.0,
+      "memory_used_gb": 6.580913543701172,
+      "memory_total_gb": 755.2154235839844,
+      "gpu_stats": [
+        {
+          "id": 0,
+          "name": "NVIDIA RTX 5000 Ada Generation",
+          "memory_used": 5.0,
+          "memory_total": 32760.0,
+          "temperature": 35.0,
+          "load": 0.0
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-05-21T01:08:13.205826",
+      "cpu_percent": 0.1,
+      "memory_used_gb": 6.581413269042969,
+      "memory_total_gb": 755.2154235839844,
+      "gpu_stats": [
+        {
+          "id": 0,
+          "name": "NVIDIA RTX 5000 Ada Generation",
+          "memory_used": 5.0,
+          "memory_total": 32760.0,
+          "temperature": 35.0,
+          "load": 0.0
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-05-21T01:08:14.262069",
+      "cpu_percent": 0.1,
+      "memory_used_gb": 6.584041595458984,
+      "memory_total_gb": 755.2154235839844,
+      "gpu_stats": [
+        {
+          "id": 0,
+          "name": "NVIDIA RTX 5000 Ada Generation",
+          "memory_used": 5.0,
+          "memory_total": 32760.0,
+          "temperature": 35.0,
+          "load": 0.0
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-05-21T01:08:15.448077",
+      "cpu_percent": 0.4,
+      "memory_used_gb": 6.691516876220703,
+      "memory_total_gb": 755.2154235839844,
+      "gpu_stats": [
+        {
+          "id": 0,
+          "name": "NVIDIA RTX 5000 Ada Generation",
+          "memory_used": 5.0,
+          "memory_total": 32760.0,
+          "temperature": 35.0,
+          "load": 0.0
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-05-21T01:08:16.476138",
+      "cpu_percent": 7.1,
+      "memory_used_gb": 8.129016876220703,
+      "memory_total_gb": 755.2154235839844,
+      "gpu_stats": [
+        {
+          "id": 0,
+          "name": "NVIDIA RTX 5000 Ada Generation",
+          "memory_used": 1634.0,
+          "memory_total": 32760.0,
+          "temperature": 36.0,
+          "load": 0.0
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-05-21T01:08:17.546582",
+      "cpu_percent": 0.8,
+      "memory_used_gb": 9.588172912597656,
+      "memory_total_gb": 755.2154235839844,
+      "gpu_stats": [
+        {
+          "id": 0,
+          "name": "NVIDIA RTX 5000 Ada Generation",
+          "memory_used": 11218.0,
+          "memory_total": 32760.0,
+          "temperature": 37.0,
+          "load": 8.0
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-05-21T01:08:18.585227",
+      "cpu_percent": 0.8,
+      "memory_used_gb": 8.39272689819336,
+      "memory_total_gb": 755.2154235839844,
+      "gpu_stats": [
+        {
+          "id": 0,
+          "name": "NVIDIA RTX 5000 Ada Generation",
+          "memory_used": 11218.0,
+          "memory_total": 32760.0,
+          "temperature": 38.0,
+          "load": 16.0
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-05-21T01:08:19.619847",
+      "cpu_percent": 0.1,
+      "memory_used_gb": 8.39691162109375,
+      "memory_total_gb": 755.2154235839844,
+      "gpu_stats": [
+        {
+          "id": 0,
+          "name": "NVIDIA RTX 5000 Ada Generation",
+          "memory_used": 11218.0,
+          "memory_total": 32760.0,
+          "temperature": 37.0,
+          "load": 0.0
+        }
+      ]
+    }
+  ]
+}

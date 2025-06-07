@@ -1,0 +1,1440 @@
+[
+  {
+    "variant": "v0_baseline",
+    "variant_name": "Baseline",
+    "variant_number": 0,
+    "description": "",
+    "total_kwh": 0.5123334852677477,
+    "runtime_s": 516.8038416630006,
+    "eval_time_s": 516.8038416630006,
+    "f1": 0.993527441931505,
+    "\u0394f1": 0.0,
+    "percent_diff_energy": 0.0,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 2.7901717284049352e-05,
+        "duration": 1.6534416360082105
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.910487182878707e-06,
+        "duration": 0.1777432920061983
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.470643359685792e-05,
+        "duration": 0.7470149850123562
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.4678362169318396,
+        "duration": 7398.605550868961
+      },
+      {
+        "stage": "save_model",
+        "kwh": 3.8440948795126495e-05,
+        "duration": 0.8222104979795404
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0444008825520642,
+        "duration": 516.7841443179641
+      }
+    ],
+    "inference": {
+      "variant": "v0_baseline",
+      "run_id": "default_20250530_163434",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v1_gradient_checkpointing",
+    "variant_name": "1 Gradient Checkpointing",
+    "variant_number": 1,
+    "description": "",
+    "total_kwh": 0.6696355323919724,
+    "runtime_s": 517.5626420640037,
+    "eval_time_s": 517.5626420640037,
+    "f1": 0.9932328745009681,
+    "\u0394f1": -0.00029456743053690726,
+    "percent_diff_energy": 30.703057997862064,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 2.684037902234669e-05,
+        "duration": 1.4394705700105987
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.50609037506481e-06,
+        "duration": 0.1877072899951599
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.5482808622497623e-05,
+        "duration": 0.752228480996564
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.6250655901929794,
+        "duration": 9922.812076718954
+      },
+      {
+        "stage": "save_model",
+        "kwh": 4.028225870400526e-05,
+        "duration": 0.915188618004322
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0444723871569648,
+        "duration": 517.5256655230187
+      }
+    ],
+    "inference": {
+      "variant": "v1_gradient_checkpointing",
+      "run_id": "default_20250530_185447",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v2_lora_peft",
+    "variant_name": "2 Lora Peft",
+    "variant_number": 2,
+    "description": "",
+    "total_kwh": 0.0,
+    "runtime_s": 0.0,
+    "eval_time_s": 0.0,
+    "f1": 0.953678919802555,
+    "\u0394f1": -0.03984852212894996,
+    "percent_diff_energy": -100.0,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 2.979551077226701e-05,
+        "duration": 1.7224085790803656
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 2.962877111450446e-06,
+        "duration": 0.1352288059424609
+      },
+      {
+        "stage": "load_model",
+        "kwh": 0.0035952029870121,
+        "duration": 116.80988899897784
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.0647963541004265,
+        "duration": 1653.9456017269986
+      },
+      {
+        "stage": "save_model",
+        "kwh": 1.0524749022022828e-05,
+        "duration": 0.2199072469957173
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0161876079785892,
+        "duration": 235.1374546239385
+      }
+    ],
+    "inference": {
+      "variant": "v2_lora_peft",
+      "run_id": "default_20250602_034843",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v3_quantization",
+    "variant_name": "3 Quantization",
+    "variant_number": 3,
+    "description": "",
+    "total_kwh": 0.4852558757799474,
+    "runtime_s": 642.8302640080219,
+    "eval_time_s": 642.8302640080219,
+    "f1": 0.9932314809874916,
+    "\u0394f1": -0.000295960944013407,
+    "percent_diff_energy": -5.285153179798393,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 4.7533128600304526e-05,
+        "duration": 2.8302885150769725
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 0.0005416945538594,
+        "duration": 17.32943017303478
+      },
+      {
+        "stage": "load_model",
+        "kwh": 5.222950034253823e-05,
+        "duration": 1.4442726830020547
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.4408247389323841,
+        "duration": 10965.089805307916
+      },
+      {
+        "stage": "save_model",
+        "kwh": 7.549270403417463e-06,
+        "duration": 0.2312279139878228
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0437788490607022,
+        "duration": 642.8092490369454
+      }
+    ],
+    "inference": {
+      "variant": "v3_quantization",
+      "run_id": "default_20250602_080319",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v4_tokenizer",
+    "variant_name": "4 Tokenizer",
+    "variant_number": 4,
+    "description": "",
+    "total_kwh": 0.51286410251821,
+    "runtime_s": 518.5285247340216,
+    "eval_time_s": 518.5285247340216,
+    "f1": 0.9946076668216501,
+    "\u0394f1": 0.0010802248901451428,
+    "percent_diff_energy": 0.10356872344290081,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 3.189489719779561e-05,
+        "duration": 1.7824449740001
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.788428765697489e-06,
+        "duration": 0.1809100359678268
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.3955605135091792e-05,
+        "duration": 0.7047455969732255
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.4682498390679658,
+        "duration": 7409.632748456032
+      },
+      {
+        "stage": "save_model",
+        "kwh": 3.6774564607267024e-05,
+        "duration": 0.8321971840341575
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.044516401559844,
+        "duration": 518.5047991069732
+      }
+    ],
+    "inference": {
+      "variant": "v4_tokenizer",
+      "run_id": "default_20250531_144256",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v5_power_limit_100w",
+    "variant_name": "5 Power Limit 100W",
+    "variant_number": 5,
+    "description": "",
+    "total_kwh": 0.6480443825838933,
+    "runtime_s": 1382.8760194799397,
+    "eval_time_s": 1382.8760194799397,
+    "f1": 0.9930791518442916,
+    "\u0394f1": -0.0004482900872133655,
+    "percent_diff_energy": 26.488781471158866,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 7.861807750875545e-05,
+        "duration": 4.822328048991039
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 5.006017828556962e-06,
+        "duration": 0.184409586014226
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.4212981720298632e-05,
+        "duration": 0.719340456998907
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.5923486772233862,
+        "duration": 19116.85369954398
+      },
+      {
+        "stage": "save_model",
+        "kwh": 3.468199020750795e-05,
+        "duration": 0.8185205919435248
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0555526944220128,
+        "duration": 1382.855488121044
+      }
+    ],
+    "inference": {
+      "variant": "v5_power_limit_100W",
+      "run_id": "default_20250602_190126",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v6_optimizer",
+    "variant_name": "6 Optimizer",
+    "variant_number": 6,
+    "description": "",
+    "total_kwh": 0.48879889007997795,
+    "runtime_s": 518.3979384380509,
+    "eval_time_s": 518.3979384380509,
+    "f1": 0.9935599965544747,
+    "\u0394f1": 3.25546229696938e-05,
+    "percent_diff_energy": -4.5936086288543985,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 4.880758444449183e-05,
+        "duration": 2.875492196995765
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.569942500525673e-06,
+        "duration": 0.1871810420416295
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.3973213562737772e-05,
+        "duration": 0.7244949979940429
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.4441715406093473,
+        "duration": 7110.015566936985
+      },
+      {
+        "stage": "save_model",
+        "kwh": 3.715721816782702e-05,
+        "duration": 0.802188956993632
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0445124195441402,
+        "duration": 518.3747925100033
+      }
+    ],
+    "inference": {
+      "variant": "v6_optimizer",
+      "run_id": "default_20250531_173602",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v7_f16",
+    "variant_name": "7 F16",
+    "variant_number": 7,
+    "description": "",
+    "total_kwh": 0.40726751305378966,
+    "runtime_s": 421.4391795800184,
+    "eval_time_s": 421.4391795800184,
+    "f1": 0.9933850269990302,
+    "\u0394f1": -0.0001424149324747992,
+    "percent_diff_energy": -20.507340479424276,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 2.882142293339155e-05,
+        "duration": 1.771240666974336
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.485186876113375e-06,
+        "duration": 0.1776840229867957
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.3644151917353547e-05,
+        "duration": 0.7013926309882663
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.372603350405963,
+        "duration": 6181.3819735849975
+      },
+      {
+        "stage": "save_model",
+        "kwh": 3.871265464383544e-05,
+        "duration": 0.8372192229726352
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0345680746280028,
+        "duration": 421.4192061279901
+      }
+    ],
+    "inference": {
+      "variant": "v7_f16",
+      "run_id": "default_20250531_202110",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v8_sequence_length_trimming",
+    "variant_name": "8 Sequence Length Trimming",
+    "variant_number": 8,
+    "description": "",
+    "total_kwh": 0.27341654201900634,
+    "runtime_s": 255.43303291400662,
+    "eval_time_s": 255.43303291400662,
+    "f1": 0.9897696202904718,
+    "\u0394f1": -0.003757821641033221,
+    "percent_diff_energy": -46.633091554396906,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 8.614965858402928e-05,
+        "duration": 5.251437282015104
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 0.0035331351391096,
+        "duration": 114.43032467196464
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.94837685031568e-05,
+        "duration": 0.8862666140194051
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.248087833082601,
+        "duration": 4066.050189394038
+      },
+      {
+        "stage": "save_model",
+        "kwh": 4.006054227007061e-05,
+        "duration": 0.9110524489660748
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0216394546693461,
+        "duration": 255.413112038048
+      }
+    ],
+    "inference": {
+      "variant": "v8_sequence_length_trimming",
+      "run_id": "default_20250531_222247",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v9_inference_engine",
+    "variant_name": "9 Inference Engine",
+    "variant_number": 9,
+    "description": "",
+    "total_kwh": 0.0,
+    "runtime_s": 0.0,
+    "eval_time_s": 0.0,
+    "f1": 0.0,
+    "\u0394f1": 0.0,
+    "percent_diff_energy": 0.0,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "load_model",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "save_model",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0,
+        "duration": 0.0
+      }
+    ]
+  },
+  {
+    "variant": "v10_dataloader_pin_memory",
+    "variant_name": "10 Dataloader Pin Memory",
+    "variant_number": 10,
+    "description": "",
+    "total_kwh": 0.4079028006399652,
+    "runtime_s": 425.89096099400194,
+    "eval_time_s": 425.89096099400194,
+    "f1": 0.9933690791945619,
+    "\u0394f1": -0.00015836273694314063,
+    "percent_diff_energy": -20.38334163795805,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 9.61019373448611e-05,
+        "duration": 5.992263476946391
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.931359813556497e-06,
+        "duration": 0.183741306012962
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.4347155924845168e-05,
+        "duration": 0.733246881980449
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.3728844721828317,
+        "duration": 6208.525556465029
+      },
+      {
+        "stage": "save_model",
+        "kwh": 3.604934622591927e-05,
+        "duration": 0.8282734359963797
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0348564529777131,
+        "duration": 425.8715265049832
+      }
+    ],
+    "inference": {
+      "variant": "v10_dataloader_pin_memory",
+      "run_id": "default_20250601_005321",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v11_torch_compile",
+    "variant_name": "11 Torch Compile",
+    "variant_number": 11,
+    "description": "",
+    "total_kwh": 0.3153955287504816,
+    "runtime_s": 444.9972057129489,
+    "eval_time_s": 444.9972057129489,
+    "f1": 0.9934304766094271,
+    "\u0394f1": -9.69653220779243e-05,
+    "percent_diff_energy": -38.439407569533635,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 5.579440098702256e-05,
+        "duration": 3.325240691076033
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.432587004331306e-06,
+        "duration": 0.1838061870075762
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.401054914433096e-05,
+        "duration": 0.7176107380073518
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.2772105364886842,
+        "duration": 4306.976521629957
+      },
+      {
+        "stage": "save_model",
+        "kwh": 4.104119871067846e-05,
+        "duration": 0.9053912590024992
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0380592695399797,
+        "duration": 444.9769107489847
+      }
+    ],
+    "inference": {
+      "variant": "v11_torch_compile",
+      "run_id": "default_20250604_134433",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v12_attention",
+    "variant_name": "12 Attention",
+    "variant_number": 12,
+    "description": "",
+    "total_kwh": 0.37510743605833224,
+    "runtime_s": 338.6114185359329,
+    "eval_time_s": 338.6114185359329,
+    "f1": 0.9939095870508714,
+    "\u0394f1": 0.00038214511936640605,
+    "percent_diff_energy": -26.78451695143458,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 5.918687095493315e-05,
+        "duration": 3.5382926639867947
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.912992907478475e-06,
+        "duration": 0.1970546939992346
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.3817366326568152e-05,
+        "duration": 0.7097684239852242
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.3463086040420449,
+        "duration": 5427.851791000983
+      },
+      {
+        "stage": "save_model",
+        "kwh": 4.025234574944747e-05,
+        "duration": 0.9162755949655548
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0286654659954924,
+        "duration": 338.5911705130711
+      }
+    ],
+    "inference": {
+      "variant": "V12_attention",
+      "run_id": "default_20250601_155806",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v13_layer_pruning_4_top",
+    "variant_name": "13 Layer Pruning 4 Top",
+    "variant_number": 13,
+    "description": "",
+    "total_kwh": 0.435379916230293,
+    "runtime_s": 430.3342764370609,
+    "eval_time_s": 430.3342764370609,
+    "f1": 0.9945251471079603,
+    "\u0394f1": 0.0009977051764552547,
+    "percent_diff_energy": -15.020210712410966,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 2.9141123399142647e-05,
+        "duration": 1.6519837050000206
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 5.312161247585162e-06,
+        "duration": 0.2047843469772488
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.569141320147934e-05,
+        "duration": 0.7715037270681933
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.3982992596314565,
+        "duration": 6172.867992822081
+      },
+      {
+        "stage": "save_model",
+        "kwh": 3.3047669729335816e-05,
+        "duration": 0.7497734939679503
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0369870055861091,
+        "duration": 430.3144888730021
+      }
+    ],
+    "inference": {
+      "variant": "v13_layer_pruning_4_top",
+      "run_id": "default_20250604_015119",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v14_layer_pruning_4_bottom",
+    "variant_name": "14 Layer Pruning 4 Bottom",
+    "variant_number": 14,
+    "description": "",
+    "total_kwh": 0.4347006752484594,
+    "runtime_s": 427.3958478390705,
+    "eval_time_s": 427.3958478390705,
+    "f1": 0.9925338041148036,
+    "\u0394f1": -0.0009936378167013649,
+    "percent_diff_energy": -15.152788613595508,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 8.550744408328049e-05,
+        "duration": 5.209053027909249
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.721347430595684e-06,
+        "duration": 0.1830810649553313
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.644457783623549e-05,
+        "duration": 0.7778900349512696
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.3977226729142534,
+        "duration": 6161.068655719981
+      },
+      {
+        "stage": "save_model",
+        "kwh": 3.569507409084682e-05,
+        "duration": 0.781413943041116
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0368252083890336,
+        "duration": 427.3763307390036
+      }
+    ],
+    "inference": {
+      "variant": "v14_layer_pruning_4_bottom",
+      "run_id": "default_20250604_034236",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v15_layer_pruning_8_top",
+    "variant_name": "15 Layer Pruning 8 Top",
+    "variant_number": 15,
+    "description": "",
+    "total_kwh": 0.3392125735001997,
+    "runtime_s": 340.6479625860229,
+    "eval_time_s": 340.6479625860229,
+    "f1": 0.9942444726330658,
+    "\u0394f1": 0.0007170307015608168,
+    "percent_diff_energy": -33.79066891891212,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 7.790959583998155e-05,
+        "duration": 4.645830038003624
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.803989149669604e-06,
+        "duration": 0.1819246240193024
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.479336777845205e-05,
+        "duration": 0.7375051690032706
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.3096578207822751,
+        "duration": 4923.836659706081
+      },
+      {
+        "stage": "save_model",
+        "kwh": 2.7020284718959345e-05,
+        "duration": 0.6129321840126067
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0294197810555238,
+        "duration": 340.62721716589294
+      }
+    ],
+    "inference": {
+      "variant": "v15_layer_pruning_8_top",
+      "run_id": "default_20250604_053342",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v16_layer_pruning_8_bottom",
+    "variant_name": "16 Layer Pruning 8 Bottom",
+    "variant_number": 16,
+    "description": "",
+    "total_kwh": 0.3393927273685478,
+    "runtime_s": 336.8028517990606,
+    "eval_time_s": 336.8028517990606,
+    "f1": 0.9924530972190342,
+    "\u0394f1": -0.0010743447124708094,
+    "percent_diff_energy": -33.75550551977298,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 5.36774806825169e-05,
+        "duration": 3.242027530097402
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 5.22544603420304e-06,
+        "duration": 0.1837470359168946
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.5024649832757323e-05,
+        "duration": 0.7446284900652245
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.3100993506266415,
+        "duration": 4925.098192856996
+      },
+      {
+        "stage": "save_model",
+        "kwh": 2.7134620670277165e-05,
+        "duration": 0.6206373879685998
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0291818663074923,
+        "duration": 336.7820485229604
+      }
+    ],
+    "inference": {
+      "variant": "v16_layer_pruning_8_bottom",
+      "run_id": "default_20250604_070243",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v17_layer_pruning_12_top",
+    "variant_name": "17 Layer Pruning 12 Top",
+    "variant_number": 17,
+    "description": "",
+    "total_kwh": 0.2617828632531708,
+    "runtime_s": 250.82309907395393,
+    "eval_time_s": 250.82309907395393,
+    "f1": 0.9945756959265908,
+    "\u0394f1": 0.0010482539950857905,
+    "percent_diff_energy": -48.903815428663236,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 2.9752755829491804e-05,
+        "duration": 1.7196442700223995
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.824981629148389e-06,
+        "duration": 0.1849907350260764
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.5468201460959007e-05,
+        "duration": 0.7546625999966636
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.2398606155543904,
+        "duration": 3682.7951516259927
+      },
+      {
+        "stage": "save_model",
+        "kwh": 2.735155907276909e-05,
+        "duration": 0.5786399400094524
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0218343587719176,
+        "duration": 250.80256250698585
+      }
+    ],
+    "inference": {
+      "variant": "v17_layer_pruning_12_top",
+      "run_id": "default_20250604_083143",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v18_layer_pruning_12_bottom",
+    "variant_name": "18 Layer Pruning 12 Bottom",
+    "variant_number": 18,
+    "description": "",
+    "total_kwh": 0.26249846335828414,
+    "runtime_s": 252.0337509199744,
+    "eval_time_s": 252.0337509199744,
+    "f1": 0.9931457060247063,
+    "\u0394f1": -0.00038173590679868585,
+    "percent_diff_energy": -48.7641407586113,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 0.0001111115728265,
+        "duration": 6.670187924057245
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.885871571897612e-06,
+        "duration": 0.1857442890759557
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.559318107369976e-05,
+        "duration": 0.7667068419978023
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.2403945500050508,
+        "duration": 3692.852749432903
+      },
+      {
+        "stage": "save_model",
+        "kwh": 2.667170930881202e-05,
+        "duration": 0.585149088059552
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0219304046135016,
+        "duration": 252.01413646701255
+      }
+    ],
+    "inference": {
+      "variant": "v18_layer_pruning_12_bottom",
+      "run_id": "default_20250604_093830",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v19_layer_pruning_16_top",
+    "variant_name": "19 Layer Pruning 16 Top",
+    "variant_number": 19,
+    "description": "",
+    "total_kwh": 0.16219588519050301,
+    "runtime_s": 162.64263226394542,
+    "eval_time_s": 162.64263226394542,
+    "f1": 0.9945781949183105,
+    "\u0394f1": 0.0010507529868054588,
+    "percent_diff_energy": -68.34173641690847,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 0.0001136476847363,
+        "duration": 6.866095874924213
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.439250520301162e-06,
+        "duration": 0.1976150360424071
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.586369084943329e-05,
+        "duration": 0.7550332120154053
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.1477276593147975,
+        "duration": 2378.2513362179743
+      },
+      {
+        "stage": "save_model",
+        "kwh": 2.433826005041051e-05,
+        "duration": 0.4815988830523565
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0142994916501322,
+        "duration": 162.62218123697676
+      }
+    ],
+    "inference": {
+      "variant": "v19_layer_pruning_16_top",
+      "run_id": "default_20250604_104534",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v20_layer_pruning_16_bottom",
+    "variant_name": "20 Layer Pruning 16 Bottom",
+    "variant_number": 20,
+    "description": "",
+    "total_kwh": 0.16176007503393713,
+    "runtime_s": 160.84596467309166,
+    "eval_time_s": 160.84596467309166,
+    "f1": 0.9940415036903347,
+    "\u0394f1": 0.0005140617588297314,
+    "percent_diff_energy": -68.42680018281439,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 3.214989770262687e-05,
+        "duration": 1.778794895973988
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 5.137709547280972e-06,
+        "duration": 0.1814726640004664
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.5100191317042693e-05,
+        "duration": 0.7423310420708731
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.1474782327665969,
+        "duration": 2374.469827729976
+      },
+      {
+        "stage": "save_model",
+        "kwh": 2.3767175098138305e-05,
+        "duration": 0.4642545440001413
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.014190579733918,
+        "duration": 160.82575340208132
+      }
+    ],
+    "inference": {
+      "variant": "v20_layer_pruning_16_bottom",
+      "run_id": "default_20250604_112914",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v21_layer_pruning_20_top",
+    "variant_name": "21 Layer Pruning 20 Top",
+    "variant_number": 21,
+    "description": "",
+    "total_kwh": 0.07921217921656434,
+    "runtime_s": 74.15797408192884,
+    "eval_time_s": 74.15797408192884,
+    "f1": 0.9929392972905058,
+    "\u0394f1": -0.0005881446409992108,
+    "percent_diff_energy": -84.5389416279969,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 3.1102351512814165e-05,
+        "duration": 1.7880471789976582
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.976173798877824e-06,
+        "duration": 0.186937466962263
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.502352121746915e-05,
+        "duration": 0.7528311880305409
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.0726793338858244,
+        "duration": 1063.4683174790116
+      },
+      {
+        "stage": "save_model",
+        "kwh": 1.841376556284413e-05,
+        "duration": 0.353476615040563
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0064528160637626,
+        "duration": 74.13782808394171
+      }
+    ],
+    "inference": {
+      "variant": "v21_layer_pruning_20_top",
+      "run_id": "default_20250604_121244",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v22_layer_pruning_20_bottom",
+    "variant_name": "22 Layer Pruning 20 Bottom",
+    "variant_number": 22,
+    "description": "",
+    "total_kwh": 0.07902808485646744,
+    "runtime_s": 74.73951475403737,
+    "eval_time_s": 74.73951475403737,
+    "f1": 0.9944183476431729,
+    "\u0394f1": 0.0008909057116679442,
+    "percent_diff_energy": -84.5748741534692,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 3.654963399822487e-05,
+        "duration": 2.054067543009296
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.90273998644428e-06,
+        "duration": 0.1926254390273243
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.5121258042681907e-05,
+        "duration": 0.7479528840631247
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.0724710469753512,
+        "duration": 1065.3088060880546
+      },
+      {
+        "stage": "save_model",
+        "kwh": 1.6039798392208926e-05,
+        "duration": 0.356868703966029
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0064740009329109,
+        "duration": 74.71967033110559
+      }
+    ],
+    "inference": {
+      "variant": "v22_layer_pruning_20_bottom",
+      "run_id": "default_20250604_123256",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation",
+    "variant_name": "23 Attention Plus Pin Memory Plus Optimizer Plus Gradient Accumulation",
+    "variant_number": 23,
+    "description": "",
+    "total_kwh": 0.44636479910374716,
+    "runtime_s": 408.0351921960246,
+    "eval_time_s": 408.0351921960246,
+    "f1": 0.9945863186486535,
+    "\u0394f1": 0.0010588767171485491,
+    "percent_diff_energy": -12.876122303332371,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 3.393113956446641e-05,
+        "duration": 1.9051704130833969
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.5444887447980805e-06,
+        "duration": 0.1769621230196207
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.3686063659400088e-05,
+        "duration": 0.71324344095774
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.4090404340674836,
+        "duration": 6099.831160865957
+      },
+      {
+        "stage": "save_model",
+        "kwh": 4.207621657581484e-05,
+        "duration": 0.9388520859647542
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0372171688103727,
+        "duration": 408.0114646939328
+      }
+    ],
+    "inference": {
+      "variant": "v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation",
+      "run_id": "default_20250604_160600",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16",
+    "variant_name": "24 Inference Engine Plus Grad Cpting Plus Lora Plus Fp16",
+    "variant_number": 24,
+    "description": "",
+    "total_kwh": 0.0,
+    "runtime_s": 0.0,
+    "eval_time_s": 0.0,
+    "f1": 0.0,
+    "\u0394f1": 0.0,
+    "percent_diff_energy": 0.0,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "load_model",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "save_model",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0,
+        "duration": 0.0
+      }
+    ]
+  },
+  {
+    "variant": "v25_gradient_accumulation_plus_fp16_plus_checkpointing",
+    "variant_name": "25 Gradient Accumulation Plus Fp16 Plus Checkpointing",
+    "variant_number": 25,
+    "description": "",
+    "total_kwh": 0.6887273851762249,
+    "runtime_s": 496.26211806898937,
+    "eval_time_s": 496.26211806898937,
+    "f1": 0.9946956699851771,
+    "\u0394f1": 0.0011682280536721157,
+    "percent_diff_energy": 34.42950831454887,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 4.892017999438874e-05,
+        "duration": 2.766584365046583
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.383489274194641e-06,
+        "duration": 0.1791190550429746
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.3648270575526985e-05,
+        "duration": 0.6965624209260568
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.6436300785899666,
+        "duration": 9778.84691521409
+      },
+      {
+        "stage": "save_model",
+        "kwh": 3.971606346475642e-05,
+        "duration": 0.8441129429265857
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0449801464259421,
+        "duration": 496.2420774650527
+      }
+    ],
+    "inference": {
+      "variant": "v25_gradient_accumulation_plus_fp16_plus_checkpointing",
+      "run_id": "default_20250601_202846",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v26_pruning_plus_seq_lngth_plus_torch_compile",
+    "variant_name": "26 Pruning Plus Seq Lngth Plus Torch Compile",
+    "variant_number": 26,
+    "description": "",
+    "total_kwh": 0.09855706169627702,
+    "runtime_s": 121.1663319549989,
+    "eval_time_s": 121.1663319549989,
+    "f1": 0.9909454792883914,
+    "\u0394f1": -0.002581962643113611,
+    "percent_diff_energy": -80.76310361701799,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 5.748320721077207e-05,
+        "duration": 3.266139834071509
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 0.0005508906822172,
+        "duration": 17.338698407053016
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.665391886994418e-05,
+        "duration": 0.7522717600222677
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.0886477545188546,
+        "duration": 1304.149318048963
+      },
+      {
+        "stage": "save_model",
+        "kwh": 2.585681058211997e-05,
+        "duration": 0.583487686002627
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0092442192654833,
+        "duration": 121.14631953393108
+      }
+    ],
+    "inference": {
+      "variant": "v26_pruning_plus_seq_lngth_plus_torch_compile",
+      "run_id": "default_20250604_150503",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v27_torch_compile_plus_fp16",
+    "variant_name": "27 Torch Compile Plus Fp16",
+    "variant_number": 27,
+    "description": "",
+    "total_kwh": 0.27672519375936966,
+    "runtime_s": 418.24187364801764,
+    "eval_time_s": 418.24187364801764,
+    "f1": 0.9938108792339553,
+    "\u0394f1": 0.00028343730245028453,
+    "percent_diff_energy": -45.9872911459707,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 3.308229252709272e-05,
+        "duration": 1.8223616409813983
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.487871523979584e-06,
+        "duration": 0.1828387540299445
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.4363022177945854e-05,
+        "duration": 0.7191350950160995
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.2410275543692986,
+        "duration": 3671.598369343032
+      },
+      {
+        "stage": "save_model",
+        "kwh": 4.27655229891244e-05,
+        "duration": 0.9051260230480692
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.035592515713842,
+        "duration": 418.2216847820091
+      }
+    ],
+    "inference": {
+      "variant": "v27_torch_compile_plus_fp16",
+      "run_id": "default_20250601_132031",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v28_pruning_plus_torch_compile_plus_fp16",
+    "variant_name": "28 Pruning Plus Torch Compile Plus Fp16",
+    "variant_number": 28,
+    "description": "",
+    "total_kwh": 0.13476812411164774,
+    "runtime_s": 210.30239194491878,
+    "eval_time_s": 210.30239194491878,
+    "f1": 0.9928743755472044,
+    "\u0394f1": -0.0006530663843006268,
+    "percent_diff_energy": -73.6952340639579,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 5.024621077857421e-05,
+        "duration": 2.899169913958758
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 4.589963833603654e-06,
+        "duration": 0.1854236659128219
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.5569598153527664e-05,
+        "duration": 0.749307659920305
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.1173093389925835,
+        "duration": 1851.7419952260095
+      },
+      {
+        "stage": "save_model",
+        "kwh": 2.669699482164833e-05,
+        "duration": 0.5986403459683061
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0173512569648011,
+        "duration": 210.28277180006265
+      }
+    ],
+    "inference": {
+      "variant": "v28_pruning_plus_torch_compile_plus_fp16",
+      "run_id": "default_20250604_153021",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "cpu": {
+    "count": 128,
+    "physical_count": 64,
+    "frequency": {
+      "current": 3142.986640624998,
+      "min": 1500.0,
+      "max": 3100.0
+    },
+    "usage_percent": 0.1
+  },
+  "memory": {
+    "total": 810906386432,
+    "available": 795947094016,
+    "used": 9015635968,
+    "percent": 1.8
+  },
+  "gpu": [
+    {
+      "id": 0,
+      "name": "NVIDIA RTX 5000 Ada Generation",
+      "memory_total": 32760.0,
+      "memory_used": 11218.0,
+      "memory_free": 21141.0,
+      "temperature": 37.0,
+      "load": 0.0
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Qwen/Qwen2.5-Coder-0.5B",
+  "type": "causal_lm",
+  "parameters": 494032768,
+  "precision": "fp32",
+  "device": "cuda"
+}

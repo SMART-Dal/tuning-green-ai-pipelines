@@ -1,0 +1,14 @@
+{
+  "train_losses": [
+    14.689010620117188
+  ],
+  "val_losses": [
+    5.907028675079346
+  ],
+  "train_accuracies": null,
+  "val_accuracies": null,
+  "best_epoch": 1,
+  "learning_rates": [
+    0.0
+  ]
+}

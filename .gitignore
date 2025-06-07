@@ -40,7 +40,7 @@ wandb/
 wandb_logs/
 datasets/
 *.log
-*.json
+# *.json
 !config.json
 !package.json
 
