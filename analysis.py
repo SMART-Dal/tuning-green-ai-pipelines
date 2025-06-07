@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from __future__ import annotations
-import argparse, json, statistics
+import argparse, json, statistics, re
 from pathlib import Path
 from collections import defaultdict
 from typing import Dict, List, Any, Tuple
@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
 from matplotlib.lines import Line2D
+from datetime import datetime
 
 # ------------------------------------------------------------------
 # ------------------------------ helpers ---------------------------
@@ -27,37 +28,91 @@ STAGE_ORDER = [
 
 # Mapping of variant folder names to readable names
 VARIANT_NAMES = {
+    "V0_baseline": "V0",
+    "V1_gradient_checkpointing": "V1",
+    "V2_lora_peft": "V2",
+    "V3_quantization": "V3",
+    "V4_tokenizer": "V4",
+    "V5_power_limit_100W": "V5",
+    "V6_optimizer": "V6",
+    "V7_f16": "V7",
+    "V8_sequence_length_trimming": "V8",
+    "V9_inference_engine": "V9",
+    "V10_dataloader_pin_memory": "V10",
+    "v11_torch_compile": "V11",
+    "V12_attention": "V12",
+    "v13_layer_pruning_4_top": "V13",
+    "v14_layer_pruning_4_bottom": "V14",
+    "v15_layer_pruning_8_top": "V15",
+    "v16_layer_pruning_8_bottom": "V16",
+    "v17_layer_pruning_12_top": "V17",
+    "v18_layer_pruning_12_bottom": "V18",
+    "v19_layer_pruning_16_top": "V19",
+    "v20_layer_pruning_16_bottom": "V20",
+    "v21_layer_pruning_20_top": "V21",
+    "v22_layer_pruning_20_bottom": "V22",
+    "v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation": "V23",
+    "V24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16": "V24",
+    "V25_gradient_accumulation_plus_fp16_plus_checkpointing": "V25",
+    "v26_pruning_plus_seq_lngth_plus_torch_compile": "V26",
+    "v27_torch_compile_plus_fp16": "V27",
+    "v28_pruning_plus_torch_compile_plus_fp16": "V28"
+}
+
+# Add variant descriptions
+VARIANT_DESCRIPTIONS = {
     "V0_baseline": "Baseline",
-    "V1_gradient_checkpointing": "Grad Check",
-    "V2_lora_peft": "LoRA",
-    "V3_quantization": "Quant",
-    "V4_tokenizer": "Tokenizer",
-    "V5_power_limit_100W": "100W Limit",
-    "V6_optimizer": "Optimizer",
-    "V7_f16": "FP16",
-    "V8_sequence_length_trimming": "Seq Trim",
-    "V9_inference_engine": "Inf Engine",
-    "V10_dataloader_pin_memory": "Pin Memory",
-    "v11_torch_compile": "Compile",
-    "V12_attention": "Attention",
-    "V13_gradient_accumulation_plus_fp16_plus_checkpointing": "Grad+FP16+Check",
-    "v14_layer_pruning": "Layer Prune",
-    "V15_inference_engine_plus_grad_cpting_plus_lora_plus_fp16": "Inf+Grad+LoRA+FP16",
-    "v16_layer_pruning_4_top": "4 Top",
-    "v17_layer_pruning_4_bottom": "4 Bottom",
-    "v18_layer_pruning_8_top": "8 Top",
-    "v19_layer_pruning_8_bottom": "8 Bottom",
-    "v20_layer_pruning_12_top": "12 Top",
-    "v21_layer_pruning_12_bottom": "12 Bottom",
-    "v22_layer_pruning_16_top": "16 Top",
-    "v23_layer_pruning_16_bottom": "16 Bottom",
-    "v24_layer_pruning_20_top": "20 Top",
-    "v25_layer_pruning_20_bottom": "20 Bottom",
+    "V1_gradient_checkpointing": "Gradient checkpointing",
+    "V2_lora_peft": "LoRA PEFT",
+    "V3_quantization": "Quantization",
+    "V4_tokenizer": "Tokenizer optimization",
+    "V5_power_limit_100W": "Power limit (100W)",
+    "V6_optimizer": "Optimizer tuning",
+    "V7_f16": "FP16 training",
+    "V8_sequence_length_trimming": "Sequence length trimming",
+    "V9_inference_engine": "Inference engine",
+    "V10_dataloader_pin_memory": "Dataloader pin memory",
+    "v11_torch_compile": "Torch compile",
+    "V12_attention": "Attention optimization",
+    "v13_layer_pruning_4_top": "Layer pruning (4 Top)",
+    "v14_layer_pruning_4_bottom": "Layer pruning (4 Bottom)",
+    "v15_layer_pruning_8_top": "Layer pruning (8 Top)",
+    "v16_layer_pruning_8_bottom": "Layer pruning (8 Bottom)",
+    "v17_layer_pruning_12_top": "Layer pruning (12 Top)",
+    "v18_layer_pruning_12_bottom": "Layer pruning (12 Bottom)",
+    "v19_layer_pruning_16_top": "Layer pruning (16 Top)",
+    "v20_layer_pruning_16_bottom": "Layer pruning (16 Bottom)",
+    "v21_layer_pruning_20_top": "Layer pruning (20 Top)",
+    "v22_layer_pruning_20_bottom": "Layer pruning (20 Bottom)",
+    "v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation": "Attention + pin mem + 8-bit + grad accum",
+    "V24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16": "Inf engine + grad ckpt + LoRA + FP16",
+    "V25_gradient_accumulation_plus_fp16_plus_checkpointing": "Grad accum + FP16 + ckpt",
+    "v26_pruning_plus_seq_lngth_plus_torch_compile": "Pruning + seq len + compile",
+    "v27_torch_compile_plus_fp16": "Torch compile + FP16",
+    "v28_pruning_plus_torch_compile_plus_fp16": "Pruning + compile + FP16"
 }
 
 def get_variant_name(variant: str) -> str:
-    """Get readable name for a variant, falling back to original name if not found"""
-    return VARIANT_NAMES.get(variant, variant)
+    """Get the display name for a variant."""
+    # Handle both uppercase and lowercase v prefixes
+    if variant.startswith('V') or variant.startswith('v'):
+        # Remove the prefix and convert to title case
+        name = variant[1:].replace('_', ' ').title()
+        # Special case for baseline
+        if name.lower() == '0 baseline':
+            return 'Baseline'
+        return name
+    return variant
+
+def extract_variant_number(variant: str) -> int:
+    """Extract the numeric part from a variant name for sorting."""
+    try:
+        # Handle both uppercase and lowercase v prefixes
+        if variant.startswith('V') or variant.startswith('v'):
+            return int(variant[1:].split('_')[0])
+        return 0
+    except (ValueError, IndexError):
+        return 0
 
 INFERENCE_METRICS = [
     "inference_energy",
@@ -77,8 +132,8 @@ def calculate_deltas(df: pd.DataFrame, baseline: str) -> pd.DataFrame:
     if df.empty:
         return df
         
-    # Get baseline data
-    baseline_mask = df['variant'] == baseline
+    # Get baseline data - case insensitive comparison
+    baseline_mask = df['variant'].str.lower() == baseline.lower()
     if not baseline_mask.any():
         print(f"Warning: Baseline variant {baseline} not found in data")
         return df
@@ -182,7 +237,8 @@ def load_inference_metrics(path: Path) -> Dict[str, Any]:
 # ---------------------- aggregation logic -------------------------
 # ------------------------------------------------------------------
 
-def aggregate(results_root: Path, baseline: str = "V0_baseline"):
+def aggregate(results_root: Path, baseline: str = "v0_baseline"):
+    """Aggregate results from all variants and store in a single JSON file."""
     variant_runs: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
     
     # First pass: collect all run data
@@ -205,21 +261,24 @@ def aggregate(results_root: Path, baseline: str = "V0_baseline"):
             "inference_energy": load_energy(inference_energy_path),
             "inference_metrics": load_inference_metrics(inference_metrics_path),
             "hardware_metrics": load_metrics(hardware_metrics_path) if hardware_metrics_path.exists() else {},
-            "emissions_path": emissions_path,
-            "run_dir": run_dir,
-            "variant": variant
+            "emissions_path": str(emissions_path) if emissions_path else None,
+            "run_dir": str(run_dir),
+            "variant": variant,
+            "run_id": run_dir.name
         }
         variant_runs[variant].append(data)
 
     print("\nCollected data for variants:", list(variant_runs.keys()))
     
-    # --- per‑variant summaries ------------------------------------
-    by_variant_rows = []
-    by_stage_rows = []
-    by_inference_rows = []
-
+    # Prepare aggregated data structure
+    aggregated_data = []
+    
     for variant, runs in variant_runs.items():
         print(f"\nAggregating data for {variant} ({len(runs)} runs)")
+        
+        # Get variant metadata
+        variant_name = get_variant_name(variant)
+        variant_number = extract_variant_number(variant)
         
         # Training metrics
         train_energies = [r["train_energy"].get("energy_consumed", 0) for r in runs]
@@ -243,78 +302,177 @@ def aggregate(results_root: Path, baseline: str = "V0_baseline"):
         gpu_utils = [r["hardware_metrics"].get("avg_gpu_util", 0) for r in runs]
         mem_utils = [r["hardware_metrics"].get("avg_gpu_mem_util", 0) for r in runs]
         
-        # Calculate means and stdevs
-        row = {
-            "variant": variant,
-            "total_kwh": _safe_mean(train_energies),
-            "total_kwh_std": _safe_stdev(train_energies),
-            "runtime_s": _safe_mean(train_times),
-            "runtime_s_std": _safe_stdev(train_times),
-            "cpu_kwh": _safe_mean(cpu_energies),
-            "gpu_kwh": _safe_mean(gpu_energies),
-            "ram_kwh": _safe_mean(ram_energies),
-            "f1": _safe_mean(f1_scores),
-            "f1_std": _safe_stdev(f1_scores),
-            "accuracy": _safe_mean(accuracies),
-            "peak_mem_gb": _safe_mean(peak_mems),
-            "inference_energy": _safe_mean(inf_energies),
-            "inference_energy_std": _safe_stdev(inf_energies),
-            "inference_time": _safe_mean(inf_times),
-            "throughput_qps": _safe_mean(throughputs),
-            "latency_ms": _safe_mean(latencies),
-            "avg_gpu_util": _safe_mean(gpu_utils),
-            "avg_gpu_mem_util": _safe_mean(mem_utils),
-            "num_runs": len(runs)
+        # Calculate aggregated metrics
+        variant_data = {
+            "metadata": {
+                "variant": variant,
+                "variant_name": variant_name,
+                "variant_number": variant_number,
+                "num_runs": len(runs),
+                "run_ids": [r["run_id"] for r in runs]
+            },
+            "training_metrics": {
+                "total_energy": {
+                    "mean": _safe_mean(train_energies),
+                    "std": _safe_stdev(train_energies),
+                    "raw_values": train_energies
+                },
+                "runtime": {
+                    "mean": _safe_mean(train_times),
+                    "std": _safe_stdev(train_times),
+                    "raw_values": train_times
+                },
+                "cpu_energy": {
+                    "mean": _safe_mean(cpu_energies),
+                    "std": _safe_stdev(cpu_energies),
+                    "raw_values": cpu_energies
+                },
+                "gpu_energy": {
+                    "mean": _safe_mean(gpu_energies),
+                    "std": _safe_stdev(gpu_energies),
+                    "raw_values": gpu_energies
+                },
+                "ram_energy": {
+                    "mean": _safe_mean(ram_energies),
+                    "std": _safe_stdev(ram_energies),
+                    "raw_values": ram_energies
+                },
+                "peak_memory": {
+                    "mean": _safe_mean(peak_mems),
+                    "std": _safe_stdev(peak_mems),
+                    "raw_values": peak_mems
+                }
+            },
+            "test_metrics": {
+                "f1_score": {
+                    "mean": _safe_mean(f1_scores),
+                    "std": _safe_stdev(f1_scores),
+                    "raw_values": f1_scores
+                },
+                "accuracy": {
+                    "mean": _safe_mean(accuracies),
+                    "std": _safe_stdev(accuracies),
+                    "raw_values": accuracies
+                }
+            },
+            "inference_metrics": {
+                "energy": {
+                    "mean": _safe_mean(inf_energies),
+                    "std": _safe_stdev(inf_energies),
+                    "raw_values": inf_energies
+                },
+                "time": {
+                    "mean": _safe_mean(inf_times),
+                    "std": _safe_stdev(inf_times),
+                    "raw_values": inf_times
+                },
+                "throughput": {
+                    "mean": _safe_mean(throughputs),
+                    "std": _safe_stdev(throughputs),
+                    "raw_values": throughputs
+                },
+                "latency": {
+                    "mean": _safe_mean(latencies),
+                    "std": _safe_stdev(latencies),
+                    "raw_values": latencies
+                }
+            },
+            "hardware_metrics": {
+                "gpu_utilization": {
+                    "mean": _safe_mean(gpu_utils),
+                    "std": _safe_stdev(gpu_utils),
+                    "raw_values": gpu_utils
+                },
+                "memory_utilization": {
+                    "mean": _safe_mean(mem_utils),
+                    "std": _safe_stdev(mem_utils),
+                    "raw_values": mem_utils
+                }
+            },
+            "stage_data": []
         }
         
-        # Calculate energy per 1k inferences
-        if row["throughput_qps"] and row["inference_energy"]:
-            row["energy_per_1k_inf"] = (row["inference_energy"] / row["throughput_qps"]) * 1000
-        
-        # Add statistical significance markers later
-        row["significant"] = False
-        
-        by_variant_rows.append(row)
-        print(f"Added summary for {variant}")
-
-        # Stage-wise energy data
+        # Add stage-wise data
         for run in runs:
-            if run["emissions_path"] and run["emissions_path"].exists():
+            if run["emissions_path"] and Path(run["emissions_path"]).exists():
                 df_stages = pd.read_csv(run["emissions_path"])
                 for _, stage_row in df_stages.iterrows():
-                    by_stage_rows.append({
-                        "variant": variant,
-                        "run_id": run["train_energy"].get("run_id", "unknown"),
+                    variant_data["stage_data"].append({
+                        "run_id": run["run_id"],
                         "stage": stage_row['task_name'],
-                        "kwh": stage_row['energy_consumed'],
+                        "energy": stage_row['energy_consumed'],
                         "duration": stage_row['duration']
                     })
-
-        # Inference metrics per run
-        for run in runs:
-            if "inference_metrics" in run:
-                by_inference_rows.append({
-                    "variant": variant,
-                    "run_id": run["train_energy"].get("run_id", "unknown"),
-                    **run["inference_metrics"]
-                })
-
-    if not by_variant_rows:
-        print("WARNING: No variant data collected!")
-        return pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
-
-    print("\nCreating DataFrames...")
-    df_variant = pd.DataFrame(by_variant_rows)
-    df_variant = df_variant.sort_values("variant")
+        
+        aggregated_data.append(variant_data)
+        print(f"Added summary for {variant}")
     
-    # Add evaluation time from stage data
-    if not by_stage_rows:
-        print("WARNING: No stage data collected!")
-    else:
-        df_stage = pd.DataFrame(by_stage_rows)
-        eval_times = df_stage[df_stage['stage'] == 'evaluate_model'].groupby('variant')['duration'].agg(['mean', 'std']).reset_index()
-        eval_times.columns = ['variant', 'eval_time_s', 'eval_time_std']
-        df_variant = df_variant.merge(eval_times, on='variant', how='left')
+    # Sort variants by variant number
+    aggregated_data.sort(key=lambda x: x["metadata"]["variant_number"])
+    
+    # Save aggregated data to JSON
+    output_path = results_root / "aggregated_metrics.json"
+    with open(output_path, 'w') as f:
+        json.dump({
+            "metadata": {
+                "baseline": baseline,
+                "timestamp": datetime.now().isoformat(),
+                "total_variants": len(aggregated_data)
+            },
+            "variants": aggregated_data
+        }, f, indent=2)
+    
+    print(f"\nAggregated metrics saved to {output_path}")
+    
+    # Convert to DataFrames for compatibility with existing analysis functions
+    df_variant = pd.DataFrame([{
+        "variant": v["metadata"]["variant"],
+        "total_kwh": v["training_metrics"]["total_energy"]["mean"],
+        "total_kwh_std": v["training_metrics"]["total_energy"]["std"],
+        "runtime_s": v["training_metrics"]["runtime"]["mean"],
+        "runtime_s_std": v["training_metrics"]["runtime"]["std"],
+        "cpu_kwh": v["training_metrics"]["cpu_energy"]["mean"],
+        "gpu_kwh": v["training_metrics"]["gpu_energy"]["mean"],
+        "ram_kwh": v["training_metrics"]["ram_energy"]["mean"],
+        "f1": v["test_metrics"]["f1_score"]["mean"],
+        "f1_std": v["test_metrics"]["f1_score"]["std"],
+        "accuracy": v["test_metrics"]["accuracy"]["mean"],
+        "peak_mem_gb": v["training_metrics"]["peak_memory"]["mean"],
+        "inference_energy": v["inference_metrics"]["energy"]["mean"],
+        "inference_energy_std": v["inference_metrics"]["energy"]["std"],
+        "inference_time": v["inference_metrics"]["time"]["mean"],
+        "throughput_qps": v["inference_metrics"]["throughput"]["mean"],
+        "latency_ms": v["inference_metrics"]["latency"]["mean"],
+        "avg_gpu_util": v["hardware_metrics"]["gpu_utilization"]["mean"],
+        "avg_gpu_mem_util": v["hardware_metrics"]["memory_utilization"]["mean"],
+        "num_runs": v["metadata"]["num_runs"],
+        "eval_time_s": v["test_metrics"].get("eval_time", v["training_metrics"]["runtime"]["mean"])  # Use eval_time if available, otherwise use runtime
+    } for v in aggregated_data])
+    
+    # Create stage DataFrame
+    stage_rows = []
+    for variant_data in aggregated_data:
+        for stage in variant_data["stage_data"]:
+            stage_rows.append({
+                "variant": variant_data["metadata"]["variant"],
+                "run_id": stage["run_id"],
+                "stage": stage["stage"],
+                "kwh": stage["energy"],
+                "duration": stage["duration"]
+            })
+    df_stage = pd.DataFrame(stage_rows) if stage_rows else pd.DataFrame()
+    
+    # Create inference DataFrame
+    inference_rows = []
+    for variant_data in aggregated_data:
+        for run_id in variant_data["metadata"]["run_ids"]:
+            inference_rows.append({
+                "variant": variant_data["metadata"]["variant"],
+                "run_id": run_id,
+                "throughput_qps": variant_data["inference_metrics"]["throughput"]["mean"],
+                "latency_ms": variant_data["inference_metrics"]["latency"]["mean"]
+            })
+    df_inference = pd.DataFrame(inference_rows) if inference_rows else pd.DataFrame()
     
     # Calculate deltas relative to baseline
     df_variant = calculate_deltas(df_variant, baseline)
@@ -322,7 +480,7 @@ def aggregate(results_root: Path, baseline: str = "V0_baseline"):
     # Identify Pareto frontier for energy/performance trade-off
     df_pareto = identify_pareto_frontier(
         df_variant, 
-        'Δtotal_kwh', 
+        'percent_diff_energy',
         'f1'
     )
     df_variant['on_pareto'] = df_variant.index.isin(df_pareto.index)
@@ -344,8 +502,6 @@ def aggregate(results_root: Path, baseline: str = "V0_baseline"):
             _, p_value = stats.wilcoxon(base_f1s, variant_f1s)
             df_variant.at[idx, 'f1_p_value'] = p_value
             df_variant.at[idx, 'significant'] = p_value < 0.05
-
-    df_inference = pd.DataFrame(by_inference_rows) if by_inference_rows else pd.DataFrame()
     
     return df_variant, df_stage, df_inference
 
@@ -1136,45 +1292,240 @@ def generate_experiment_setup(df_variant: pd.DataFrame, df_stage: pd.DataFrame, 
         for variant in sorted(combined_variants):
             f.write(f"- {variant}\n")
 
+def combine_variant_metrics(results_root: Path, baseline: str, out_dir: Path):
+    """Combine metrics for each variant across stages using raw results data."""
+    # Use the same aggregation logic as the main analysis
+    df_variant, df_stage, df_inference = aggregate(results_root, baseline)
+    
+    # Set variant as index for easier lookup (case-insensitive)
+    df_variant = df_variant.set_index('variant')
+    df_variant.index = df_variant.index.str.lower()
+    
+    # Get all variant directories and sort them
+    variant_dirs = [d for d in results_root.iterdir() if d.is_dir() and not d.name.startswith('__')]
+    all_variants = [d.name.lower() for d in variant_dirs]  # Convert to lowercase
+    
+    # Prepare combined metrics
+    combined = []
+    for variant in all_variants:
+        # Get variant name and number
+        variant_name = get_variant_name(variant)
+        variant_number = extract_variant_number(variant)
+        
+        # Initialize default metrics
+        default_metrics = {
+            'variant': variant,
+            'variant_name': variant_name,
+            'variant_number': variant_number,
+            'description': '',
+            'total_kwh': 0.0,
+            'runtime_s': 0.0,
+            'eval_time_s': 0.0,
+            'f1': 0.0,
+            'Δf1': 0.0,
+            'percent_diff_energy': 0.0,
+            'stages': []
+        }
+        
+        # If variant has results, update metrics
+        if variant in df_variant.index:
+            variant_data = df_variant.loc[variant].to_dict()
+            default_metrics.update({
+                'description': variant_data.get('description', ''),
+                'total_kwh': float(variant_data.get('total_kwh', 0.0)),
+                'runtime_s': float(variant_data.get('runtime_s', 0.0)),
+                'eval_time_s': float(variant_data.get('eval_time_s', 0.0)),
+                'f1': float(variant_data.get('f1', 0.0)),
+                'Δf1': float(variant_data.get('Δf1', 0.0)),
+                'percent_diff_energy': float(variant_data.get('percent_diff_energy', 0.0))
+            })
+            
+            # Get stage data for this variant (case-insensitive)
+            stages = df_stage[df_stage['variant'].str.lower() == variant]
+            stage_metrics = []
+            
+            # Process each stage
+            for stage in ['load_dataset', 'tokenize_dataset', 'load_model', 'train_model', 'save_model', 'evaluate_model']:
+                stage_data = stages[stages['stage'] == stage]
+                if not stage_data.empty:
+                    stage_metrics.append({
+                        'stage': stage,
+                        'kwh': float(stage_data['kwh'].iloc[0]),
+                        'duration': float(stage_data['duration'].iloc[0])
+                    })
+                else:
+                    stage_metrics.append({
+                        'stage': stage,
+                        'kwh': 0.0,
+                        'duration': 0.0
+                    })
+            
+            default_metrics['stages'] = stage_metrics
+            
+            # Add inference metrics if available (case-insensitive)
+            inference_data = df_inference[df_inference['variant'].str.lower() == variant]
+            if not inference_data.empty:
+                inference_dict = inference_data.to_dict(orient='records')[0]
+                # Convert numeric values to float
+                for k, v in inference_dict.items():
+                    if isinstance(v, (int, float)):
+                        inference_dict[k] = float(v)
+                default_metrics['inference'] = inference_dict
+        else:
+            # Add empty stages for variants without results
+            default_metrics['stages'] = [
+                {'stage': stage, 'kwh': 0.0, 'duration': 0.0}
+                for stage in ['load_dataset', 'tokenize_dataset', 'load_model', 'train_model', 'save_model', 'evaluate_model']
+            ]
+        
+        combined.append(default_metrics)
+    
+    # Sort by variant number
+    combined.sort(key=lambda x: x['variant_number'])
+    
+    # Write to JSON
+    with open(out_dir / 'combined_metrics.json', 'w') as f_json:
+        json.dump(combined, f_json, indent=2)
+    
+    # Create flattened CSV
+    flat_rows = []
+    for entry in combined:
+        flat = {k: v for k, v in entry.items() if k not in ['stages', 'inference', 'variant_number']}
+        for stage in entry['stages']:
+            flat[f"{stage['stage']}_kwh"] = stage['kwh']
+            flat[f"{stage['stage']}_duration"] = stage['duration']
+        if 'inference' in entry:
+            for k, v in entry['inference'].items():
+                flat[f"inference_{k}"] = v
+        flat_rows.append(flat)
+    
+    df_flat = pd.DataFrame(flat_rows)
+    df_flat.to_csv(out_dir / 'combined_metrics.csv', index=False)
+    print("Combined metrics written to combined_metrics.json and combined_metrics.csv")
+
+def get_stage_indicators(variant):
+    """Return appropriate cell commands for each development phase"""
+    data_cell = "\\emptycell"
+    model_cell = "\\emptycell"
+    train_cell = "\\emptycell"
+    system_cell = "\\emptycell"
+    infer_cell = "\\emptycell"
+    
+    # Data stage
+    if variant in ['v4_tokenizer', 'v8_sequence_length_trimming', 'v10_dataloader_pin_memory', 
+                   'v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation',
+                   'v26_pruning_plus_seq_lngth_plus_torch_compile']:
+        data_cell = "\\datacell"
+    
+    # Model stage
+    if variant in ['v2_lora_peft', 'v3_quantization', 'v7_f16', 'V12_attention',
+                   'v13_layer_pruning_4_top', 'v14_layer_pruning_4_bottom',
+                   'v15_layer_pruning_8_top', 'v16_layer_pruning_8_bottom',
+                   'v17_layer_pruning_12_top', 'v18_layer_pruning_12_bottom',
+                   'v19_layer_pruning_16_top', 'v20_layer_pruning_16_bottom',
+                   'v21_layer_pruning_20_top', 'v22_layer_pruning_20_bottom',
+                   'v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation',
+                   'v24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16',
+                   'v25_gradient_accumulation_plus_fp16_plus_checkpointing',
+                   'v26_pruning_plus_seq_lngth_plus_torch_compile',
+                   'v27_torch_compile_plus_fp16',
+                   'v28_pruning_plus_torch_compile_plus_fp16']:
+        model_cell = "\\modelcell"
+    
+    # Training stage
+    if variant in ['v1_gradient_checkpointing', 'v2_lora_peft', 'v3_quantization',
+                   'v6_optimizer', 'v7_f16', 'v8_sequence_length_trimming',
+                   'v10_dataloader_pin_memory', 'v11_torch_compile', 'V12_attention',
+                   'v13_layer_pruning_4_top', 'v14_layer_pruning_4_bottom',
+                   'v15_layer_pruning_8_top', 'v16_layer_pruning_8_bottom',
+                   'v17_layer_pruning_12_top', 'v18_layer_pruning_12_bottom',
+                   'v19_layer_pruning_16_top', 'v20_layer_pruning_16_bottom',
+                   'v21_layer_pruning_20_top', 'v22_layer_pruning_20_bottom',
+                   'v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation',
+                   'v24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16',
+                   'v25_gradient_accumulation_plus_fp16_plus_checkpointing',
+                   'v26_pruning_plus_seq_lngth_plus_torch_compile',
+                   'v27_torch_compile_plus_fp16',
+                   'v28_pruning_plus_torch_compile_plus_fp16']:
+        train_cell = "\\traincell"
+    
+    # System stage
+    if variant in ['v3_quantization', 'v4_tokenizer', 'v5_power_limit_100W',
+                   'v7_f16', 'v8_sequence_length_trimming', 'v9_inference_engine',
+                   'v11_torch_compile', 'v13_layer_pruning_4_top',
+                   'v14_layer_pruning_4_bottom', 'v15_layer_pruning_8_top',
+                   'v16_layer_pruning_8_bottom', 'v17_layer_pruning_12_top',
+                   'v18_layer_pruning_12_bottom', 'v19_layer_pruning_16_top',
+                   'v20_layer_pruning_16_bottom', 'v21_layer_pruning_20_top',
+                   'v22_layer_pruning_20_bottom',
+                   'v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation',
+                   'v24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16',
+                   'v25_gradient_accumulation_plus_fp16_plus_checkpointing',
+                   'v26_pruning_plus_seq_lngth_plus_torch_compile',
+                   'v27_torch_compile_plus_fp16',
+                   'v28_pruning_plus_torch_compile_plus_fp16']:
+        system_cell = "\\systemcell"
+    
+    # Inference stage
+    if variant in ['v2_lora_peft', 'v3_quantization', 'v4_tokenizer',
+                   'v9_inference_engine', 'v11_torch_compile', 'V12_attention',
+                   'v13_layer_pruning_4_top', 'v14_layer_pruning_4_bottom',
+                   'v15_layer_pruning_8_top', 'v16_layer_pruning_8_bottom',
+                   'v17_layer_pruning_12_top', 'v18_layer_pruning_12_bottom',
+                   'v19_layer_pruning_16_top', 'v20_layer_pruning_16_bottom',
+                   'v21_layer_pruning_20_top', 'v22_layer_pruning_20_bottom',
+                   'v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation',
+                   'v24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16',
+                   'v26_pruning_plus_seq_lngth_plus_torch_compile',
+                   'v27_torch_compile_plus_fp16',
+                   'v28_pruning_plus_torch_compile_plus_fp16']:
+        infer_cell = "\\infercell"
+    
+    return data_cell, model_cell, train_cell, system_cell, infer_cell
+
 # ------------------------------------------------------------------
 # ------------------------------ main ------------------------------
 # ------------------------------------------------------------------
 
 def main():
-    parser = argparse.ArgumentParser(description="Green AI Pipeline Analyzer")
-    parser.add_argument("--results_dir", type=Path, default=Path("variants"))
-    parser.add_argument("--out_dir",     type=Path, default=Path("analysis_results"))
-    parser.add_argument("--baseline",    type=str,  default="V0_baseline")
-    parser.add_argument("--cascade_variants", nargs='+', default=["V0_baseline", "V4_tokenizer", "V2_lora_peft", "V15_inference_engine_plus_grad_cpting_plus_lora_plus_fp16"])
+    parser = argparse.ArgumentParser(description='Analyze experiment results')
+    parser.add_argument('--results', type=str, default='variants', help='Path to results directory')
+    parser.add_argument('--baseline', type=str, default='v0_baseline', help='Baseline variant name')
+    parser.add_argument('--out-dir', type=str, default='analysis_results', help='Output directory for analysis')
     args = parser.parse_args()
-
-    args.out_dir.mkdir(parents=True, exist_ok=True)
-    print(f"Starting analysis with baseline: {args.baseline}")
-
-    df_variant, df_stage, df_inference = aggregate(args.results_dir, args.baseline)
     
-    # Save CSVs
-    df_variant.to_csv(args.out_dir / "by_variant.csv", index=False)
-    if not df_stage.empty:
-        df_stage.to_csv(args.out_dir / "by_variant_stage.csv", index=False)
-    if not df_inference.empty:
-        df_inference.to_csv(args.out_dir / "inference_metrics.csv", index=False)
+    results_root = Path(args.results)
+    out_dir = Path(args.out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    
+    print(f"Starting analysis with baseline: {args.baseline}")
+    
+    # Aggregate results
+    df_variant, df_stage, df_inference = aggregate(results_root, args.baseline)
     
     # Generate reports
-    generate_delta_table(df_variant, args.baseline, args.out_dir)
-    generate_pareto_analysis(df_variant, args.out_dir)
-    generate_comprehensive_report(df_variant, df_stage, df_inference, args.baseline, args.out_dir)
-    generate_experiment_setup(df_variant, df_stage, df_inference, args.baseline, args.out_dir)
+    generate_comprehensive_report(df_variant, df_stage, df_inference, args.baseline, out_dir)
+    generate_experiment_setup(df_variant, df_stage, df_inference, args.baseline, out_dir)
+    
+    # Save CSVs
+    df_variant.to_csv(out_dir / "by_variant.csv", index=False)
+    if not df_stage.empty:
+        df_stage.to_csv(out_dir / "by_variant_stage.csv", index=False)
+    if not df_inference.empty:
+        df_inference.to_csv(out_dir / "inference_metrics.csv", index=False)
+    
+    # Combine metrics using raw results data
+    combine_variant_metrics(Path(args.results), args.baseline, out_dir)
     
     # Create plots
     if not df_stage.empty:
-        plot_stacked(df_stage, args.out_dir / "stage_energy.png")
+        plot_stacked(df_stage, out_dir / "stage_energy.png")
     if not df_variant.empty:
-        plot_energy_tradeoff(df_variant, args.baseline, args.out_dir / "energy_tradeoff.png")
-        plot_energy_time_pareto(df_variant, args.baseline, args.out_dir / "energy_time_pareto.png")
-        plot_delta_energy_time_pareto(df_variant, args.baseline, args.out_dir / "delta_energy_time_pareto.png")
+        plot_energy_tradeoff(df_variant, args.baseline, out_dir / "energy_tradeoff.png")
+        plot_energy_time_pareto(df_variant, args.baseline, out_dir / "energy_time_pareto.png")
+        plot_delta_energy_time_pareto(df_variant, args.baseline, out_dir / "delta_energy_time_pareto.png")
 
-    print("\nAnalysis complete. Results saved to:", args.out_dir)
+    print("\nAnalysis complete. Results saved to:", out_dir)
 
 
 if __name__ == "__main__":

@@ -64,3 +64,9 @@ for variant in "${variants[@]}"; do
 done
 
 echo "All variants have been processed"
+
+
+
+
+
+# pick best performning variant across stages and combine and run the model
