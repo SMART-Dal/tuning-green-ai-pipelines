@@ -181,9 +181,15 @@ def main(cfg_path: Path, out_root: Path):
             json.dump(test_metrics, f, indent=2)
         logger.info(f"Test metrics: {test_metrics}")
 
-        with open(output_dir / "energy_stats_train.json", "w") as f:
+        with open(out_dir / "energy_stats_train.json", "w") as f:
             json.dump(json.loads(tracker.final_emissions_data.toJSON()), f, indent=2)
 
+    except Exception as e:
+        # Ensure we stop tracking even if there's an error
+        if tracker:
+            tracker.stop()
+        logger.error(f"Pipeline failed: {str(e)}")
+        raise
         
 # --------------------------------------------------------------------------- #
 if __name__ == "__main__":
