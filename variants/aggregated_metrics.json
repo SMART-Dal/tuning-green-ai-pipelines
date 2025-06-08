@@ -1,0 +1,4194 @@
+{
+  "metadata": {
+    "baseline": "v0_baseline",
+    "timestamp": "2025-06-08T00:34:35.726514",
+    "total_variants": 27
+  },
+  "variants": [
+    {
+      "metadata": {
+        "variant": "v0_baseline",
+        "variant_name": "Baseline",
+        "variant_number": 0,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250530_163434"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.5123334852677477,
+          "std": 0.0,
+          "raw_values": [
+            0.5123334852677477
+          ]
+        },
+        "runtime": {
+          "mean": 516.8038416630006,
+          "std": 0.0,
+          "raw_values": [
+            516.8038416630006
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.01960156978929884,
+          "std": 0.0,
+          "raw_values": [
+            0.01960156978929884
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.47073560408818205,
+          "std": 0.0,
+          "raw_values": [
+            0.47073560408818205
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.021996311390266865,
+          "std": 0.0,
+          "raw_values": [
+            0.021996311390266865
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.993527441931505,
+          "std": 0.0,
+          "raw_values": [
+            0.993527441931505
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250530_163434",
+          "stage": "load_dataset",
+          "energy": 2.7901717284049352e-05,
+          "duration": 1.6534416360082105
+        },
+        {
+          "run_id": "default_20250530_163434",
+          "stage": "tokenize_dataset",
+          "energy": 4.910487182878707e-06,
+          "duration": 0.1777432920061983
+        },
+        {
+          "run_id": "default_20250530_163434",
+          "stage": "load_model",
+          "energy": 2.470643359685792e-05,
+          "duration": 0.7470149850123562
+        },
+        {
+          "run_id": "default_20250530_163434",
+          "stage": "train_model",
+          "energy": 0.4678362169318396,
+          "duration": 7398.605550868961
+        },
+        {
+          "run_id": "default_20250530_163434",
+          "stage": "save_model",
+          "energy": 3.8440948795126495e-05,
+          "duration": 0.8222104979795404
+        },
+        {
+          "run_id": "default_20250530_163434",
+          "stage": "evaluate_model",
+          "energy": 0.0444008825520642,
+          "duration": 516.7841443179641
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v1_gradient_checkpointing",
+        "variant_name": "1 Gradient Checkpointing",
+        "variant_number": 1,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250530_185447"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.6696355323919724,
+          "std": 0.0,
+          "raw_values": [
+            0.6696355323919724
+          ]
+        },
+        "runtime": {
+          "mean": 517.5626420640037,
+          "std": 0.0,
+          "raw_values": [
+            517.5626420640037
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.020752073408589884,
+          "std": 0.0,
+          "raw_values": [
+            0.020752073408589884
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.6198737022874545,
+          "std": 0.0,
+          "raw_values": [
+            0.6198737022874545
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.02900975669592784,
+          "std": 0.0,
+          "raw_values": [
+            0.02900975669592784
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9932328745009681,
+          "std": 0.0,
+          "raw_values": [
+            0.9932328745009681
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250530_185447",
+          "stage": "load_dataset",
+          "energy": 2.684037902234669e-05,
+          "duration": 1.4394705700105987
+        },
+        {
+          "run_id": "default_20250530_185447",
+          "stage": "tokenize_dataset",
+          "energy": 4.50609037506481e-06,
+          "duration": 0.1877072899951599
+        },
+        {
+          "run_id": "default_20250530_185447",
+          "stage": "load_model",
+          "energy": 2.5482808622497623e-05,
+          "duration": 0.752228480996564
+        },
+        {
+          "run_id": "default_20250530_185447",
+          "stage": "train_model",
+          "energy": 0.6250655901929794,
+          "duration": 9922.812076718954
+        },
+        {
+          "run_id": "default_20250530_185447",
+          "stage": "save_model",
+          "energy": 4.028225870400526e-05,
+          "duration": 0.915188618004322
+        },
+        {
+          "run_id": "default_20250530_185447",
+          "stage": "evaluate_model",
+          "energy": 0.0444723871569648,
+          "duration": 517.5256655230187
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v2_lora_peft",
+        "variant_name": "2 Lora Peft",
+        "variant_number": 2,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250602_034843"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "runtime": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "ram_energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.953678919802555,
+          "std": 0.0,
+          "raw_values": [
+            0.953678919802555
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250602_034843",
+          "stage": "load_dataset",
+          "energy": 2.979551077226701e-05,
+          "duration": 1.7224085790803656
+        },
+        {
+          "run_id": "default_20250602_034843",
+          "stage": "tokenize_dataset",
+          "energy": 2.962877111450446e-06,
+          "duration": 0.1352288059424609
+        },
+        {
+          "run_id": "default_20250602_034843",
+          "stage": "load_model",
+          "energy": 0.0035952029870121,
+          "duration": 116.80988899897784
+        },
+        {
+          "run_id": "default_20250602_034843",
+          "stage": "train_model",
+          "energy": 0.0647963541004265,
+          "duration": 1653.9456017269986
+        },
+        {
+          "run_id": "default_20250602_034843",
+          "stage": "save_model",
+          "energy": 1.0524749022022828e-05,
+          "duration": 0.2199072469957173
+        },
+        {
+          "run_id": "default_20250602_034843",
+          "stage": "evaluate_model",
+          "energy": 0.0161876079785892,
+          "duration": 235.1374546239385
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v3_quantization",
+        "variant_name": "3 Quantization",
+        "variant_number": 3,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250602_080319"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.4852558757799474,
+          "std": 0.0,
+          "raw_values": [
+            0.4852558757799474
+          ]
+        },
+        "runtime": {
+          "mean": 642.8302640080219,
+          "std": 0.0,
+          "raw_values": [
+            642.8302640080219
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.027504119602722525,
+          "std": 0.0,
+          "raw_values": [
+            0.027504119602722525
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.42544727674643923,
+          "std": 0.0,
+          "raw_values": [
+            0.42544727674643923
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.032304479430785675,
+          "std": 0.0,
+          "raw_values": [
+            0.032304479430785675
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9932314809874916,
+          "std": 0.0,
+          "raw_values": [
+            0.9932314809874916
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250602_080319",
+          "stage": "load_dataset",
+          "energy": 4.7533128600304526e-05,
+          "duration": 2.8302885150769725
+        },
+        {
+          "run_id": "default_20250602_080319",
+          "stage": "tokenize_dataset",
+          "energy": 0.0005416945538594,
+          "duration": 17.32943017303478
+        },
+        {
+          "run_id": "default_20250602_080319",
+          "stage": "load_model",
+          "energy": 5.222950034253823e-05,
+          "duration": 1.4442726830020547
+        },
+        {
+          "run_id": "default_20250602_080319",
+          "stage": "train_model",
+          "energy": 0.4408247389323841,
+          "duration": 10965.089805307916
+        },
+        {
+          "run_id": "default_20250602_080319",
+          "stage": "save_model",
+          "energy": 7.549270403417463e-06,
+          "duration": 0.2312279139878228
+        },
+        {
+          "run_id": "default_20250602_080319",
+          "stage": "evaluate_model",
+          "energy": 0.0437788490607022,
+          "duration": 642.8092490369454
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v4_tokenizer",
+        "variant_name": "4 Tokenizer",
+        "variant_number": 4,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250531_144256"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.51286410251821,
+          "std": 0.0,
+          "raw_values": [
+            0.51286410251821
+          ]
+        },
+        "runtime": {
+          "mean": 518.5285247340216,
+          "std": 0.0,
+          "raw_values": [
+            518.5285247340216
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.019687298689270792,
+          "std": 0.0,
+          "raw_values": [
+            0.019687298689270792
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.47114480524887536,
+          "std": 0.0,
+          "raw_values": [
+            0.47114480524887536
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.02203199858006378,
+          "std": 0.0,
+          "raw_values": [
+            0.02203199858006378
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9946076668216501,
+          "std": 0.0,
+          "raw_values": [
+            0.9946076668216501
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250531_144256",
+          "stage": "load_dataset",
+          "energy": 3.189489719779561e-05,
+          "duration": 1.7824449740001
+        },
+        {
+          "run_id": "default_20250531_144256",
+          "stage": "tokenize_dataset",
+          "energy": 4.788428765697489e-06,
+          "duration": 0.1809100359678268
+        },
+        {
+          "run_id": "default_20250531_144256",
+          "stage": "load_model",
+          "energy": 2.3955605135091792e-05,
+          "duration": 0.7047455969732255
+        },
+        {
+          "run_id": "default_20250531_144256",
+          "stage": "train_model",
+          "energy": 0.4682498390679658,
+          "duration": 7409.632748456032
+        },
+        {
+          "run_id": "default_20250531_144256",
+          "stage": "save_model",
+          "energy": 3.6774564607267024e-05,
+          "duration": 0.8321971840341575
+        },
+        {
+          "run_id": "default_20250531_144256",
+          "stage": "evaluate_model",
+          "energy": 0.044516401559844,
+          "duration": 518.5047991069732
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v5_power_limit_100W",
+        "variant_name": "5 Power Limit 100W",
+        "variant_number": 5,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250602_190126"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.6480443825838933,
+          "std": 0.0,
+          "raw_values": [
+            0.6480443825838933
+          ]
+        },
+        "runtime": {
+          "mean": 1382.8760194799397,
+          "std": 0.0,
+          "raw_values": [
+            1382.8760194799397
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.026601847082571753,
+          "std": 0.0,
+          "raw_values": [
+            0.026601847082571753
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.5644810765844994,
+          "std": 0.0,
+          "raw_values": [
+            0.5644810765844994
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.056961458916822125,
+          "std": 0.0,
+          "raw_values": [
+            0.056961458916822125
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9930791518442916,
+          "std": 0.0,
+          "raw_values": [
+            0.9930791518442916
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250602_190126",
+          "stage": "load_dataset",
+          "energy": 7.861807750875545e-05,
+          "duration": 4.822328048991039
+        },
+        {
+          "run_id": "default_20250602_190126",
+          "stage": "tokenize_dataset",
+          "energy": 5.006017828556962e-06,
+          "duration": 0.184409586014226
+        },
+        {
+          "run_id": "default_20250602_190126",
+          "stage": "load_model",
+          "energy": 2.4212981720298632e-05,
+          "duration": 0.719340456998907
+        },
+        {
+          "run_id": "default_20250602_190126",
+          "stage": "train_model",
+          "energy": 0.5923486772233862,
+          "duration": 19116.85369954398
+        },
+        {
+          "run_id": "default_20250602_190126",
+          "stage": "save_model",
+          "energy": 3.468199020750795e-05,
+          "duration": 0.8185205919435248
+        },
+        {
+          "run_id": "default_20250602_190126",
+          "stage": "evaluate_model",
+          "energy": 0.0555526944220128,
+          "duration": 1382.855488121044
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v6_optimizer",
+        "variant_name": "6 Optimizer",
+        "variant_number": 6,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250531_173602"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.48879889007997795,
+          "std": 0.0,
+          "raw_values": [
+            0.48879889007997795
+          ]
+        },
+        "runtime": {
+          "mean": 518.3979384380509,
+          "std": 0.0,
+          "raw_values": [
+            518.3979384380509
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.012915637774446393,
+          "std": 0.0,
+          "raw_values": [
+            0.012915637774446393
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.45468084096660366,
+          "std": 0.0,
+          "raw_values": [
+            0.45468084096660366
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.02120241133892786,
+          "std": 0.0,
+          "raw_values": [
+            0.02120241133892786
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9935599965544747,
+          "std": 0.0,
+          "raw_values": [
+            0.9935599965544747
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250531_173602",
+          "stage": "load_dataset",
+          "energy": 4.880758444449183e-05,
+          "duration": 2.875492196995765
+        },
+        {
+          "run_id": "default_20250531_173602",
+          "stage": "tokenize_dataset",
+          "energy": 4.569942500525673e-06,
+          "duration": 0.1871810420416295
+        },
+        {
+          "run_id": "default_20250531_173602",
+          "stage": "load_model",
+          "energy": 2.3973213562737772e-05,
+          "duration": 0.7244949979940429
+        },
+        {
+          "run_id": "default_20250531_173602",
+          "stage": "train_model",
+          "energy": 0.4441715406093473,
+          "duration": 7110.015566936985
+        },
+        {
+          "run_id": "default_20250531_173602",
+          "stage": "save_model",
+          "energy": 3.715721816782702e-05,
+          "duration": 0.802188956993632
+        },
+        {
+          "run_id": "default_20250531_173602",
+          "stage": "evaluate_model",
+          "energy": 0.0445124195441402,
+          "duration": 518.3747925100033
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v7_f16",
+        "variant_name": "7 F16",
+        "variant_number": 7,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250531_202110"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.40726751305378966,
+          "std": 0.0,
+          "raw_values": [
+            0.40726751305378966
+          ]
+        },
+        "runtime": {
+          "mean": 421.4391795800184,
+          "std": 0.0,
+          "raw_values": [
+            421.4391795800184
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.02666493402554126,
+          "std": 0.0,
+          "raw_values": [
+            0.02666493402554126
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.3622521098014566,
+          "std": 0.0,
+          "raw_values": [
+            0.3622521098014566
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.018350469226791757,
+          "std": 0.0,
+          "raw_values": [
+            0.018350469226791757
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9933850269990302,
+          "std": 0.0,
+          "raw_values": [
+            0.9933850269990302
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250531_202110",
+          "stage": "load_dataset",
+          "energy": 2.882142293339155e-05,
+          "duration": 1.771240666974336
+        },
+        {
+          "run_id": "default_20250531_202110",
+          "stage": "tokenize_dataset",
+          "energy": 4.485186876113375e-06,
+          "duration": 0.1776840229867957
+        },
+        {
+          "run_id": "default_20250531_202110",
+          "stage": "load_model",
+          "energy": 2.3644151917353547e-05,
+          "duration": 0.7013926309882663
+        },
+        {
+          "run_id": "default_20250531_202110",
+          "stage": "train_model",
+          "energy": 0.372603350405963,
+          "duration": 6181.3819735849975
+        },
+        {
+          "run_id": "default_20250531_202110",
+          "stage": "save_model",
+          "energy": 3.871265464383544e-05,
+          "duration": 0.8372192229726352
+        },
+        {
+          "run_id": "default_20250531_202110",
+          "stage": "evaluate_model",
+          "energy": 0.0345680746280028,
+          "duration": 421.4192061279901
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v8_sequence_length_trimming",
+        "variant_name": "8 Sequence Length Trimming",
+        "variant_number": 8,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250531_222247"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.27341654201900634,
+          "std": 0.0,
+          "raw_values": [
+            0.27341654201900634
+          ]
+        },
+        "runtime": {
+          "mean": 255.43303291400662,
+          "std": 0.0,
+          "raw_values": [
+            255.43303291400662
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.014607592648842547,
+          "std": 0.0,
+          "raw_values": [
+            0.014607592648842547
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.24646777772961936,
+          "std": 0.0,
+          "raw_values": [
+            0.24646777772961936
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.012341171640544457,
+          "std": 0.0,
+          "raw_values": [
+            0.012341171640544457
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9897696202904718,
+          "std": 0.0,
+          "raw_values": [
+            0.9897696202904718
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250531_222247",
+          "stage": "load_dataset",
+          "energy": 8.614965858402928e-05,
+          "duration": 5.251437282015104
+        },
+        {
+          "run_id": "default_20250531_222247",
+          "stage": "tokenize_dataset",
+          "energy": 0.0035331351391096,
+          "duration": 114.43032467196464
+        },
+        {
+          "run_id": "default_20250531_222247",
+          "stage": "load_model",
+          "energy": 2.94837685031568e-05,
+          "duration": 0.8862666140194051
+        },
+        {
+          "run_id": "default_20250531_222247",
+          "stage": "train_model",
+          "energy": 0.248087833082601,
+          "duration": 4066.050189394038
+        },
+        {
+          "run_id": "default_20250531_222247",
+          "stage": "save_model",
+          "energy": 4.006054227007061e-05,
+          "duration": 0.9110524489660748
+        },
+        {
+          "run_id": "default_20250531_222247",
+          "stage": "evaluate_model",
+          "energy": 0.0216394546693461,
+          "duration": 255.413112038048
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v10_dataloader_pin_memory",
+        "variant_name": "10 Dataloader Pin Memory",
+        "variant_number": 10,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250601_005321"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.4079028006399652,
+          "std": 0.0,
+          "raw_values": [
+            0.4079028006399652
+          ]
+        },
+        "runtime": {
+          "mean": 425.89096099400194,
+          "std": 0.0,
+          "raw_values": [
+            425.89096099400194
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.02753105297315809,
+          "std": 0.0,
+          "raw_values": [
+            0.02753105297315809
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.3619217398149379,
+          "std": 0.0,
+          "raw_values": [
+            0.3619217398149379
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.018450007851869225,
+          "std": 0.0,
+          "raw_values": [
+            0.018450007851869225
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9933690791945619,
+          "std": 0.0,
+          "raw_values": [
+            0.9933690791945619
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250601_005321",
+          "stage": "load_dataset",
+          "energy": 9.61019373448611e-05,
+          "duration": 5.992263476946391
+        },
+        {
+          "run_id": "default_20250601_005321",
+          "stage": "tokenize_dataset",
+          "energy": 4.931359813556497e-06,
+          "duration": 0.183741306012962
+        },
+        {
+          "run_id": "default_20250601_005321",
+          "stage": "load_model",
+          "energy": 2.4347155924845168e-05,
+          "duration": 0.733246881980449
+        },
+        {
+          "run_id": "default_20250601_005321",
+          "stage": "train_model",
+          "energy": 0.3728844721828317,
+          "duration": 6208.525556465029
+        },
+        {
+          "run_id": "default_20250601_005321",
+          "stage": "save_model",
+          "energy": 3.604934622591927e-05,
+          "duration": 0.8282734359963797
+        },
+        {
+          "run_id": "default_20250601_005321",
+          "stage": "evaluate_model",
+          "energy": 0.0348564529777131,
+          "duration": 425.8715265049832
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v11_torch_compile",
+        "variant_name": "11 Torch Compile",
+        "variant_number": 11,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250604_134433"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.3153955287504816,
+          "std": 0.0,
+          "raw_values": [
+            0.3153955287504816
+          ]
+        },
+        "runtime": {
+          "mean": 444.9972057129489,
+          "std": 0.0,
+          "raw_values": [
+            444.9972057129489
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.015938328808430623,
+          "std": 0.0,
+          "raw_values": [
+            0.015938328808430623
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.2862433984389785,
+          "std": 0.0,
+          "raw_values": [
+            0.2862433984389785
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.013213801503072478,
+          "std": 0.0,
+          "raw_values": [
+            0.013213801503072478
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9934304766094271,
+          "std": 0.0,
+          "raw_values": [
+            0.9934304766094271
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250604_134433",
+          "stage": "load_dataset",
+          "energy": 5.579440098702256e-05,
+          "duration": 3.325240691076033
+        },
+        {
+          "run_id": "default_20250604_134433",
+          "stage": "tokenize_dataset",
+          "energy": 4.432587004331306e-06,
+          "duration": 0.1838061870075762
+        },
+        {
+          "run_id": "default_20250604_134433",
+          "stage": "load_model",
+          "energy": 2.401054914433096e-05,
+          "duration": 0.7176107380073518
+        },
+        {
+          "run_id": "default_20250604_134433",
+          "stage": "train_model",
+          "energy": 0.2772105364886842,
+          "duration": 4306.976521629957
+        },
+        {
+          "run_id": "default_20250604_134433",
+          "stage": "save_model",
+          "energy": 4.104119871067846e-05,
+          "duration": 0.9053912590024992
+        },
+        {
+          "run_id": "default_20250604_134433",
+          "stage": "evaluate_model",
+          "energy": 0.0380592695399797,
+          "duration": 444.9769107489847
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "V12_attention",
+        "variant_name": "12 Attention",
+        "variant_number": 12,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250601_155806"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.37510743605833224,
+          "std": 0.0,
+          "raw_values": [
+            0.37510743605833224
+          ]
+        },
+        "runtime": {
+          "mean": 338.6114185359329,
+          "std": 0.0,
+          "raw_values": [
+            338.6114185359329
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.026033627399940813,
+          "std": 0.0,
+          "raw_values": [
+            0.026033627399940813
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.3330413503217553,
+          "std": 0.0,
+          "raw_values": [
+            0.3330413503217553
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.016032458336636125,
+          "std": 0.0,
+          "raw_values": [
+            0.016032458336636125
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9939095870508714,
+          "std": 0.0,
+          "raw_values": [
+            0.9939095870508714
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250601_155806",
+          "stage": "load_dataset",
+          "energy": 5.918687095493315e-05,
+          "duration": 3.5382926639867947
+        },
+        {
+          "run_id": "default_20250601_155806",
+          "stage": "tokenize_dataset",
+          "energy": 4.912992907478475e-06,
+          "duration": 0.1970546939992346
+        },
+        {
+          "run_id": "default_20250601_155806",
+          "stage": "load_model",
+          "energy": 2.3817366326568152e-05,
+          "duration": 0.7097684239852242
+        },
+        {
+          "run_id": "default_20250601_155806",
+          "stage": "train_model",
+          "energy": 0.3463086040420449,
+          "duration": 5427.851791000983
+        },
+        {
+          "run_id": "default_20250601_155806",
+          "stage": "save_model",
+          "energy": 4.025234574944747e-05,
+          "duration": 0.9162755949655548
+        },
+        {
+          "run_id": "default_20250601_155806",
+          "stage": "evaluate_model",
+          "energy": 0.0286654659954924,
+          "duration": 338.5911705130711
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v13_layer_pruning_4_top",
+        "variant_name": "13 Layer Pruning 4 Top",
+        "variant_number": 13,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250604_015119"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.435379916230293,
+          "std": 0.0,
+          "raw_values": [
+            0.435379916230293
+          ]
+        },
+        "runtime": {
+          "mean": 430.3342764370609,
+          "std": 0.0,
+          "raw_values": [
+            430.3342764370609
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.026548521172966605,
+          "std": 0.0,
+          "raw_values": [
+            0.026548521172966605
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.3904801690505515,
+          "std": 0.0,
+          "raw_values": [
+            0.3904801690505515
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.018351226006774874,
+          "std": 0.0,
+          "raw_values": [
+            0.018351226006774874
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9945251471079603,
+          "std": 0.0,
+          "raw_values": [
+            0.9945251471079603
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250604_015119",
+          "stage": "load_dataset",
+          "energy": 2.9141123399142647e-05,
+          "duration": 1.6519837050000206
+        },
+        {
+          "run_id": "default_20250604_015119",
+          "stage": "tokenize_dataset",
+          "energy": 5.312161247585162e-06,
+          "duration": 0.2047843469772488
+        },
+        {
+          "run_id": "default_20250604_015119",
+          "stage": "load_model",
+          "energy": 2.569141320147934e-05,
+          "duration": 0.7715037270681933
+        },
+        {
+          "run_id": "default_20250604_015119",
+          "stage": "train_model",
+          "energy": 0.3982992596314565,
+          "duration": 6172.867992822081
+        },
+        {
+          "run_id": "default_20250604_015119",
+          "stage": "save_model",
+          "energy": 3.3047669729335816e-05,
+          "duration": 0.7497734939679503
+        },
+        {
+          "run_id": "default_20250604_015119",
+          "stage": "evaluate_model",
+          "energy": 0.0369870055861091,
+          "duration": 430.3144888730021
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v14_layer_pruning_4_bottom",
+        "variant_name": "14 Layer Pruning 4 Bottom",
+        "variant_number": 14,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250604_034236"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.4347006752484594,
+          "std": 0.0,
+          "raw_values": [
+            0.4347006752484594
+          ]
+        },
+        "runtime": {
+          "mean": 427.3958478390705,
+          "std": 0.0,
+          "raw_values": [
+            427.3958478390705
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.026198804448193457,
+          "std": 0.0,
+          "raw_values": [
+            0.026198804448193457
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.39018165270062966,
+          "std": 0.0,
+          "raw_values": [
+            0.39018165270062966
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.018320218099636264,
+          "std": 0.0,
+          "raw_values": [
+            0.018320218099636264
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9925338041148036,
+          "std": 0.0,
+          "raw_values": [
+            0.9925338041148036
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250604_034236",
+          "stage": "load_dataset",
+          "energy": 8.550744408328049e-05,
+          "duration": 5.209053027909249
+        },
+        {
+          "run_id": "default_20250604_034236",
+          "stage": "tokenize_dataset",
+          "energy": 4.721347430595684e-06,
+          "duration": 0.1830810649553313
+        },
+        {
+          "run_id": "default_20250604_034236",
+          "stage": "load_model",
+          "energy": 2.644457783623549e-05,
+          "duration": 0.7778900349512696
+        },
+        {
+          "run_id": "default_20250604_034236",
+          "stage": "train_model",
+          "energy": 0.3977226729142534,
+          "duration": 6161.068655719981
+        },
+        {
+          "run_id": "default_20250604_034236",
+          "stage": "save_model",
+          "energy": 3.569507409084682e-05,
+          "duration": 0.781413943041116
+        },
+        {
+          "run_id": "default_20250604_034236",
+          "stage": "evaluate_model",
+          "energy": 0.0368252083890336,
+          "duration": 427.3763307390036
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v15_layer_pruning_8_top",
+        "variant_name": "15 Layer Pruning 8 Top",
+        "variant_number": 15,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250604_053342"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.3392125735001997,
+          "std": 0.0,
+          "raw_values": [
+            0.3392125735001997
+          ]
+        },
+        "runtime": {
+          "mean": 340.6479625860229,
+          "std": 0.0,
+          "raw_values": [
+            340.6479625860229
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.014524767992860652,
+          "std": 0.0,
+          "raw_values": [
+            0.014524767992860652
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.3100474566488778,
+          "std": 0.0,
+          "raw_values": [
+            0.3100474566488778
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.014640348858461301,
+          "std": 0.0,
+          "raw_values": [
+            0.014640348858461301
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9942444726330658,
+          "std": 0.0,
+          "raw_values": [
+            0.9942444726330658
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250604_053342",
+          "stage": "load_dataset",
+          "energy": 7.790959583998155e-05,
+          "duration": 4.645830038003624
+        },
+        {
+          "run_id": "default_20250604_053342",
+          "stage": "tokenize_dataset",
+          "energy": 4.803989149669604e-06,
+          "duration": 0.1819246240193024
+        },
+        {
+          "run_id": "default_20250604_053342",
+          "stage": "load_model",
+          "energy": 2.479336777845205e-05,
+          "duration": 0.7375051690032706
+        },
+        {
+          "run_id": "default_20250604_053342",
+          "stage": "train_model",
+          "energy": 0.3096578207822751,
+          "duration": 4923.836659706081
+        },
+        {
+          "run_id": "default_20250604_053342",
+          "stage": "save_model",
+          "energy": 2.7020284718959345e-05,
+          "duration": 0.6129321840126067
+        },
+        {
+          "run_id": "default_20250604_053342",
+          "stage": "evaluate_model",
+          "energy": 0.0294197810555238,
+          "duration": 340.62721716589294
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v16_layer_pruning_8_bottom",
+        "variant_name": "16 Layer Pruning 8 Bottom",
+        "variant_number": 16,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250604_070243"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.3393927273685478,
+          "std": 0.0,
+          "raw_values": [
+            0.3393927273685478
+          ]
+        },
+        "runtime": {
+          "mean": 336.8028517990606,
+          "std": 0.0,
+          "raw_values": [
+            336.8028517990606
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.014878629417060675,
+          "std": 0.0,
+          "raw_values": [
+            0.014878629417060675
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.3098847756854006,
+          "std": 0.0,
+          "raw_values": [
+            0.3098847756854006
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.014629322266086497,
+          "std": 0.0,
+          "raw_values": [
+            0.014629322266086497
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9924530972190342,
+          "std": 0.0,
+          "raw_values": [
+            0.9924530972190342
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250604_070243",
+          "stage": "load_dataset",
+          "energy": 5.36774806825169e-05,
+          "duration": 3.242027530097402
+        },
+        {
+          "run_id": "default_20250604_070243",
+          "stage": "tokenize_dataset",
+          "energy": 5.22544603420304e-06,
+          "duration": 0.1837470359168946
+        },
+        {
+          "run_id": "default_20250604_070243",
+          "stage": "load_model",
+          "energy": 2.5024649832757323e-05,
+          "duration": 0.7446284900652245
+        },
+        {
+          "run_id": "default_20250604_070243",
+          "stage": "train_model",
+          "energy": 0.3100993506266415,
+          "duration": 4925.098192856996
+        },
+        {
+          "run_id": "default_20250604_070243",
+          "stage": "save_model",
+          "energy": 2.7134620670277165e-05,
+          "duration": 0.6206373879685998
+        },
+        {
+          "run_id": "default_20250604_070243",
+          "stage": "evaluate_model",
+          "energy": 0.0291818663074923,
+          "duration": 336.7820485229604
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v17_layer_pruning_12_top",
+        "variant_name": "17 Layer Pruning 12 Top",
+        "variant_number": 17,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250604_083143"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.2617828632531708,
+          "std": 0.0,
+          "raw_values": [
+            0.2617828632531708
+          ]
+        },
+        "runtime": {
+          "mean": 250.82309907395393,
+          "std": 0.0,
+          "raw_values": [
+            250.82309907395393
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.02129158592131066,
+          "std": 0.0,
+          "raw_values": [
+            0.02129158592131066
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.2295560011446547,
+          "std": 0.0,
+          "raw_values": [
+            0.2295560011446547
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.010935276187205453,
+          "std": 0.0,
+          "raw_values": [
+            0.010935276187205453
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9945756959265908,
+          "std": 0.0,
+          "raw_values": [
+            0.9945756959265908
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250604_083143",
+          "stage": "load_dataset",
+          "energy": 2.9752755829491804e-05,
+          "duration": 1.7196442700223995
+        },
+        {
+          "run_id": "default_20250604_083143",
+          "stage": "tokenize_dataset",
+          "energy": 4.824981629148389e-06,
+          "duration": 0.1849907350260764
+        },
+        {
+          "run_id": "default_20250604_083143",
+          "stage": "load_model",
+          "energy": 2.5468201460959007e-05,
+          "duration": 0.7546625999966636
+        },
+        {
+          "run_id": "default_20250604_083143",
+          "stage": "train_model",
+          "energy": 0.2398606155543904,
+          "duration": 3682.7951516259927
+        },
+        {
+          "run_id": "default_20250604_083143",
+          "stage": "save_model",
+          "energy": 2.735155907276909e-05,
+          "duration": 0.5786399400094524
+        },
+        {
+          "run_id": "default_20250604_083143",
+          "stage": "evaluate_model",
+          "energy": 0.0218343587719176,
+          "duration": 250.80256250698585
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v18_layer_pruning_12_bottom",
+        "variant_name": "18 Layer Pruning 12 Bottom",
+        "variant_number": 18,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250604_093830"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.26249846335828414,
+          "std": 0.0,
+          "raw_values": [
+            0.26249846335828414
+          ]
+        },
+        "runtime": {
+          "mean": 252.0337509199744,
+          "std": 0.0,
+          "raw_values": [
+            252.0337509199744
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.02162905984240069,
+          "std": 0.0,
+          "raw_values": [
+            0.02162905984240069
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.22988896363324685,
+          "std": 0.0,
+          "raw_values": [
+            0.22988896363324685
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.010980439882636549,
+          "std": 0.0,
+          "raw_values": [
+            0.010980439882636549
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9931457060247063,
+          "std": 0.0,
+          "raw_values": [
+            0.9931457060247063
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250604_093830",
+          "stage": "load_dataset",
+          "energy": 0.0001111115728265,
+          "duration": 6.670187924057245
+        },
+        {
+          "run_id": "default_20250604_093830",
+          "stage": "tokenize_dataset",
+          "energy": 4.885871571897612e-06,
+          "duration": 0.1857442890759557
+        },
+        {
+          "run_id": "default_20250604_093830",
+          "stage": "load_model",
+          "energy": 2.559318107369976e-05,
+          "duration": 0.7667068419978023
+        },
+        {
+          "run_id": "default_20250604_093830",
+          "stage": "train_model",
+          "energy": 0.2403945500050508,
+          "duration": 3692.852749432903
+        },
+        {
+          "run_id": "default_20250604_093830",
+          "stage": "save_model",
+          "energy": 2.667170930881202e-05,
+          "duration": 0.585149088059552
+        },
+        {
+          "run_id": "default_20250604_093830",
+          "stage": "evaluate_model",
+          "energy": 0.0219304046135016,
+          "duration": 252.01413646701255
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v19_layer_pruning_16_top",
+        "variant_name": "19 Layer Pruning 16 Top",
+        "variant_number": 19,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250604_104534"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.16219588519050301,
+          "std": 0.0,
+          "raw_values": [
+            0.16219588519050301
+          ]
+        },
+        "runtime": {
+          "mean": 162.64263226394542,
+          "std": 0.0,
+          "raw_values": [
+            162.64263226394542
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.008268796628920902,
+          "std": 0.0,
+          "raw_values": [
+            0.008268796628920902
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.14684636997700196,
+          "std": 0.0,
+          "raw_values": [
+            0.14684636997700196
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.007080718584580205,
+          "std": 0.0,
+          "raw_values": [
+            0.007080718584580205
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9945781949183105,
+          "std": 0.0,
+          "raw_values": [
+            0.9945781949183105
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250604_104534",
+          "stage": "load_dataset",
+          "energy": 0.0001136476847363,
+          "duration": 6.866095874924213
+        },
+        {
+          "run_id": "default_20250604_104534",
+          "stage": "tokenize_dataset",
+          "energy": 4.439250520301162e-06,
+          "duration": 0.1976150360424071
+        },
+        {
+          "run_id": "default_20250604_104534",
+          "stage": "load_model",
+          "energy": 2.586369084943329e-05,
+          "duration": 0.7550332120154053
+        },
+        {
+          "run_id": "default_20250604_104534",
+          "stage": "train_model",
+          "energy": 0.1477276593147975,
+          "duration": 2378.2513362179743
+        },
+        {
+          "run_id": "default_20250604_104534",
+          "stage": "save_model",
+          "energy": 2.433826005041051e-05,
+          "duration": 0.4815988830523565
+        },
+        {
+          "run_id": "default_20250604_104534",
+          "stage": "evaluate_model",
+          "energy": 0.0142994916501322,
+          "duration": 162.62218123697676
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v20_layer_pruning_16_bottom",
+        "variant_name": "20 Layer Pruning 16 Bottom",
+        "variant_number": 20,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250604_112914"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.16176007503393713,
+          "std": 0.0,
+          "raw_values": [
+            0.16176007503393713
+          ]
+        },
+        "runtime": {
+          "mean": 160.84596467309166,
+          "std": 0.0,
+          "raw_values": [
+            160.84596467309166
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.00824712995825424,
+          "std": 0.0,
+          "raw_values": [
+            0.00824712995825424
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.14646198078060202,
+          "std": 0.0,
+          "raw_values": [
+            0.14646198078060202
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.00705096429508089,
+          "std": 0.0,
+          "raw_values": [
+            0.00705096429508089
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9940415036903347,
+          "std": 0.0,
+          "raw_values": [
+            0.9940415036903347
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250604_112914",
+          "stage": "load_dataset",
+          "energy": 3.214989770262687e-05,
+          "duration": 1.778794895973988
+        },
+        {
+          "run_id": "default_20250604_112914",
+          "stage": "tokenize_dataset",
+          "energy": 5.137709547280972e-06,
+          "duration": 0.1814726640004664
+        },
+        {
+          "run_id": "default_20250604_112914",
+          "stage": "load_model",
+          "energy": 2.5100191317042693e-05,
+          "duration": 0.7423310420708731
+        },
+        {
+          "run_id": "default_20250604_112914",
+          "stage": "train_model",
+          "energy": 0.1474782327665969,
+          "duration": 2374.469827729976
+        },
+        {
+          "run_id": "default_20250604_112914",
+          "stage": "save_model",
+          "energy": 2.3767175098138305e-05,
+          "duration": 0.4642545440001413
+        },
+        {
+          "run_id": "default_20250604_112914",
+          "stage": "evaluate_model",
+          "energy": 0.014190579733918,
+          "duration": 160.82575340208132
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v21_layer_pruning_20_top",
+        "variant_name": "21 Layer Pruning 20 Top",
+        "variant_number": 21,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250604_121244"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.07921217921656434,
+          "std": 0.0,
+          "raw_values": [
+            0.07921217921656434
+          ]
+        },
+        "runtime": {
+          "mean": 74.15797408192884,
+          "std": 0.0,
+          "raw_values": [
+            74.15797408192884
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.013005856107176564,
+          "std": 0.0,
+          "raw_values": [
+            0.013005856107176564
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.06303807598597366,
+          "std": 0.0,
+          "raw_values": [
+            0.06303807598597366
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.00316824712341412,
+          "std": 0.0,
+          "raw_values": [
+            0.00316824712341412
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9929392972905058,
+          "std": 0.0,
+          "raw_values": [
+            0.9929392972905058
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250604_121244",
+          "stage": "load_dataset",
+          "energy": 3.1102351512814165e-05,
+          "duration": 1.7880471789976582
+        },
+        {
+          "run_id": "default_20250604_121244",
+          "stage": "tokenize_dataset",
+          "energy": 4.976173798877824e-06,
+          "duration": 0.186937466962263
+        },
+        {
+          "run_id": "default_20250604_121244",
+          "stage": "load_model",
+          "energy": 2.502352121746915e-05,
+          "duration": 0.7528311880305409
+        },
+        {
+          "run_id": "default_20250604_121244",
+          "stage": "train_model",
+          "energy": 0.0726793338858244,
+          "duration": 1063.4683174790116
+        },
+        {
+          "run_id": "default_20250604_121244",
+          "stage": "save_model",
+          "energy": 1.841376556284413e-05,
+          "duration": 0.353476615040563
+        },
+        {
+          "run_id": "default_20250604_121244",
+          "stage": "evaluate_model",
+          "energy": 0.0064528160637626,
+          "duration": 74.13782808394171
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v22_layer_pruning_20_bottom",
+        "variant_name": "22 Layer Pruning 20 Bottom",
+        "variant_number": 22,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250604_123256"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.07902808485646744,
+          "std": 0.0,
+          "raw_values": [
+            0.07902808485646744
+          ]
+        },
+        "runtime": {
+          "mean": 74.73951475403737,
+          "std": 0.0,
+          "raw_values": [
+            74.73951475403737
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.012987198936695282,
+          "std": 0.0,
+          "raw_values": [
+            0.012987198936695282
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.0628651611254245,
+          "std": 0.0,
+          "raw_values": [
+            0.0628651611254245
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.003175724794347641,
+          "std": 0.0,
+          "raw_values": [
+            0.003175724794347641
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9944183476431729,
+          "std": 0.0,
+          "raw_values": [
+            0.9944183476431729
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250604_123256",
+          "stage": "load_dataset",
+          "energy": 3.654963399822487e-05,
+          "duration": 2.054067543009296
+        },
+        {
+          "run_id": "default_20250604_123256",
+          "stage": "tokenize_dataset",
+          "energy": 4.90273998644428e-06,
+          "duration": 0.1926254390273243
+        },
+        {
+          "run_id": "default_20250604_123256",
+          "stage": "load_model",
+          "energy": 2.5121258042681907e-05,
+          "duration": 0.7479528840631247
+        },
+        {
+          "run_id": "default_20250604_123256",
+          "stage": "train_model",
+          "energy": 0.0724710469753512,
+          "duration": 1065.3088060880546
+        },
+        {
+          "run_id": "default_20250604_123256",
+          "stage": "save_model",
+          "energy": 1.6039798392208926e-05,
+          "duration": 0.356868703966029
+        },
+        {
+          "run_id": "default_20250604_123256",
+          "stage": "evaluate_model",
+          "energy": 0.0064740009329109,
+          "duration": 74.71967033110559
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation",
+        "variant_name": "23 Attention Plus Pin Memory Plus Optimizer Plus Gradient Accumulation",
+        "variant_number": 23,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250604_160600"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.44636479910374716,
+          "std": 0.0,
+          "raw_values": [
+            0.44636479910374716
+          ]
+        },
+        "runtime": {
+          "mean": 408.0351921960246,
+          "std": 0.0,
+          "raw_values": [
+            408.0351921960246
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.02226194531537534,
+          "std": 0.0,
+          "raw_values": [
+            0.02226194531537534
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.40601546897878293,
+          "std": 0.0,
+          "raw_values": [
+            0.40601546897878293
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.018087384809588877,
+          "std": 0.0,
+          "raw_values": [
+            0.018087384809588877
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9945863186486535,
+          "std": 0.0,
+          "raw_values": [
+            0.9945863186486535
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250604_160600",
+          "stage": "load_dataset",
+          "energy": 3.393113956446641e-05,
+          "duration": 1.9051704130833969
+        },
+        {
+          "run_id": "default_20250604_160600",
+          "stage": "tokenize_dataset",
+          "energy": 4.5444887447980805e-06,
+          "duration": 0.1769621230196207
+        },
+        {
+          "run_id": "default_20250604_160600",
+          "stage": "load_model",
+          "energy": 2.3686063659400088e-05,
+          "duration": 0.71324344095774
+        },
+        {
+          "run_id": "default_20250604_160600",
+          "stage": "train_model",
+          "energy": 0.4090404340674836,
+          "duration": 6099.831160865957
+        },
+        {
+          "run_id": "default_20250604_160600",
+          "stage": "save_model",
+          "energy": 4.207621657581484e-05,
+          "duration": 0.9388520859647542
+        },
+        {
+          "run_id": "default_20250604_160600",
+          "stage": "evaluate_model",
+          "energy": 0.0372171688103727,
+          "duration": 408.0114646939328
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v25_gradient_accumulation_plus_fp16_plus_checkpointing",
+        "variant_name": "25 Gradient Accumulation Plus Fp16 Plus Checkpointing",
+        "variant_number": 25,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250601_202846"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.6887273851762249,
+          "std": 0.0,
+          "raw_values": [
+            0.6887273851762249
+          ]
+        },
+        "runtime": {
+          "mean": 496.26211806898937,
+          "std": 0.0,
+          "raw_values": [
+            496.26211806898937
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.016107015047546174,
+          "std": 0.0,
+          "raw_values": [
+            0.016107015047546174
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.6440663399748816,
+          "std": 0.0,
+          "raw_values": [
+            0.6440663399748816
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.02855403015379723,
+          "std": 0.0,
+          "raw_values": [
+            0.02855403015379723
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9946956699851771,
+          "std": 0.0,
+          "raw_values": [
+            0.9946956699851771
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250601_202846",
+          "stage": "load_dataset",
+          "energy": 4.892017999438874e-05,
+          "duration": 2.766584365046583
+        },
+        {
+          "run_id": "default_20250601_202846",
+          "stage": "tokenize_dataset",
+          "energy": 4.383489274194641e-06,
+          "duration": 0.1791190550429746
+        },
+        {
+          "run_id": "default_20250601_202846",
+          "stage": "load_model",
+          "energy": 2.3648270575526985e-05,
+          "duration": 0.6965624209260568
+        },
+        {
+          "run_id": "default_20250601_202846",
+          "stage": "train_model",
+          "energy": 0.6436300785899666,
+          "duration": 9778.84691521409
+        },
+        {
+          "run_id": "default_20250601_202846",
+          "stage": "save_model",
+          "energy": 3.971606346475642e-05,
+          "duration": 0.8441129429265857
+        },
+        {
+          "run_id": "default_20250601_202846",
+          "stage": "evaluate_model",
+          "energy": 0.0449801464259421,
+          "duration": 496.2420774650527
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v26_pruning_plus_seq_lngth_plus_torch_compile",
+        "variant_name": "26 Pruning Plus Seq Lngth Plus Torch Compile",
+        "variant_number": 26,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250604_150503"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.09855706169627702,
+          "std": 0.0,
+          "raw_values": [
+            0.09855706169627702
+          ]
+        },
+        "runtime": {
+          "mean": 121.1663319549989,
+          "std": 0.0,
+          "raw_values": [
+            121.1663319549989
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.015543842354786154,
+          "std": 0.0,
+          "raw_values": [
+            0.015543842354786154
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.07899345097248833,
+          "std": 0.0,
+          "raw_values": [
+            0.07899345097248833
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.004019768369002526,
+          "std": 0.0,
+          "raw_values": [
+            0.004019768369002526
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9909454792883914,
+          "std": 0.0,
+          "raw_values": [
+            0.9909454792883914
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250604_150503",
+          "stage": "load_dataset",
+          "energy": 5.748320721077207e-05,
+          "duration": 3.266139834071509
+        },
+        {
+          "run_id": "default_20250604_150503",
+          "stage": "tokenize_dataset",
+          "energy": 0.0005508906822172,
+          "duration": 17.338698407053016
+        },
+        {
+          "run_id": "default_20250604_150503",
+          "stage": "load_model",
+          "energy": 2.665391886994418e-05,
+          "duration": 0.7522717600222677
+        },
+        {
+          "run_id": "default_20250604_150503",
+          "stage": "train_model",
+          "energy": 0.0886477545188546,
+          "duration": 1304.149318048963
+        },
+        {
+          "run_id": "default_20250604_150503",
+          "stage": "save_model",
+          "energy": 2.585681058211997e-05,
+          "duration": 0.583487686002627
+        },
+        {
+          "run_id": "default_20250604_150503",
+          "stage": "evaluate_model",
+          "energy": 0.0092442192654833,
+          "duration": 121.14631953393108
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v27_torch_compile_plus_fp16",
+        "variant_name": "27 Torch Compile Plus Fp16",
+        "variant_number": 27,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250601_132031"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.27672519375936966,
+          "std": 0.0,
+          "raw_values": [
+            0.27672519375936966
+          ]
+        },
+        "runtime": {
+          "mean": 418.24187364801764,
+          "std": 0.0,
+          "raw_values": [
+            418.24187364801764
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.01967737610327718,
+          "std": 0.0,
+          "raw_values": [
+            0.01967737610327718
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.23431450161811718,
+          "std": 0.0,
+          "raw_values": [
+            0.23431450161811718
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.022733316037975276,
+          "std": 0.0,
+          "raw_values": [
+            0.022733316037975276
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9938108792339553,
+          "std": 0.0,
+          "raw_values": [
+            0.9938108792339553
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250601_132031",
+          "stage": "load_dataset",
+          "energy": 3.308229252709272e-05,
+          "duration": 1.8223616409813983
+        },
+        {
+          "run_id": "default_20250601_132031",
+          "stage": "tokenize_dataset",
+          "energy": 4.487871523979584e-06,
+          "duration": 0.1828387540299445
+        },
+        {
+          "run_id": "default_20250601_132031",
+          "stage": "load_model",
+          "energy": 2.4363022177945854e-05,
+          "duration": 0.7191350950160995
+        },
+        {
+          "run_id": "default_20250601_132031",
+          "stage": "train_model",
+          "energy": 0.2410275543692986,
+          "duration": 3671.598369343032
+        },
+        {
+          "run_id": "default_20250601_132031",
+          "stage": "save_model",
+          "energy": 4.27655229891244e-05,
+          "duration": 0.9051260230480692
+        },
+        {
+          "run_id": "default_20250601_132031",
+          "stage": "evaluate_model",
+          "energy": 0.035592515713842,
+          "duration": 418.2216847820091
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v28_pruning_plus_torch_compile_plus_fp16",
+        "variant_name": "28 Pruning Plus Torch Compile Plus Fp16",
+        "variant_number": 28,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250604_153021"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.13476812411164774,
+          "std": 0.0,
+          "raw_values": [
+            0.13476812411164774
+          ]
+        },
+        "runtime": {
+          "mean": 210.30239194491878,
+          "std": 0.0,
+          "raw_values": [
+            210.30239194491878
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.011120745826589548,
+          "std": 0.0,
+          "raw_values": [
+            0.011120745826589548
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.11790756543708625,
+          "std": 0.0,
+          "raw_values": [
+            0.11790756543708625
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.005739812847971915,
+          "std": 0.0,
+          "raw_values": [
+            0.005739812847971915
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9928743755472044,
+          "std": 0.0,
+          "raw_values": [
+            0.9928743755472044
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250604_153021",
+          "stage": "load_dataset",
+          "energy": 5.024621077857421e-05,
+          "duration": 2.899169913958758
+        },
+        {
+          "run_id": "default_20250604_153021",
+          "stage": "tokenize_dataset",
+          "energy": 4.589963833603654e-06,
+          "duration": 0.1854236659128219
+        },
+        {
+          "run_id": "default_20250604_153021",
+          "stage": "load_model",
+          "energy": 2.5569598153527664e-05,
+          "duration": 0.749307659920305
+        },
+        {
+          "run_id": "default_20250604_153021",
+          "stage": "train_model",
+          "energy": 0.1173093389925835,
+          "duration": 1851.7419952260095
+        },
+        {
+          "run_id": "default_20250604_153021",
+          "stage": "save_model",
+          "energy": 2.669699482164833e-05,
+          "duration": 0.5986403459683061
+        },
+        {
+          "run_id": "default_20250604_153021",
+          "stage": "evaluate_model",
+          "energy": 0.0173512569648011,
+          "duration": 210.28277180006265
+        }
+      ]
+    }
+  ]
+}
