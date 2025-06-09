@@ -11,7 +11,7 @@ Baseline variant: v0_baseline
 Variant: v0_baseline
 --------------------
 Total Energy: 0.512333 kWh (±0.000000)
-Runtime: 516.803842 s (±0.000000)
+Runtime: 7918.790106 s (±0.000000)
 F1 Score: 0.993527 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -27,7 +27,7 @@ F1 Score: 0.000000%
 Variant: v1_gradient_checkpointing
 ----------------------------------
 Total Energy: 0.669636 kWh (±0.000000)
-Runtime: 517.562642 s (±0.000000)
+Runtime: 10443.632337 s (±0.000000)
 F1 Score: 0.993233 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -36,14 +36,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: 30.703058%
-Time: 0.146826%
+Time: 31.884192%
 F1 Score: -0.029649%
 
 
 Variant: v2_lora_peft
 ---------------------
-Total Energy: 0.000000 kWh (±0.000000)
-Runtime: 0.000000 s (±0.000000)
+Total Energy: 0.075593 kWh (±0.000000)
+Runtime: 1701.440488 s (±0.000000)
 F1 Score: 0.953679 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -51,15 +51,15 @@ GPU Memory Utilization: 0.000000%
 Peak Memory: 0.000000 GB
 
 Differences from baseline:
-Energy: -100.000000%
-Time: -100.000000%
+Energy: -85.245300%
+Time: -78.513883%
 F1 Score: -4.010812%
 
 
 Variant: v3_quantization
 ------------------------
 Total Energy: 0.485256 kWh (±0.000000)
-Runtime: 642.830264 s (±0.000000)
+Runtime: 11629.734274 s (±0.000000)
 F1 Score: 0.993231 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -68,14 +68,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -5.285153%
-Time: 24.385736%
+Time: 46.862515%
 F1 Score: -0.029789%
 
 
 Variant: v4_tokenizer
 ---------------------
 Total Energy: 0.512864 kWh (±0.000000)
-Runtime: 518.528525 s (±0.000000)
+Runtime: 7931.637845 s (±0.000000)
 F1 Score: 0.994608 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -84,14 +84,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: 0.103569%
-Time: 0.333721%
+Time: 0.162244%
 F1 Score: 0.108726%
 
 
-Variant: v5_power_limit_100W
+Variant: v5_power_limit_100w
 ----------------------------
 Total Energy: 0.648044 kWh (±0.000000)
-Runtime: 1382.876019 s (±0.000000)
+Runtime: 20506.253786 s (±0.000000)
 F1 Score: 0.993079 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -100,14 +100,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: 26.488781%
-Time: 167.582380%
+Time: 158.956905%
 F1 Score: -0.045121%
 
 
 Variant: v6_optimizer
 ---------------------
 Total Energy: 0.488799 kWh (±0.000000)
-Runtime: 518.397938 s (±0.000000)
+Runtime: 7632.979717 s (±0.000000)
 F1 Score: 0.993560 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -116,14 +116,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -4.593609%
-Time: 0.308453%
+Time: -3.609268%
 F1 Score: 0.003277%
 
 
 Variant: v7_f16
 ---------------
 Total Energy: 0.407268 kWh (±0.000000)
-Runtime: 421.439180 s (±0.000000)
+Runtime: 6606.288716 s (±0.000000)
 F1 Score: 0.993385 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -132,14 +132,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -20.507340%
-Time: -18.452777%
+Time: -16.574519%
 F1 Score: -0.014334%
 
 
 Variant: v8_sequence_length_trimming
 ------------------------------------
 Total Energy: 0.273417 kWh (±0.000000)
-Runtime: 255.433033 s (±0.000000)
+Runtime: 4442.942382 s (±0.000000)
 F1 Score: 0.989770 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -148,14 +148,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -46.633092%
-Time: -50.574471%
+Time: -43.893672%
 F1 Score: -0.378230%
 
 
 Variant: v10_dataloader_pin_memory
 ----------------------------------
 Total Energy: 0.407903 kWh (±0.000000)
-Runtime: 425.890961 s (±0.000000)
+Runtime: 6642.134608 s (±0.000000)
 F1 Score: 0.993369 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -164,14 +164,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -20.383342%
-Time: -17.591371%
+Time: -16.121850%
 F1 Score: -0.015939%
 
 
 Variant: v11_torch_compile
 --------------------------
 Total Energy: 0.315396 kWh (±0.000000)
-Runtime: 444.997206 s (±0.000000)
+Runtime: 4757.085481 s (±0.000000)
 F1 Score: 0.993430 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -180,14 +180,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -38.439408%
-Time: -13.894370%
+Time: -39.926612%
 F1 Score: -0.009760%
 
 
-Variant: V12_attention
+Variant: v12_attention
 ----------------------
 Total Energy: 0.375107 kWh (±0.000000)
-Runtime: 338.611419 s (±0.000000)
+Runtime: 5771.804353 s (±0.000000)
 F1 Score: 0.993910 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -196,14 +196,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -26.784517%
-Time: -34.479702%
+Time: -27.112548%
 F1 Score: 0.038463%
 
 
 Variant: v13_layer_pruning_4_top
 --------------------------------
 Total Energy: 0.435380 kWh (±0.000000)
-Runtime: 430.334276 s (±0.000000)
+Runtime: 6606.560527 s (±0.000000)
 F1 Score: 0.994525 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -212,14 +212,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -15.020211%
-Time: -16.731603%
+Time: -16.571087%
 F1 Score: 0.100420%
 
 
 Variant: v14_layer_pruning_4_bottom
 -----------------------------------
 Total Energy: 0.434701 kWh (±0.000000)
-Runtime: 427.395848 s (±0.000000)
+Runtime: 6595.396425 s (±0.000000)
 F1 Score: 0.992534 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -228,14 +228,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -15.152789%
-Time: -17.300180%
+Time: -16.712069%
 F1 Score: -0.100011%
 
 
 Variant: v15_layer_pruning_8_top
 --------------------------------
 Total Energy: 0.339213 kWh (±0.000000)
-Runtime: 340.647963 s (±0.000000)
+Runtime: 5270.642069 s (±0.000000)
 F1 Score: 0.994244 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -244,14 +244,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -33.790669%
-Time: -34.085637%
+Time: -33.441321%
 F1 Score: 0.072170%
 
 
 Variant: v16_layer_pruning_8_bottom
 -----------------------------------
 Total Energy: 0.339393 kWh (±0.000000)
-Runtime: 336.802852 s (±0.000000)
+Runtime: 5266.671282 s (±0.000000)
 F1 Score: 0.992453 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -260,14 +260,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -33.755506%
-Time: -34.829654%
+Time: -33.491465%
 F1 Score: -0.108134%
 
 
 Variant: v17_layer_pruning_12_top
 ---------------------------------
 Total Energy: 0.261783 kWh (±0.000000)
-Runtime: 250.823099 s (±0.000000)
+Runtime: 3936.835652 s (±0.000000)
 F1 Score: 0.994576 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -276,14 +276,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -48.903815%
-Time: -51.466479%
+Time: -50.284884%
 F1 Score: 0.105508%
 
 
 Variant: v18_layer_pruning_12_bottom
 ------------------------------------
 Total Energy: 0.262498 kWh (±0.000000)
-Runtime: 252.033751 s (±0.000000)
+Runtime: 3953.074674 s (±0.000000)
 F1 Score: 0.993146 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -292,14 +292,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -48.764141%
-Time: -51.232222%
+Time: -50.079815%
 F1 Score: -0.038422%
 
 
 Variant: v19_layer_pruning_16_top
 ---------------------------------
 Total Energy: 0.162196 kWh (±0.000000)
-Runtime: 162.642632 s (±0.000000)
+Runtime: 2549.173860 s (±0.000000)
 F1 Score: 0.994578 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -308,14 +308,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -68.341736%
-Time: -68.529136%
+Time: -67.808544%
 F1 Score: 0.105760%
 
 
 Variant: v20_layer_pruning_16_bottom
 ------------------------------------
 Total Energy: 0.161760 kWh (±0.000000)
-Runtime: 160.845965 s (±0.000000)
+Runtime: 2538.462434 s (±0.000000)
 F1 Score: 0.994042 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -324,14 +324,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -68.426800%
-Time: -68.876786%
+Time: -67.943810%
 F1 Score: 0.051741%
 
 
 Variant: v21_layer_pruning_20_top
 ---------------------------------
 Total Energy: 0.079212 kWh (±0.000000)
-Runtime: 74.157974 s (±0.000000)
+Runtime: 1140.687438 s (±0.000000)
 F1 Score: 0.992939 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -340,14 +340,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -84.538942%
-Time: -85.650653%
+Time: -85.595180%
 F1 Score: -0.059198%
 
 
 Variant: v22_layer_pruning_20_bottom
 ------------------------------------
 Total Energy: 0.079028 kWh (±0.000000)
-Runtime: 74.739515 s (±0.000000)
+Runtime: 1143.379991 s (±0.000000)
 F1 Score: 0.994418 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -356,14 +356,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -84.574874%
-Time: -85.538127%
+Time: -85.561178%
 F1 Score: 0.089671%
 
 
 Variant: v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation
 --------------------------------------------------------------------------------
 Total Energy: 0.446365 kWh (±0.000000)
-Runtime: 408.035192 s (±0.000000)
+Runtime: 6511.576854 s (±0.000000)
 F1 Score: 0.994586 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -372,14 +372,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -12.876122%
-Time: -21.046409%
+Time: -17.770559%
 F1 Score: 0.106578%
 
 
 Variant: v25_gradient_accumulation_plus_fp16_plus_checkpointing
 ---------------------------------------------------------------
 Total Energy: 0.688727 kWh (±0.000000)
-Runtime: 496.262118 s (±0.000000)
+Runtime: 10279.575371 s (±0.000000)
 F1 Score: 0.994696 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -388,14 +388,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: 34.429508%
-Time: -3.974762%
+Time: 29.812449%
 F1 Score: 0.117584%
 
 
 Variant: v26_pruning_plus_seq_lngth_plus_torch_compile
 ------------------------------------------------------
 Total Energy: 0.098557 kWh (±0.000000)
-Runtime: 121.166332 s (±0.000000)
+Runtime: 1447.236235 s (±0.000000)
 F1 Score: 0.990945 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -404,14 +404,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -80.763104%
-Time: -76.554677%
+Time: -81.724023%
 F1 Score: -0.259878%
 
 
 Variant: v27_torch_compile_plus_fp16
 ------------------------------------
 Total Energy: 0.276725 kWh (±0.000000)
-Runtime: 418.241874 s (±0.000000)
+Runtime: 4093.449516 s (±0.000000)
 F1 Score: 0.993811 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -420,14 +420,14 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -45.987291%
-Time: -19.071446%
+Time: -48.307135%
 F1 Score: 0.028528%
 
 
 Variant: v28_pruning_plus_torch_compile_plus_fp16
 -------------------------------------------------
 Total Energy: 0.134768 kWh (±0.000000)
-Runtime: 210.302392 s (±0.000000)
+Runtime: 2066.457309 s (±0.000000)
 F1 Score: 0.992874 (±0.000000)
 Accuracy: 0.000000
 GPU Utilization: 0.000000%
@@ -436,7 +436,7 @@ Peak Memory: 0.000000 GB
 
 Differences from baseline:
 Energy: -73.695234%
-Time: -59.307115%
+Time: -73.904381%
 F1 Score: -0.065732%
 
 3. COMBINED VARIANTS ANALYSIS
@@ -448,10 +448,10 @@ Description: Combines torch compile and FP16 precision
 
 Combined Variant Metrics:
 Total Energy: 0.276725 kWh
-Runtime: 418.241874 s
+Runtime: 4093.449516 s
 F1 Score: 0.993811
 Energy Savings vs Baseline: -45.987291%
-Time Savings vs Baseline: -19.071446%
+Time Savings vs Baseline: -48.307135%
 F1 Impact vs Baseline: 0.028528%
 
 Comparison with Individual Components:
@@ -459,7 +459,7 @@ Comparison with Individual Components:
 
 Component: v11_torch_compile
 Energy Impact: -12.260901%
-Time Impact: -6.012472%
+Time Impact: -13.950474%
 F1 Score Impact: 0.000380
 Interpretation:
 - Energy efficient compared to v11_torch_compile
@@ -470,7 +470,7 @@ Component V7_f16 not found in data
 Overall Analysis:
 ----------------
 Average Energy Impact: -12.260901%
-Average Time Impact: -6.012472%
+Average Time Impact: -13.950474%
 Average F1 Impact: 0.000380
 
 Recommendation:
@@ -482,45 +482,45 @@ This combination is recommended as it improves both efficiency and performance
 
 Stage: load_dataset
 -------------------
-Average Energy: 0.000053 kWh
+Average Energy: 0.000054 kWh
 Std Dev: 0.000027 kWh
 Min Energy: 0.000027 kWh
 Max Energy: 0.000114 kWh
-Average Duration: 3.158871 s
-Duration Std Dev: 1.664926 s
+Average Duration: 3.167736 s
+Duration Std Dev: 1.657604 s
 Min Duration: 1.439471 s
 Max Duration: 6.866096 s
 
 Stage: tokenize_dataset
 -----------------------
-Average Energy: 0.000175 kWh
+Average Energy: 0.000176 kWh
 Std Dev: 0.000686 kWh
-Min Energy: 0.000003 kWh
+Min Energy: 0.000004 kWh
 Max Energy: 0.003533 kWh
-Average Duration: 5.685229 s
-Duration Std Dev: 22.208246 s
-Min Duration: 0.135229 s
+Average Duration: 5.685184 s
+Duration Std Dev: 22.208257 s
+Min Duration: 0.134016 s
 Max Duration: 114.430325 s
 
 Stage: load_model
 -----------------
-Average Energy: 0.000158 kWh
-Std Dev: 0.000687 kWh
+Average Energy: 0.000026 kWh
+Std Dev: 0.000006 kWh
 Min Energy: 0.000024 kWh
-Max Energy: 0.003595 kWh
-Average Duration: 5.067846 s
-Duration Std Dev: 22.332308 s
+Max Energy: 0.000052 kWh
+Average Duration: 0.780429 s
+Duration Std Dev: 0.149528 s
 Min Duration: 0.696562 s
-Max Duration: 116.809889 s
+Max Duration: 1.444273 s
 
 Stage: train_model
 ------------------
-Average Energy: 0.316905 kWh
-Std Dev: 0.168676 kWh
-Min Energy: 0.064796 kWh
+Average Energy: 0.316700 kWh
+Std Dev: 0.168997 kWh
+Min Energy: 0.059270 kWh
 Max Energy: 0.643630 kWh
-Average Duration: 5515.330612 s
-Duration Std Dev: 3842.263288 s
+Average Duration: 5508.242969 s
+Duration Std Dev: 3849.829216 s
 Min Duration: 1063.468317 s
 Max Duration: 19116.853700 s
 
@@ -530,61 +530,61 @@ Average Energy: 0.000031 kWh
 Std Dev: 0.000010 kWh
 Min Energy: 0.000008 kWh
 Max Energy: 0.000043 kWh
-Average Duration: 0.684986 s
-Duration Std Dev: 0.219430 s
-Min Duration: 0.219907 s
+Average Duration: 0.690998 s
+Duration Std Dev: 0.208130 s
+Min Duration: 0.231228 s
 Max Duration: 0.938852 s
 
 Stage: evaluate_model
 ---------------------
-Average Energy: 0.030118 kWh
-Std Dev: 0.013564 kWh
+Average Energy: 0.030120 kWh
+Std Dev: 0.013562 kWh
 Min Energy: 0.006453 kWh
 Max Energy: 0.055553 kWh
-Average Duration: 384.532965 s
-Duration Std Dev: 250.485872 s
+Average Duration: 384.540229 s
+Duration Std Dev: 250.481376 s
 Min Duration: 74.137828 s
 Max Duration: 1382.855488 s
 
 Stage-wise Energy Distribution:
-load_dataset: 0.000565%
-tokenize_dataset: 0.001865%
-load_model: 0.001684%
-train_model: 3.378188%
-save_model: 0.000330%
-evaluate_model: 0.321056%
+load_dataset: 0.000576%
+tokenize_dataset: 0.001878%
+load_model: 0.000277%
+train_model: 3.379256%
+save_model: 0.000331%
+evaluate_model: 0.321387%
 
 Stage-wise Time Distribution:
-load_dataset: 0.001978%
-tokenize_dataset: 0.003560%
-load_model: 0.003174%
-train_model: 3.453764%
-save_model: 0.000429%
-evaluate_model: 0.240799%
+load_dataset: 0.001987%
+tokenize_dataset: 0.003567%
+load_model: 0.000490%
+train_model: 3.455959%
+save_model: 0.000434%
+evaluate_model: 0.241267%
 
 5. STATISTICAL ANALYSIS
 =====================
 
 Energy Consumption Statistics:
-Mean: 0.344308 kWh
+Mean: 0.347108 kWh
 Median: 0.339393 kWh
-Std Dev: 0.186456 kWh
-Min: 0.000000 kWh
+Std Dev: 0.181591 kWh
+Min: 0.075593 kWh
 Max: 0.688727 kWh
 
 Runtime Statistics:
-Mean: 375.844549 s
-Median: 408.035192 s
-Std Dev: 259.796110 s
-Min: 0.000000 s
-Max: 1382.876019 s
+Mean: 5903.107546 s
+Median: 5270.642069 s
+Std Dev: 4088.994690 s
+Min: 1140.687438 s
+Max: 20506.253786 s
 
 Evaluation Time Statistics:
-Mean: 375.844549 s
-Median: 408.035192 s
-Std Dev: 259.796110 s
-Min: 0.000000 s
-Max: 1382.876019 s
+Mean: 384.540229 s
+Median: 408.011465 s
+Std Dev: 250.481376 s
+Min: 74.137828 s
+Max: 1382.855488 s
 
 F1 Score Statistics:
 Mean: 0.991968
@@ -597,27 +597,27 @@ Max: 0.994696
 ================
 
 Most Energy Efficient: v2_lora_peft
-Energy Savings: -100.000000%
+Energy Savings: -85.245300%
 F1 Impact: -4.010812%
 
-Fastest Runtime: v2_lora_peft
-Time Savings: -100.000000%
-F1 Impact: -4.010812%
+Fastest Runtime: v21_layer_pruning_20_top
+Time Savings: -85.595180%
+F1 Impact: -0.059198%
 
-Fastest Evaluation: v2_lora_peft
-Evaluation Time Savings: -100.000000%
-F1 Impact: -4.010812%
+Fastest Evaluation: v21_layer_pruning_20_top
+Evaluation Time Savings: -85.654005%
+F1 Impact: -0.059198%
 
 Best F1 Score: v25_gradient_accumulation_plus_fp16_plus_checkpointing
 F1 Score: 0.994696
 Energy Impact: 34.429508%
-Time Impact: -3.974762%
+Time Impact: 29.812449%
 
 7. RECOMMENDATIONS
 ================
 
 For Energy Efficiency:
-- v2_lora_peft: -100.000000% energy savings, F1 impact: -4.010812%
+- v2_lora_peft: -85.245300% energy savings, F1 impact: -4.010812%
 - v22_layer_pruning_20_bottom: -84.574874% energy savings, F1 impact: 0.089671%
 - v21_layer_pruning_20_top: -84.538942% energy savings, F1 impact: -0.059198%
 
@@ -627,7 +627,7 @@ For Performance:
 - v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation: F1 score 0.994586, Energy impact: -12.876122%
 
 For Balanced Approach:
-- v2_lora_peft: Energy 0.000000 kWh, F1: 0.953679
+- v2_lora_peft: Energy 0.075593 kWh, F1: 0.953679
 - v22_layer_pruning_20_bottom: Energy 0.079028 kWh, F1: 0.994418
 - v19_layer_pruning_16_top: Energy 0.162196 kWh, F1: 0.994578
 - v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation: Energy 0.446365 kWh, F1: 0.994586

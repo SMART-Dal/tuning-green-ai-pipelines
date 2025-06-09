@@ -12,6 +12,7 @@ import seaborn as sns
 from scipy import stats
 from matplotlib.lines import Line2D
 from datetime import datetime
+from adjustText import adjust_text
 
 # ------------------------------------------------------------------
 # ------------------------------ helpers ---------------------------
@@ -94,8 +95,10 @@ VARIANT_DESCRIPTIONS = {
 
 def get_variant_name(variant: str) -> str:
     """Get the display name for a variant."""
-    # Handle both uppercase and lowercase v prefixes
-    if variant.startswith('V') or variant.startswith('v'):
+    # Convert to lowercase for consistent handling
+    variant = variant.lower()
+    # Handle v prefix
+    if variant.startswith('v'):
         # Remove the prefix and convert to title case
         name = variant[1:].replace('_', ' ').title()
         # Special case for baseline
@@ -107,8 +110,10 @@ def get_variant_name(variant: str) -> str:
 def extract_variant_number(variant: str) -> int:
     """Extract the numeric part from a variant name for sorting."""
     try:
-        # Handle both uppercase and lowercase v prefixes
-        if variant.startswith('V') or variant.startswith('v'):
+        # Convert to lowercase for consistent handling
+        variant = variant.lower()
+        # Handle v prefix
+        if variant.startswith('v'):
             return int(variant[1:].split('_')[0])
         return 0
     except (ValueError, IndexError):
@@ -141,10 +146,21 @@ def calculate_deltas(df: pd.DataFrame, baseline: str) -> pd.DataFrame:
     baseline_data = df[baseline_mask].iloc[0]
     deltas = df.copy()
     
-    # Calculate percentage changes
-    for col in ['total_kwh', 'runtime_s', 'train_energy', 'inference_energy', 'eval_time_s']:
+    # Calculate percentage changes for energy metrics
+    for col in ['total_kwh', 'train_energy', 'inference_energy', 'eval_time_s']:
         if col in df.columns:
-            deltas[f'Δ{col}'] = ((deltas[col] - baseline_data[col]) / baseline_data[col] * 100) if baseline_data[col] != 0 else 0
+            # Calculate percentage change, handling zero baseline values
+            baseline_value = baseline_data[col]
+            if baseline_value == 0:
+                # If baseline is 0, set delta to 0 to avoid division by zero
+                deltas[f'Δ{col}'] = 0
+            else:
+                # Calculate percentage change: ((new - old) / old) * 100
+                deltas[f'Δ{col}'] = ((deltas[col] - baseline_value) / baseline_value) * 100
+    
+    # Calculate absolute difference for runtime
+    if 'runtime_s' in df.columns:
+        deltas['Δruntime_s'] = deltas['runtime_s'] - baseline_data['runtime_s']
             
     # Calculate absolute changes for metrics
     for col in ['f1', 'accuracy']:
@@ -153,16 +169,20 @@ def calculate_deltas(df: pd.DataFrame, baseline: str) -> pd.DataFrame:
             
     # Calculate percentage differences for key metrics
     if 'total_kwh' in df.columns:
-        deltas['percent_diff_energy'] = ((deltas['total_kwh'] - baseline_data['total_kwh']) / baseline_data['total_kwh'] * 100) if baseline_data['total_kwh'] != 0 else 0
+        baseline_energy = baseline_data['total_kwh']
+        deltas['percent_diff_energy'] = ((deltas['total_kwh'] - baseline_energy) / baseline_energy * 100) if baseline_energy != 0 else 0
     
     if 'runtime_s' in df.columns:
-        deltas['percent_diff_time'] = ((deltas['runtime_s'] - baseline_data['runtime_s']) / baseline_data['runtime_s'] * 100) if baseline_data['runtime_s'] != 0 else 0
+        baseline_runtime = baseline_data['runtime_s']
+        deltas['percent_diff_time'] = ((deltas['runtime_s'] - baseline_runtime) / baseline_runtime * 100) if baseline_runtime != 0 else 0
     
     if 'eval_time_s' in df.columns:
-        deltas['percent_diff_eval_time'] = ((deltas['eval_time_s'] - baseline_data['eval_time_s']) / baseline_data['eval_time_s'] * 100) if baseline_data['eval_time_s'] != 0 else 0
+        baseline_eval_time = baseline_data['eval_time_s']
+        deltas['percent_diff_eval_time'] = ((deltas['eval_time_s'] - baseline_eval_time) / baseline_eval_time * 100) if baseline_eval_time != 0 else 0
     
     if 'f1' in df.columns:
-        deltas['percent_diff_f1'] = ((deltas['f1'] - baseline_data['f1']) / baseline_data['f1'] * 100) if baseline_data['f1'] != 0 else 0
+        baseline_f1 = baseline_data['f1']
+        deltas['percent_diff_f1'] = ((deltas['f1'] - baseline_f1) / baseline_f1 * 100) if baseline_f1 != 0 else 0
             
     # Calculate efficiency metrics
     if 'f1' in df.columns and 'total_kwh' in df.columns:
@@ -207,8 +227,10 @@ def walk_results(root: Path):
             print(f"No run directories found in {results_dir}")
             continue
         print(f"Found {len(run_dirs)} runs for {variant_dir.name}")
+        # Convert variant name to lowercase for consistent comparison
+        variant_name = variant_dir.name.lower()
         for run_dir in run_dirs:
-            yield variant_dir.name, run_dir
+            yield variant_name, run_dir
 
 
 def load_energy(path: Path) -> Dict[str, Any]:
@@ -288,6 +310,16 @@ def aggregate(results_root: Path, baseline: str = "v0_baseline"):
         ram_energies = [r["train_energy"].get("ram_energy", 0) for r in runs]
         peak_mems = [r["train_energy"].get("max_gpu_mem", 0) for r in runs]
         
+        # Calculate total runtime as sum of all stage durations
+        total_runtimes = []
+        for run in runs:
+            if run["emissions_path"] and Path(run["emissions_path"]).exists():
+                df_stages = pd.read_csv(run["emissions_path"])
+                total_runtime = df_stages['duration'].sum()
+                total_runtimes.append(total_runtime)
+            else:
+                total_runtimes.append(0)
+        
         # Test metrics
         f1_scores = [r["test_metrics"].get("eval_f1", 0) for r in runs]
         accuracies = [r["test_metrics"].get("eval_accuracy", 0) for r in runs]
@@ -318,9 +350,9 @@ def aggregate(results_root: Path, baseline: str = "v0_baseline"):
                     "raw_values": train_energies
                 },
                 "runtime": {
-                    "mean": _safe_mean(train_times),
-                    "std": _safe_stdev(train_times),
-                    "raw_values": train_times
+                    "mean": _safe_mean(total_runtimes),
+                    "std": _safe_stdev(total_runtimes),
+                    "raw_values": total_runtimes
                 },
                 "cpu_energy": {
                     "mean": _safe_mean(cpu_energies),
@@ -446,15 +478,18 @@ def aggregate(results_root: Path, baseline: str = "v0_baseline"):
         "avg_gpu_util": v["hardware_metrics"]["gpu_utilization"]["mean"],
         "avg_gpu_mem_util": v["hardware_metrics"]["memory_utilization"]["mean"],
         "num_runs": v["metadata"]["num_runs"],
-        "eval_time_s": v["test_metrics"].get("eval_time", v["training_metrics"]["runtime"]["mean"])  # Use eval_time if available, otherwise use runtime
+        "eval_time_s": next((stage["duration"] for stage in v["stage_data"] if stage["stage"] == "evaluate_model"), 0.0)  # Get duration of evaluate_model stage
     } for v in aggregated_data])
+    
+    # Convert variant names to lowercase in all DataFrames
+    df_variant['variant'] = df_variant['variant'].astype(str).str.strip().str.lower()
     
     # Create stage DataFrame
     stage_rows = []
     for variant_data in aggregated_data:
         for stage in variant_data["stage_data"]:
             stage_rows.append({
-                "variant": variant_data["metadata"]["variant"],
+                "variant": variant_data["metadata"]["variant"].lower(),  # Convert to lowercase
                 "run_id": stage["run_id"],
                 "stage": stage["stage"],
                 "kwh": stage["energy"],
@@ -467,7 +502,7 @@ def aggregate(results_root: Path, baseline: str = "v0_baseline"):
     for variant_data in aggregated_data:
         for run_id in variant_data["metadata"]["run_ids"]:
             inference_rows.append({
-                "variant": variant_data["metadata"]["variant"],
+                "variant": variant_data["metadata"]["variant"].lower(),  # Convert to lowercase
                 "run_id": run_id,
                 "throughput_qps": variant_data["inference_metrics"]["throughput"]["mean"],
                 "latency_ms": variant_data["inference_metrics"]["latency"]["mean"]
@@ -475,7 +510,7 @@ def aggregate(results_root: Path, baseline: str = "v0_baseline"):
     df_inference = pd.DataFrame(inference_rows) if inference_rows else pd.DataFrame()
     
     # Calculate deltas relative to baseline
-    df_variant = calculate_deltas(df_variant, baseline)
+    df_variant = calculate_deltas(df_variant, baseline.lower())  # Convert baseline to lowercase
     
     # Identify Pareto frontier for energy/performance trade-off
     df_pareto = identify_pareto_frontier(
@@ -486,9 +521,9 @@ def aggregate(results_root: Path, baseline: str = "v0_baseline"):
     df_variant['on_pareto'] = df_variant.index.isin(df_pareto.index)
     
     # Add statistical significance markers
-    baseline_data = df_variant[df_variant['variant'] == baseline].iloc[0]
+    baseline_data = df_variant[df_variant['variant'] == baseline.lower()].iloc[0]  # Convert baseline to lowercase
     for idx, row in df_variant.iterrows():
-        if row['variant'] == baseline:
+        if row['variant'] == baseline.lower():  # Convert baseline to lowercase
             continue
             
         # Compare F1 scores
@@ -510,8 +545,10 @@ def aggregate(results_root: Path, baseline: str = "v0_baseline"):
 # ------------------------------------------------------------------
 
 def plot_stacked(df_stage: pd.DataFrame, out: Path):
+    """Plot energy consumption for each stage of the pipeline in vertically stacked subplots"""
     if df_stage.empty:
         return
+        
     # Aggregate across runs
     df_agg = df_stage.groupby(['variant', 'stage'])['kwh'].mean().reset_index()
     
@@ -519,38 +556,77 @@ def plot_stacked(df_stage: pd.DataFrame, out: Path):
     pivot = df_agg.pivot(index="variant", columns="stage", values="kwh").fillna(0)
     pivot = pivot[[c for c in STAGE_ORDER if c in pivot.columns]]
     
-    # Plot
-    pivot.div(1000).plot(kind="bar", stacked=True, figsize=(11,6))
-    plt.ylabel("Energy (kWh)")
-    plt.title("Stage-wise Energy Consumption per Variant")
-    plt.legend(title='Pipeline Stage', bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.tight_layout()
-    plt.savefig(out)
+    # Convert variant names to V1, V2, etc. and sort numerically
+    pivot.index = [f'V{extract_variant_number(v)}' for v in pivot.index]
+    pivot = pivot.sort_index(key=lambda x: [extract_variant_number(v) for v in x])
+    
+    # Create figure with subplots for each stage
+    n_stages = len(pivot.columns)
+    fig, axes = plt.subplots(n_stages, 1, figsize=(8, 2.5*n_stages), sharex=True)
+    
+    # Plot each stage in its own subplot
+    for i, stage in enumerate(pivot.columns):
+        ax = axes[i]
+        pivot[[stage]].div(1000).plot(
+            kind="bar",
+            ax=ax,
+            color='#2ecc71' if stage == 'train' else '#3498db'
+        )
+        ax.set_ylabel("kWh")
+        # Add title inside the plot
+        ax.text(0.02, 0.95, stage.title(), 
+                transform=ax.transAxes,
+                fontsize=10,
+                fontweight='bold',
+                verticalalignment='top')
+        ax.grid(True, linestyle='--', alpha=0.3)
+        ax.tick_params(axis='x', rotation=45, labelsize=8)
+        ax.tick_params(axis='y', labelsize=8)
+        
+        # Remove legend for all subplots
+        ax.get_legend().remove()
+    
+    # Add x-label to the bottom subplot
+    axes[-1].set_xlabel("Variant", fontsize=9)
+    
+    # Adjust layout with minimal spacing
+    plt.tight_layout(h_pad=0)
+    plt.savefig(out, bbox_inches='tight', dpi=300)
     plt.close()
 
-def plot_energy_tradeoff(df_variant: pd.DataFrame, baseline: str, out: Path):
-    """Plot F1 vs Energy with Pareto frontier"""
-    if df_variant.empty:
+def plot_energy_tradeoff(df: pd.DataFrame, baseline: str, out: Path):
+    """Plot energy tradeoff with F1 score and Pareto frontier"""
+    if df.empty:
         return
-        
+    
     plt.figure(figsize=(10, 7))
     ax = plt.gca()
     
-    # Baseline point
-    baseline_row = df_variant[df_variant['variant'] == baseline].iloc[0]
+    # Case-insensitive baseline mask (do not modify df in-place)
+    baseline_mask = df['variant'].str.lower() == baseline.lower()
+    
+    print("Available variants:", df['variant'].tolist())
+    print("Looking for baseline:", baseline)
+    if not baseline_mask.any():
+        print(f"Warning: Baseline {baseline} not found in data. Skipping plot.")
+        return
+    
+    baseline_row = df[baseline_mask].iloc[0]
     plt.scatter(
         baseline_row['total_kwh'], 
         baseline_row['f1'],
-        s=200, c='red', marker='*', label='Baseline'
+        s=150, c='red', marker='*', label='Baseline',
+        edgecolor='black', linewidth=1.5
     )
     
     # Pareto frontier
-    pareto_df = df_variant[df_variant['on_pareto'] & (df_variant['variant'] != baseline)]
+    pareto_df = df[df['on_pareto'] & ~baseline_mask]
     if not pareto_df.empty:
         plt.scatter(
             pareto_df['total_kwh'], 
             pareto_df['f1'],
-            s=100, c='green', marker='D', label='Pareto Frontier'
+            s=80, c='green', marker='D', label='Pareto Frontier',
+            edgecolor='black', linewidth=1
         )
         
         # Connect Pareto points
@@ -558,37 +634,68 @@ def plot_energy_tradeoff(df_variant: pd.DataFrame, baseline: str, out: Path):
         plt.plot(
             pareto_sorted['total_kwh'], 
             pareto_sorted['f1'],
-            'g--', alpha=0.5
+            'g--', alpha=0.5, linewidth=1.5
         )
     
     # Other variants
-    other_df = df_variant[~df_variant['on_pareto'] & (df_variant['variant'] != baseline)]
+    other_df = df[~df['on_pareto'] & ~baseline_mask]
     if not other_df.empty:
         plt.scatter(
             other_df['total_kwh'], 
             other_df['f1'],
-            s=80, c='blue', alpha=0.7, label='Other Variants'
+            s=60, c='blue', alpha=0.7, label='Other Variants',
+            edgecolor='black', linewidth=1
         )
     
-    # Annotate points
-    for _, row in df_variant.iterrows():
-        if row['variant'] == baseline:
-            continue
-        plt.annotate(
-            row['variant'], 
-            (row['total_kwh'], row['f1']),
-            xytext=(5, 5), textcoords='offset points',
-            fontsize=9
-        )
+    # Add labels for all points using adjustText
+    from adjustText import adjust_text
+    texts = []
+    
+    # Add baseline label
+    texts.append(plt.text(
+        baseline_row['total_kwh'],
+        baseline_row['f1'],
+        'V0',
+        ha='center',
+        va='center',
+        fontsize=12,
+        color='black',
+        fontweight='bold',
+        # bbox=dict(facecolor='white', edgecolor='none', alpha=0.7, pad=2)
+    ))
+    
+    # Add labels for all other points
+    for _, row in df[~baseline_mask].iterrows():
+        variant_num = extract_variant_number(row['variant'])
+        texts.append(plt.text(
+            row['total_kwh'],
+            row['f1'],
+            f'V{variant_num}',
+            fontsize=10,
+            fontweight='bold',
+            # bbox=dict(facecolor='white', edgecolor='none', alpha=0.7, pad=2)
+        ))
+    
+    # Adjust text positions to avoid overlap with increased arrow length
+    adjust_text(texts, 
+               arrowprops=dict(arrowstyle='->', color='black', lw=1.5, connectionstyle='arc3,rad=0.5'),
+               expand_text=(8.0, 8.0),
+               expand_points=(8.0, 8.0),
+               force_text=(6.0, 6.0),
+               force_points=(6.0, 6.0),
+               only_move={'points':'xy', 'text':'xy'},
+               avoid_text=True,
+               avoid_points=True,
+               avoid_self=True,
+               avoid_axes=True)
     
     # Formatting
-    plt.xlabel("Total Energy Consumption (kWh)")
+    plt.xlabel("Total Energy (kWh)")
     plt.ylabel("F1 Score")
-    plt.title("Energy-Performance Trade-off")
     plt.grid(True, linestyle='--', alpha=0.3)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(out)
+    plt.savefig(out, bbox_inches='tight', dpi=300)
     plt.close()
 
 def plot_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
@@ -599,8 +706,21 @@ def plot_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
     plt.figure(figsize=(10, 7))
     ax = plt.gca()
     
+    # Convert baseline to lowercase for consistent comparison
+    baseline = baseline.lower()
+    
+    # Convert variant column to lowercase for consistent comparison
+    df = df.copy()
+    df['variant'] = df['variant'].str.lower()
+    
+    # Case-insensitive baseline mask
+    baseline_mask = df['variant'] == baseline
+    if not baseline_mask.any():
+        print(f"Warning: Baseline {baseline} not found in data. Skipping plot.")
+        return
+    
     # Baseline point
-    baseline_row = df[df['variant'] == baseline].iloc[0]
+    baseline_row = df[baseline_mask].iloc[0]
     plt.scatter(
         baseline_row['total_kwh'], 
         baseline_row['eval_time_s'],
@@ -620,7 +740,7 @@ def plot_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
                 pareto_mask[i] = False
     
     # Plot Pareto frontier
-    pareto_df = df[pareto_mask & (df['variant'] != baseline)]
+    pareto_df = df[pareto_mask & ~baseline_mask]
     if not pareto_df.empty:
         plt.scatter(
             pareto_df['total_kwh'], 
@@ -637,7 +757,7 @@ def plot_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
         )
     
     # Other variants
-    other_df = df[~pareto_mask & (df['variant'] != baseline)]
+    other_df = df[~pareto_mask & ~baseline_mask]
     if not other_df.empty:
         plt.scatter(
             other_df['total_kwh'], 
@@ -647,7 +767,7 @@ def plot_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
     
     # Annotate points
     for _, row in df.iterrows():
-        if row['variant'] == baseline:
+        if baseline_mask.loc[row.name]:
             continue
         plt.annotate(
             get_variant_name(row['variant']), 
@@ -667,7 +787,111 @@ def plot_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
     plt.close()
 
 def plot_delta_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
-    """Plot Pareto frontier for delta energy vs delta evaluation time trade-off"""
+    """Plot delta energy vs delta evaluation time trade-off"""
+    if df.empty:
+        return
+        
+    plt.figure(figsize=(12, 10))
+    ax = plt.gca()
+    
+    # Convert baseline to lowercase for consistent comparison
+    baseline = baseline.lower()
+    
+    # Convert variant column to lowercase for consistent comparison
+    df = df.copy()
+    df['variant'] = df['variant'].str.lower()
+    
+    # Case-insensitive baseline mask
+    baseline_mask = df['variant'] == baseline
+    if not baseline_mask.any():
+        print(f"Warning: Baseline {baseline} not found in data. Skipping plot.")
+        return
+    
+    # Set equal aspect ratio and limits
+    max_delta = max(
+        abs(df['Δtotal_kwh'].min()),
+        abs(df['Δtotal_kwh'].max()),
+        abs(df['percent_diff_time'].min()),
+        abs(df['percent_diff_time'].max())
+    )
+    limit = max_delta * 1.1  # Add 10% padding
+    ax.set_xlim(-limit, limit)
+    ax.set_ylim(-limit, limit)
+    
+    # Plot origin point (baseline)
+    plt.scatter(0, 0, s=200, c='red', marker='*', label='Baseline')
+    
+    # Identify Pareto frontier
+    points = df[['Δtotal_kwh', 'percent_diff_time']].values
+    pareto_mask = np.ones(points.shape[0], dtype=bool)
+    
+    for i, point in enumerate(points):
+        if pareto_mask[i]:
+            # Dominated if any point has lower energy delta AND lower time delta
+            mask = (points[:,0] <= point[0]) & (points[:,1] <= point[1])
+            mask[i] = False  # Don't compare to self
+            if np.any(mask):
+                pareto_mask[i] = False
+    
+    # Plot Pareto frontier
+    pareto_df = df[pareto_mask & ~baseline_mask]
+    if not pareto_df.empty:
+        plt.scatter(
+            pareto_df['Δtotal_kwh'], 
+            pareto_df['percent_diff_time'],
+            s=100, c='green', marker='D', label='Pareto Frontier'
+        )
+        
+        # Connect Pareto points
+        pareto_sorted = pareto_df.sort_values('Δtotal_kwh')
+        plt.plot(
+            pareto_sorted['Δtotal_kwh'], 
+            pareto_sorted['percent_diff_time'],
+            'g--', alpha=0.5
+        )
+    
+    # Other variants
+    other_df = df[~pareto_mask & ~baseline_mask]
+    if not other_df.empty:
+        plt.scatter(
+            other_df['Δtotal_kwh'], 
+            other_df['percent_diff_time'],
+            s=80, c='blue', alpha=0.7, label='Other Variants'
+        )
+    
+    # Annotate points
+    for _, row in df.iterrows():
+        if baseline_mask.loc[row.name]:
+            continue
+        plt.annotate(
+            get_variant_name(row['variant']), 
+            (row['Δtotal_kwh'], row['percent_diff_time']),
+            xytext=(5, 5), textcoords='offset points',
+            fontsize=9
+        )
+    
+    # Add quadrant lines
+    plt.axhline(y=0, color='k', linestyle='--', alpha=0.3)
+    plt.axvline(x=0, color='k', linestyle='--', alpha=0.3)
+    
+    # Add quadrant labels
+    plt.text(limit*0.8, limit*0.8, 'Worse Energy\nWorse Time', ha='center', va='center')
+    plt.text(-limit*0.8, limit*0.8, 'Better Energy\nWorse Time', ha='center', va='center')
+    plt.text(limit*0.8, -limit*0.8, 'Worse Energy\nBetter Time', ha='center', va='center')
+    plt.text(-limit*0.8, -limit*0.8, 'Better Energy\nBetter Time', ha='center', va='center')
+    
+    # Formatting
+    plt.xlabel("Δ Energy Consumption (%)")
+    plt.ylabel("Δ Evaluation Time (%)")
+    plt.title("Energy-Time Trade-off Relative to Baseline")
+    plt.grid(True, linestyle='--', alpha=0.3)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(out)
+    plt.close()
+
+def plot_delta_training_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
+    """Plot delta training energy vs delta training time trade-off"""
     if df.empty:
         return
         
@@ -678,8 +902,8 @@ def plot_delta_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
     max_delta = max(
         abs(df['Δtotal_kwh'].min()),
         abs(df['Δtotal_kwh'].max()),
-        abs(df['Δeval_time_s'].min()),
-        abs(df['Δeval_time_s'].max())
+        abs(df['percent_diff_time'].min()),
+        abs(df['percent_diff_time'].max())
     )
     limit = max_delta * 1.1  # Add 10% padding
     ax.set_xlim(-limit, limit)
@@ -694,76 +918,45 @@ def plot_delta_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
     plt.axvline(x=0, color='k', linestyle='--', alpha=0.3)
     
     # Baseline point (should be at origin since it's the reference)
-    plt.scatter(0, 0, s=200, c='red', marker='*', label=get_variant_name(baseline), zorder=5)
+    plt.scatter(0, 0, s=200, c='red', marker='*', zorder=5, edgecolor='black', linewidth=1.5)
     
-    # Identify Pareto frontier
-    points = df[['Δtotal_kwh', 'Δeval_time_s']].values
-    pareto_mask = np.ones(points.shape[0], dtype=bool)
-    
-    for i, point in enumerate(points):
-        if pareto_mask[i]:
-            # Dominated if any point has lower delta energy AND lower delta time
-            # (more negative deltas are better)
-            mask = (points[:,0] <= point[0]) & (points[:,1] <= point[1])
-            mask[i] = False  # Don't compare to self
-            if np.any(mask):
-                pareto_mask[i] = False
-    
-    # Plot Pareto frontier
-    pareto_df = df[pareto_mask & (df['variant'] != baseline)]
-    if not pareto_df.empty:
-        for _, row in pareto_df.iterrows():
-            plt.scatter(
-                row['Δtotal_kwh'], 
-                row['Δeval_time_s'],
-                s=100, c='green', marker='D', label=get_variant_name(row['variant']), zorder=4
-            )
-        
-        # Connect Pareto points
-        pareto_sorted = pareto_df.sort_values('Δtotal_kwh')
-        plt.plot(
-            pareto_sorted['Δtotal_kwh'], 
-            pareto_sorted['Δeval_time_s'],
-            'g--', alpha=0.5, zorder=3
-        )
-    
-    # Other variants with color coding based on quadrant
-    other_df = df[~pareto_mask & (df['variant'] != baseline)]
+    # Plot all variants except baseline
+    other_df = df[df['variant'] != baseline]
     if not other_df.empty:
         # Group variants by quadrant
-        better_both = other_df[(other_df['Δtotal_kwh'] < 0) & (other_df['Δeval_time_s'] < 0)]
-        worse_both = other_df[(other_df['Δtotal_kwh'] > 0) & (other_df['Δeval_time_s'] > 0)]
-        mixed = other_df[~((other_df['Δtotal_kwh'] < 0) & (other_df['Δeval_time_s'] < 0)) & 
-                        ~((other_df['Δtotal_kwh'] > 0) & (other_df['Δeval_time_s'] > 0))]
+        better_both = other_df[(other_df['Δtotal_kwh'] < 0) & (other_df['percent_diff_time'] < 0)]
+        worse_both = other_df[(other_df['Δtotal_kwh'] > 0) & (other_df['percent_diff_time'] > 0)]
+        mixed = other_df[~((other_df['Δtotal_kwh'] < 0) & (other_df['percent_diff_time'] < 0)) & 
+                        ~((other_df['Δtotal_kwh'] > 0) & (other_df['percent_diff_time'] > 0))]
         
-        # Plot each group with different markers
+        # Plot each group with different colors
         for _, row in better_both.iterrows():
             plt.scatter(
                 row['Δtotal_kwh'], 
-                row['Δeval_time_s'],
-                s=80, c='green', marker='o', label=get_variant_name(row['variant']), zorder=4
+                row['percent_diff_time'],
+                s=100, c='green', marker='o', zorder=4, edgecolor='black', linewidth=1.5
             )
             
         for _, row in worse_both.iterrows():
             plt.scatter(
                 row['Δtotal_kwh'], 
-                row['Δeval_time_s'],
-                s=80, c='red', marker='s', label=get_variant_name(row['variant']), zorder=4
+                row['percent_diff_time'],
+                s=100, c='red', marker='o', zorder=4, edgecolor='black', linewidth=1.5
             )
             
         for _, row in mixed.iterrows():
             plt.scatter(
                 row['Δtotal_kwh'], 
-                row['Δeval_time_s'],
-                s=80, c='gray', marker='^', label=get_variant_name(row['variant']), zorder=4
+                row['percent_diff_time'],
+                s=100, c='gray', marker='o', zorder=4, edgecolor='black', linewidth=1.5
             )
     
     # Add quadrant annotations with background
     annotations = [
-        (0.95, 0.95, 'Worse Energy\nWorse Eval Time', 'right', 'top'),
-        (0.05, 0.95, 'Better Energy\nWorse Eval Time', 'left', 'top'),
-        (0.95, 0.05, 'Worse Energy\nBetter Eval Time', 'right', 'bottom'),
-        (0.05, 0.05, 'Better Energy\nBetter Eval Time', 'left', 'bottom')
+        (0.95, 0.95, 'Worse Energy\nWorse Runtime', 'right', 'top'),
+        (0.05, 0.95, 'Better Energy\nWorse Runtime', 'left', 'top'),
+        (0.95, 0.05, 'Worse Energy\nBetter Runtime', 'right', 'bottom'),
+        (0.05, 0.05, 'Better Energy\nBetter Runtime', 'left', 'bottom')
     ]
     
     for x, y, text, ha, va in annotations:
@@ -777,22 +970,577 @@ def plot_delta_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
                 alpha=0.8,
                 pad=5
             ),
-            fontsize=10
+            fontsize=14,
+            fontweight='bold'
         )
     
-    # Add legend in top left quadrant
-    plt.legend(
-        loc='upper left',
-        bbox_to_anchor=(0.05, 0.95),
-        framealpha=0.9,
-        edgecolor='gray',
-        fontsize=9
-    )
+    # Add labels for all points
+    from adjustText import adjust_text
+    texts = []
+    
+    # Add baseline label
+    texts.append(plt.text(0, 0, 'V0', ha='center', va='center', fontsize=14, color='black', fontweight='bold'))
+    
+    # Add labels for all other points
+    for _, row in df[df['variant'] != baseline].iterrows():
+        variant_num = extract_variant_number(row['variant'])
+        texts.append(plt.text(
+            row['Δtotal_kwh'],
+            row['percent_diff_time'],
+            f'V{variant_num}',
+            fontsize=12,
+            fontweight='bold'
+        ))
+    
+    # Adjust text positions to avoid overlaps
+    adjust_text(texts, 
+                arrowprops=dict(arrowstyle='->', color='gray', lw=1.5, connectionstyle='arc3,rad=0.3'),
+                expand_points=(4.0, 4.0),
+                force_points=(0.8, 0.8),
+                force_text=(1.5, 1.5),
+                only_move={'points':'xy', 'text':'xy'},
+                avoid_text=True,
+                avoid_points=True,
+                avoid_self=True)
     
     # Formatting
-    plt.xlabel("Δ Energy Consumption (%)", fontsize=12)
-    plt.ylabel("Δ Evaluation Time (%)", fontsize=12)
+    plt.xlabel("Δ Training Energy (%)", fontsize=16)
+    plt.ylabel("Δ Training Time (%)", fontsize=16)
     plt.grid(True, linestyle='--', alpha=0.3)
+    
+    # Increase tick label sizes
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+    
+    plt.tight_layout()
+    plt.savefig(out, bbox_inches='tight', dpi=300)
+    plt.close()
+
+def plot_delta_eval_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
+    """Plot delta evaluation energy vs delta evaluation time trade-off"""
+    if df.empty:
+        return
+        
+    plt.figure(figsize=(12, 10))
+    ax = plt.gca()
+    
+    # Set equal aspect ratio and limits
+    max_delta = max(
+        abs(df['Δtotal_kwh'].min()),
+        abs(df['Δtotal_kwh'].max()),
+        abs(df['percent_diff_eval_time'].min()),
+        abs(df['percent_diff_eval_time'].max())
+    )
+    limit = max_delta * 1.1  # Add 10% padding
+    ax.set_xlim(-limit, limit)
+    ax.set_ylim(-limit, limit)
+    
+    # Add quadrant background colors
+    ax.axhspan(0, limit, xmin=0.5, xmax=1, color='red', alpha=0.1)  # Top right
+    ax.axhspan(-limit, 0, xmin=0, xmax=0.5, color='green', alpha=0.1)  # Bottom left
+    
+    # Add quadrant lines
+    plt.axhline(y=0, color='k', linestyle='--', alpha=0.3)
+    plt.axvline(x=0, color='k', linestyle='--', alpha=0.3)
+    
+    # Baseline point (should be at origin since it's the reference)
+    plt.scatter(0, 0, s=200, c='red', marker='*', zorder=5, edgecolor='black', linewidth=1.5)
+    
+    # Plot all variants except baseline
+    other_df = df[df['variant'] != baseline]
+    if not other_df.empty:
+        # Group variants by quadrant
+        better_both = other_df[(other_df['Δtotal_kwh'] < 0) & (other_df['percent_diff_eval_time'] < 0)]
+        worse_both = other_df[(other_df['Δtotal_kwh'] > 0) & (other_df['percent_diff_eval_time'] > 0)]
+        mixed = other_df[~((other_df['Δtotal_kwh'] < 0) & (other_df['percent_diff_eval_time'] < 0)) & 
+                        ~((other_df['Δtotal_kwh'] > 0) & (other_df['percent_diff_eval_time'] > 0))]
+        
+        # Plot each group with different colors
+        for _, row in better_both.iterrows():
+            plt.scatter(
+                row['Δtotal_kwh'], 
+                row['percent_diff_eval_time'],
+                s=100, c='green', marker='o', zorder=4, edgecolor='black', linewidth=1.5
+            )
+            
+        for _, row in worse_both.iterrows():
+            plt.scatter(
+                row['Δtotal_kwh'], 
+                row['percent_diff_eval_time'],
+                s=100, c='red', marker='o', zorder=4, edgecolor='black', linewidth=1.5
+            )
+            
+        for _, row in mixed.iterrows():
+            plt.scatter(
+                row['Δtotal_kwh'], 
+                row['percent_diff_eval_time'],
+                s=100, c='gray', marker='o', zorder=4, edgecolor='black', linewidth=1.5
+            )
+    
+    # Add quadrant annotations with background
+    annotations = [
+        (0.95, 0.95, 'Worse Energy\nWorse Runtime', 'right', 'top'),
+        (0.05, 0.95, 'Better Energy\nWorse Runtime', 'left', 'top'),
+        (0.95, 0.05, 'Worse Energy\nBetter Runtime', 'right', 'bottom'),
+        (0.05, 0.05, 'Better Energy\nBetter Runtime', 'left', 'bottom')
+    ]
+    
+    for x, y, text, ha, va in annotations:
+        plt.text(
+            x, y, text,
+            transform=ax.transAxes,
+            ha=ha, va=va,
+            bbox=dict(
+                facecolor='white',
+                edgecolor='gray',
+                alpha=0.8,
+                pad=5
+            ),
+            fontsize=14,
+            fontweight='bold'
+        )
+    
+    # Add labels for all points
+    from adjustText import adjust_text
+    texts = []
+    
+    # Add baseline label
+    texts.append(plt.text(0, 0, 'V0', ha='center', va='center', fontsize=14, color='black', fontweight='bold'))
+    
+    # Add labels for all other points
+    for _, row in df[df['variant'] != baseline].iterrows():
+        variant_num = extract_variant_number(row['variant'])
+        texts.append(plt.text(
+            row['Δtotal_kwh'],
+            row['percent_diff_eval_time'],
+            f'V{variant_num}',
+            fontsize=12,
+            fontweight='bold'
+        ))
+    
+    # Adjust text positions to avoid overlaps
+    adjust_text(texts, 
+                arrowprops=dict(arrowstyle='->', color='gray', lw=1.5, connectionstyle='arc3,rad=0.3'),
+                expand_points=(4.0, 4.0),
+                force_points=(0.8, 0.8),
+                force_text=(1.5, 1.5),
+                only_move={'points':'xy', 'text':'xy'},
+                avoid_text=True,
+                avoid_points=True,
+                avoid_self=True)
+    
+    # Formatting
+    plt.xlabel("Δ Evaluation Energy (%)", fontsize=16)
+    plt.ylabel("Δ Evaluation Time (%)", fontsize=16)
+    plt.grid(True, linestyle='--', alpha=0.3)
+    
+    # Increase tick label sizes
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+    
+    plt.tight_layout()
+    plt.savefig(out, bbox_inches='tight', dpi=300)
+    plt.close()
+
+def plot_total_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Path):
+    """Plot total energy vs total time trade-off"""
+    if df.empty:
+        return
+        
+    plt.figure(figsize=(12, 10))
+    ax = plt.gca()
+    
+    # Baseline point
+    baseline_row = df[df['variant'] == baseline].iloc[0]
+    plt.scatter(
+        baseline_row['total_kwh'], 
+        baseline_row['runtime_s'],
+        s=200, c='red', marker='*', label=get_variant_name(baseline)
+    )
+    
+    # Identify Pareto frontier
+    points = df[['total_kwh', 'runtime_s']].values
+    pareto_mask = np.ones(points.shape[0], dtype=bool)
+    
+    for i, point in enumerate(points):
+        if pareto_mask[i]:
+            # Dominated if any point has lower energy AND lower time
+            mask = (points[:,0] <= point[0]) & (points[:,1] <= point[1])
+            mask[i] = False  # Don't compare to self
+            if np.any(mask):
+                pareto_mask[i] = False
+    
+    # Plot Pareto frontier
+    pareto_df = df[pareto_mask & (df['variant'] != baseline)]
+    if not pareto_df.empty:
+        plt.scatter(
+            pareto_df['total_kwh'], 
+            pareto_df['runtime_s'],
+            s=100, c='green', marker='D', label='Pareto Frontier'
+        )
+        
+        # Connect Pareto points
+        pareto_sorted = pareto_df.sort_values('total_kwh')
+        plt.plot(
+            pareto_sorted['total_kwh'], 
+            pareto_sorted['runtime_s'],
+            'g--', alpha=0.5
+        )
+    
+    # Other variants
+    other_df = df[~pareto_mask & (df['variant'] != baseline)]
+    if not other_df.empty:
+        plt.scatter(
+            other_df['total_kwh'], 
+            other_df['runtime_s'],
+            s=100, c='blue', alpha=0.7, label='Other Variants'
+        )
+    
+    # Add labels for all points
+    from adjustText import adjust_text
+    texts = []
+    
+    # Add baseline label
+    texts.append(plt.text(
+        baseline_row['total_kwh'],
+        baseline_row['runtime_s'],
+        'V0',
+        ha='center',
+        va='center',
+        fontsize=14,
+        color='black',
+        fontweight='bold'
+    ))
+    
+    # Add labels for all other points
+    for _, row in df[df['variant'] != baseline].iterrows():
+        variant_num = extract_variant_number(row['variant'])
+        texts.append(plt.text(
+            row['total_kwh'],
+            row['runtime_s'],
+            f'V{variant_num}',
+            fontsize=12,
+            fontweight='bold'
+        ))
+    
+    # Adjust text positions to avoid overlap
+    adjust_text(texts, 
+               arrowprops=dict(arrowstyle='->', color='black', lw=1.5),
+               expand_text=(1.2, 1.2),
+               expand_points=(1.2, 1.2),
+               force_text=(0.5, 0.5),
+               force_points=(0.5, 0.5))
+    
+    # Formatting
+    plt.xlabel("Total Energy (kWh)")
+    plt.ylabel("Runtime (seconds)")
+    plt.grid(True, linestyle='--', alpha=0.3)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(out, bbox_inches='tight', dpi=300)
+    plt.close()
+
+def plot_faceted_energy_tradeoff(df: pd.DataFrame, baseline: str, out: Path):
+    """Create faceted energy trade-off plots separated by model size"""
+    if df.empty:
+        return
+        
+    # Create figure with subplots
+    fig = plt.figure(figsize=(20, 15))
+    
+    # Get unique model sizes
+    model_sizes = sorted(df['model_size'].unique())
+    n_sizes = len(model_sizes)
+    
+    # Calculate grid dimensions
+    n_cols = min(3, n_sizes)  # Max 3 columns
+    n_rows = (n_sizes + n_cols - 1) // n_cols
+    
+    # Create subplots
+    for idx, size in enumerate(model_sizes, 1):
+        ax = plt.subplot(n_rows, n_cols, idx)
+        
+        # Filter data for this model size
+        size_df = df[df['model_size'] == size]
+        
+        # Set equal aspect ratio and limits
+        max_delta = max(
+            abs(size_df['Δtotal_kwh'].min()),
+            abs(size_df['Δtotal_kwh'].max()),
+            abs(size_df['percent_diff_time'].min()),
+            abs(size_df['percent_diff_time'].max())
+        )
+        limit = max_delta * 1.1  # Add 10% padding
+        ax.set_xlim(-limit, limit)
+        ax.set_ylim(-limit, limit)
+        
+        # Add quadrant background colors
+        ax.axhspan(0, limit, xmin=0.5, xmax=1, color='red', alpha=0.1)
+        ax.axhspan(-limit, 0, xmin=0, xmax=0.5, color='green', alpha=0.1)
+        
+        # Add quadrant lines
+        ax.axhline(y=0, color='k', linestyle='--', alpha=0.3)
+        ax.axvline(x=0, color='k', linestyle='--', alpha=0.3)
+        
+        # Baseline point
+        baseline_row = size_df[size_df['variant'] == baseline]
+        if not baseline_row.empty:
+            ax.scatter(0, 0, s=200, c='red', marker='*', zorder=5, edgecolor='black', linewidth=1.5)
+        
+        # Plot all variants except baseline
+        other_df = size_df[size_df['variant'] != baseline]
+        if not other_df.empty:
+            # Group variants by quadrant
+            better_both = other_df[(other_df['Δtotal_kwh'] < 0) & (other_df['percent_diff_time'] < 0)]
+            worse_both = other_df[(other_df['Δtotal_kwh'] > 0) & (other_df['percent_diff_time'] > 0)]
+            mixed = other_df[~((other_df['Δtotal_kwh'] < 0) & (other_df['percent_diff_time'] < 0)) & 
+                           ~((other_df['Δtotal_kwh'] > 0) & (other_df['percent_diff_time'] > 0))]
+            
+            # Plot each group
+            for _, row in better_both.iterrows():
+                ax.scatter(
+                    row['Δtotal_kwh'], 
+                    row['percent_diff_time'],
+                    s=100, c='green', marker='o', zorder=4, edgecolor='black', linewidth=1.5
+                )
+            
+            for _, row in worse_both.iterrows():
+                ax.scatter(
+                    row['Δtotal_kwh'], 
+                    row['percent_diff_time'],
+                    s=100, c='red', marker='o', zorder=4, edgecolor='black', linewidth=1.5
+                )
+            
+            for _, row in mixed.iterrows():
+                ax.scatter(
+                    row['Δtotal_kwh'], 
+                    row['percent_diff_time'],
+                    s=100, c='gray', marker='o', zorder=4, edgecolor='black', linewidth=1.5
+                )
+        
+        # Add quadrant annotations
+        annotations = [
+            (0.95, 0.95, 'Worse Energy\nWorse Runtime', 'right', 'top'),
+            (0.05, 0.95, 'Better Energy\nWorse Runtime', 'left', 'top'),
+            (0.95, 0.05, 'Worse Energy\nBetter Runtime', 'right', 'bottom'),
+            (0.05, 0.05, 'Better Energy\nBetter Runtime', 'left', 'bottom')
+        ]
+        
+        for x, y, text, ha, va in annotations:
+            ax.text(
+                x, y, text,
+                transform=ax.transAxes,
+                ha=ha, va=va,
+                bbox=dict(
+                    facecolor='white',
+                    edgecolor='gray',
+                    alpha=0.8,
+                    pad=5
+                ),
+                fontsize=12,
+                fontweight='bold'
+            )
+        
+        # Add labels for all points
+        from adjustText import adjust_text
+        texts = []
+        
+        # Add baseline label
+        texts.append(ax.text(0, 0, 'V0', ha='center', va='center', fontsize=12, color='black', fontweight='bold'))
+        
+        # Add labels for all other points
+        for _, row in size_df[size_df['variant'] != baseline].iterrows():
+            variant_num = extract_variant_number(row['variant'])
+            texts.append(ax.text(
+                row['Δtotal_kwh'],
+                row['percent_diff_time'],
+                f'V{variant_num}',
+                fontsize=10,
+                fontweight='bold'
+            ))
+        
+        # Adjust text positions to avoid overlap
+        adjust_text(texts, 
+                   arrowprops=dict(arrowstyle='->', color='black', lw=1.5, connectionstyle='arc3,rad=0.2'),
+                   expand_text=(1.5, 1.5),
+                   expand_points=(1.5, 1.5),
+                   force_text=(1.0, 1.0),
+                   force_points=(1.0, 1.0))
+        
+        # Add title and labels
+        ax.set_title(f"Model Size: {size}", fontsize=14, pad=20)
+        ax.set_xlabel("Δ Energy (kWh)", fontsize=12)
+        ax.set_ylabel("Δ Runtime (%)", fontsize=12)
+        ax.grid(True, linestyle='--', alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig(out, bbox_inches='tight', dpi=300)
+    plt.close()
+
+def plot_energy_tradeoff_by_type(df: pd.DataFrame, baseline: str, out: Path):
+    """Plot energy trade-off with variants grouped by optimization type"""
+    if df.empty:
+        return
+        
+    plt.figure(figsize=(15, 12))
+    ax = plt.gca()
+    
+    # Define optimization types and their markers
+    opt_types = {
+        'pruning': ('Layer Pruning', 's'),  # square
+        'quantization': ('Quantization', '^'),  # triangle up
+        'compilation': ('Torch Compile', 'D'),  # diamond
+        'fp16': ('FP16', 'o'),  # circle
+        'gradient': ('Gradient Opts', 'v'),  # triangle down
+        'sequence': ('Sequence Length', '>'),  # triangle right
+        'other': ('Other', 'x')  # x
+    }
+    
+    # Set equal aspect ratio and limits
+    max_delta = max(
+        abs(df['Δtotal_kwh'].min()),
+        abs(df['Δtotal_kwh'].max()),
+        abs(df['percent_diff_time'].min()),
+        abs(df['percent_diff_time'].max())
+    )
+    limit = max_delta * 1.1  # Add 10% padding
+    ax.set_xlim(-limit, limit)
+    ax.set_ylim(-limit, limit)
+    
+    # Add quadrant background colors
+    ax.axhspan(0, limit, xmin=0.5, xmax=1, color='red', alpha=0.1)
+    ax.axhspan(-limit, 0, xmin=0, xmax=0.5, color='green', alpha=0.1)
+    
+    # Add quadrant lines
+    plt.axhline(y=0, color='k', linestyle='--', alpha=0.3)
+    plt.axvline(x=0, color='k', linestyle='--', alpha=0.3)
+    
+    # Baseline point
+    plt.scatter(0, 0, s=200, c='red', marker='*', zorder=5, edgecolor='black', linewidth=1.5, label='Baseline (V0)')
+    
+    # Plot all variants except baseline
+    other_df = df[df['variant'] != baseline]
+    if not other_df.empty:
+        # Group variants by quadrant
+        better_both = other_df[(other_df['Δtotal_kwh'] < 0) & (other_df['percent_diff_time'] < 0)]
+        worse_both = other_df[(other_df['Δtotal_kwh'] > 0) & (other_df['percent_diff_time'] > 0)]
+        mixed = other_df[~((other_df['Δtotal_kwh'] < 0) & (other_df['percent_diff_time'] < 0)) & 
+                        ~((other_df['Δtotal_kwh'] > 0) & (other_df['percent_diff_time'] > 0))]
+        
+        # Function to determine optimization type
+        def get_opt_type(variant):
+            variant = variant.lower()
+            if 'pruning' in variant:
+                return 'pruning'
+            elif 'quantization' in variant or 'quant' in variant:
+                return 'quantization'
+            elif 'compile' in variant:
+                return 'compilation'
+            elif 'fp16' in variant:
+                return 'fp16'
+            elif 'gradient' in variant or 'checkpoint' in variant:
+                return 'gradient'
+            elif 'sequence' in variant or 'length' in variant:
+                return 'sequence'
+            else:
+                return 'other'
+        
+        # Plot each group with different markers based on optimization type
+        for _, row in better_both.iterrows():
+            opt_type = get_opt_type(row['variant'])
+            marker = opt_types[opt_type][1]
+            plt.scatter(
+                row['Δtotal_kwh'], 
+                row['percent_diff_time'],
+                s=80, c='green', marker=marker, zorder=4, edgecolor='black', linewidth=1.5,
+                label=opt_types[opt_type][0] if opt_type not in [l.get_label() for l in plt.gca().lines] else ""
+            )
+            
+        for _, row in worse_both.iterrows():
+            opt_type = get_opt_type(row['variant'])
+            marker = opt_types[opt_type][1]
+            plt.scatter(
+                row['Δtotal_kwh'], 
+                row['percent_diff_time'],
+                s=80, c='red', marker=marker, zorder=4, edgecolor='black', linewidth=1.5,
+                label=opt_types[opt_type][0] if opt_type not in [l.get_label() for l in plt.gca().lines] else ""
+            )
+            
+        for _, row in mixed.iterrows():
+            opt_type = get_opt_type(row['variant'])
+            marker = opt_types[opt_type][1]
+            plt.scatter(
+                row['Δtotal_kwh'], 
+                row['percent_diff_time'],
+                s=80, c='gray', marker=marker, zorder=4, edgecolor='black', linewidth=1.5,
+                label=opt_types[opt_type][0] if opt_type not in [l.get_label() for l in plt.gca().lines] else ""
+            )
+    
+    # Add quadrant annotations
+    annotations = [
+        (0.95, 0.95, 'Worse Energy\nWorse Runtime', 'right', 'top'),
+        (0.05, 0.95, 'Better Energy\nWorse Runtime', 'left', 'top'),
+        (0.95, 0.05, 'Worse Energy\nBetter Runtime', 'right', 'bottom'),
+        (0.05, 0.05, 'Better Energy\nBetter Runtime', 'left', 'bottom')
+    ]
+    
+    for x, y, text, ha, va in annotations:
+        plt.text(
+            x, y, text,
+            transform=ax.transAxes,
+            ha=ha, va=va,
+            bbox=dict(
+                facecolor='white',
+                edgecolor='gray',
+                alpha=0.8,
+                pad=5
+            ),
+            fontsize=12,
+            fontweight='bold'
+        )
+    
+    # Add labels for all points
+    from adjustText import adjust_text
+    texts = []
+    
+    # Add baseline label
+    texts.append(plt.text(0, 0, 'V0', ha='center', va='center', fontsize=12, color='black', fontweight='bold'))
+    
+    # Add labels for all other points
+    for _, row in df[df['variant'] != baseline].iterrows():
+        variant_num = extract_variant_number(row['variant'])
+        texts.append(plt.text(
+            row['Δtotal_kwh'],
+            row['percent_diff_time'],
+            f'V{variant_num}',
+            fontsize=10,
+            fontweight='bold'
+        ))
+    
+    # Adjust text positions
+    adjust_text(texts, 
+                arrowprops=dict(arrowstyle='->', color='gray', lw=1.5, connectionstyle='arc3,rad=0.3'),
+                expand_points=(4.0, 4.0),
+                force_points=(0.8, 0.8),
+                force_text=(1.5, 1.5),
+                only_move={'points':'xy', 'text':'xy'},
+                avoid_text=True,
+                avoid_points=True,
+                avoid_self=True)
+    
+    # Formatting
+    plt.xlabel("Δ Energy (%)", fontsize=16)
+    plt.ylabel("Δ Time (%)", fontsize=16)
+    plt.grid(True, linestyle='--', alpha=0.3)
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+    
+    # Add legend with optimization types
+    handles, labels = plt.gca().get_legend_handles_labels()
+    by_label = dict(zip(labels, handles))
+    plt.legend(by_label.values(), by_label.keys(), 
+              loc='center left', bbox_to_anchor=(1, 0.5),
+              fontsize=12, framealpha=0.9)
     
     plt.tight_layout()
     plt.savefig(out, bbox_inches='tight', dpi=300)
@@ -840,7 +1588,7 @@ def generate_delta_table(df: pd.DataFrame, baseline: str, out: Path):
     )
     
     # Rename columns
-    table_df.columns = ['Variant', 'Δ Energy', 'Δ Time', 'Δ F1', 'Significant']
+    table_df.columns = ['Variant', 'Δ Energy', 'Δ Runtime', 'Δ F1', 'Significant']
     
     # Save to CSV
     table_df.to_csv(out / "individual_impacts.csv", index=False)
@@ -858,7 +1606,7 @@ def generate_delta_table(df: pd.DataFrame, baseline: str, out: Path):
         # Practitioner takeaways
         print("\n**Practitioner Takeaways:**")
         print(f"- For maximum energy savings: **{best_energy}**")
-        print(f"- For fastest training: **{best_time}**")
+        print(f"- For fastest runtime: **{best_time}**")
         print(f"- For best model performance: **{best_f1}**")
     except (ValueError, KeyError) as e:
         print(f"Warning: Could not determine best performers: {e}")
@@ -1301,6 +2049,9 @@ def combine_variant_metrics(results_root: Path, baseline: str, out_dir: Path):
     df_variant = df_variant.set_index('variant')
     df_variant.index = df_variant.index.str.lower()
     
+    # Convert baseline to lowercase for consistent comparison
+    baseline = baseline.lower()
+    
     # Get all variant directories and sort them
     variant_dirs = [d for d in results_root.iterdir() if d.is_dir() and not d.name.startswith('__')]
     all_variants = [d.name.lower() for d in variant_dirs]  # Convert to lowercase
@@ -1343,15 +2094,18 @@ def combine_variant_metrics(results_root: Path, baseline: str, out_dir: Path):
             # Get stage data for this variant (case-insensitive)
             stages = df_stage[df_stage['variant'].str.lower() == variant]
             stage_metrics = []
+            total_duration = 0.0
             
             # Process each stage
             for stage in ['load_dataset', 'tokenize_dataset', 'load_model', 'train_model', 'save_model', 'evaluate_model']:
                 stage_data = stages[stages['stage'] == stage]
                 if not stage_data.empty:
+                    duration = float(stage_data['duration'].iloc[0])
+                    total_duration += duration
                     stage_metrics.append({
                         'stage': stage,
                         'kwh': float(stage_data['kwh'].iloc[0]),
-                        'duration': float(stage_data['duration'].iloc[0])
+                        'duration': duration
                     })
                 else:
                     stage_metrics.append({
@@ -1361,6 +2115,7 @@ def combine_variant_metrics(results_root: Path, baseline: str, out_dir: Path):
                     })
             
             default_metrics['stages'] = stage_metrics
+            default_metrics['runtime_s'] = total_duration
             
             # Add inference metrics if available (case-insensitive)
             inference_data = df_inference[df_inference['variant'].str.lower() == variant]
@@ -1402,9 +2157,19 @@ def combine_variant_metrics(results_root: Path, baseline: str, out_dir: Path):
     df_flat = pd.DataFrame(flat_rows)
     df_flat.to_csv(out_dir / 'combined_metrics.csv', index=False)
     print("Combined metrics written to combined_metrics.json and combined_metrics.csv")
+    
+    # Return DataFrames with lowercase variant names for consistent comparison
+    df_variant.index = df_variant.index.str.lower()
+    df_stage['variant'] = df_stage['variant'].str.lower()
+    df_inference['variant'] = df_inference['variant'].str.lower()
+    
+    return df_variant, df_stage, df_inference
 
 def get_stage_indicators(variant):
     """Return appropriate cell commands for each development phase"""
+    # Convert variant to lowercase for consistent comparison
+    variant = variant.lower()
+    
     data_cell = "\\emptycell"
     model_cell = "\\emptycell"
     train_cell = "\\emptycell"
@@ -1418,7 +2183,7 @@ def get_stage_indicators(variant):
         data_cell = "\\datacell"
     
     # Model stage
-    if variant in ['v2_lora_peft', 'v3_quantization', 'v7_f16', 'V12_attention',
+    if variant in ['v2_lora_peft', 'v3_quantization', 'v7_f16', 'v12_attention',
                    'v13_layer_pruning_4_top', 'v14_layer_pruning_4_bottom',
                    'v15_layer_pruning_8_top', 'v16_layer_pruning_8_bottom',
                    'v17_layer_pruning_12_top', 'v18_layer_pruning_12_bottom',
@@ -1435,7 +2200,7 @@ def get_stage_indicators(variant):
     # Training stage
     if variant in ['v1_gradient_checkpointing', 'v2_lora_peft', 'v3_quantization',
                    'v6_optimizer', 'v7_f16', 'v8_sequence_length_trimming',
-                   'v10_dataloader_pin_memory', 'v11_torch_compile', 'V12_attention',
+                   'v10_dataloader_pin_memory', 'v11_torch_compile', 'v12_attention',
                    'v13_layer_pruning_4_top', 'v14_layer_pruning_4_bottom',
                    'v15_layer_pruning_8_top', 'v16_layer_pruning_8_bottom',
                    'v17_layer_pruning_12_top', 'v18_layer_pruning_12_bottom',
@@ -1450,7 +2215,7 @@ def get_stage_indicators(variant):
         train_cell = "\\traincell"
     
     # System stage
-    if variant in ['v3_quantization', 'v4_tokenizer', 'v5_power_limit_100W',
+    if variant in ['v3_quantization', 'v4_tokenizer', 'v5_power_limit_100w',
                    'v7_f16', 'v8_sequence_length_trimming', 'v9_inference_engine',
                    'v11_torch_compile', 'v13_layer_pruning_4_top',
                    'v14_layer_pruning_4_bottom', 'v15_layer_pruning_8_top',
@@ -1468,7 +2233,7 @@ def get_stage_indicators(variant):
     
     # Inference stage
     if variant in ['v2_lora_peft', 'v3_quantization', 'v4_tokenizer',
-                   'v9_inference_engine', 'v11_torch_compile', 'V12_attention',
+                   'v9_inference_engine', 'v11_torch_compile', 'v12_attention',
                    'v13_layer_pruning_4_top', 'v14_layer_pruning_4_bottom',
                    'v15_layer_pruning_8_top', 'v16_layer_pruning_8_bottom',
                    'v17_layer_pruning_12_top', 'v18_layer_pruning_12_bottom',
@@ -1476,12 +2241,488 @@ def get_stage_indicators(variant):
                    'v21_layer_pruning_20_top', 'v22_layer_pruning_20_bottom',
                    'v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation',
                    'v24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16',
+                   'v25_gradient_accumulation_plus_fp16_plus_checkpointing',
                    'v26_pruning_plus_seq_lngth_plus_torch_compile',
                    'v27_torch_compile_plus_fp16',
                    'v28_pruning_plus_torch_compile_plus_fp16']:
         infer_cell = "\\infercell"
     
     return data_cell, model_cell, train_cell, system_cell, infer_cell
+
+def plot_3d_metrics(df: pd.DataFrame, baseline: str, out: Path):
+    """Create a 3D plot showing the relationship between time, energy, and F1 score"""
+    if df.empty:
+        return
+        
+    # Create figure
+    fig = plt.figure(figsize=(15, 12))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # Define optimization types and their markers
+    opt_types = {
+        'pruning': ('Layer Pruning', 's'),  # square
+        'quantization': ('Quantization', '^'),  # triangle up
+        'compilation': ('Torch Compile', 'D'),  # diamond
+        'fp16': ('FP16', 'o'),  # circle
+        'gradient': ('Gradient Opts', 'v'),  # triangle down
+        'sequence': ('Sequence Length', '>'),  # triangle right
+        'other': ('Other', 'x')  # x
+    }
+    
+    # Function to determine optimization type
+    def get_opt_type(variant):
+        variant = variant.lower()
+        if 'pruning' in variant:
+            return 'pruning'
+        elif 'quantization' in variant or 'quant' in variant:
+            return 'quantization'
+        elif 'compile' in variant:
+            return 'compilation'
+        elif 'fp16' in variant:
+            return 'fp16'
+        elif 'gradient' in variant or 'checkpoint' in variant:
+            return 'gradient'
+        elif 'sequence' in variant or 'length' in variant:
+            return 'sequence'
+        else:
+            return 'other'
+    
+    # Plot baseline
+    baseline_row = df[df['variant'] == baseline].iloc[0]
+    ax.scatter(
+        baseline_row['runtime_s'],
+        baseline_row['total_kwh'],
+        baseline_row['f1'],
+        s=200, c='red', marker='*', label='Baseline (V0)',
+        edgecolor='black', linewidth=1.5
+    )
+    
+    # Plot all variants except baseline
+    other_df = df[df['variant'] != baseline]
+    if not other_df.empty:
+        # Group variants by quadrant (based on energy and time)
+        better_both = other_df[(other_df['Δtotal_kwh'] < 0) & (other_df['percent_diff_time'] < 0)]
+        worse_both = other_df[(other_df['Δtotal_kwh'] > 0) & (other_df['percent_diff_time'] > 0)]
+        mixed = other_df[~((other_df['Δtotal_kwh'] < 0) & (other_df['percent_diff_time'] < 0)) & 
+                        ~((other_df['Δtotal_kwh'] > 0) & (other_df['percent_diff_time'] > 0))]
+        
+        # Plot each group with different markers based on optimization type
+        for _, row in better_both.iterrows():
+            opt_type = get_opt_type(row['variant'])
+            marker = opt_types[opt_type][1]
+            ax.scatter(
+                row['runtime_s'],
+                row['total_kwh'],
+                row['f1'],
+                s=100, c='green', marker=marker, label=opt_types[opt_type][0] if opt_type not in [l.get_label() for l in ax.lines] else "",
+                edgecolor='black', linewidth=1.5
+            )
+            
+        for _, row in worse_both.iterrows():
+            opt_type = get_opt_type(row['variant'])
+            marker = opt_types[opt_type][1]
+            ax.scatter(
+                row['runtime_s'],
+                row['total_kwh'],
+                row['f1'],
+                s=100, c='red', marker=marker, label=opt_types[opt_type][0] if opt_type not in [l.get_label() for l in ax.lines] else "",
+                edgecolor='black', linewidth=1.5
+            )
+            
+        for _, row in mixed.iterrows():
+            opt_type = get_opt_type(row['variant'])
+            marker = opt_types[opt_type][1]
+            ax.scatter(
+                row['runtime_s'],
+                row['total_kwh'],
+                row['f1'],                s=100, c='gray', marker=marker, label=opt_types[opt_type][0] if opt_type not in [l.get_label() for l in ax.lines] else "",
+                edgecolor='black', linewidth=1.5
+            )
+    
+    # Add labels for all points
+    from adjustText import adjust_text
+    texts = []
+    
+    # Add baseline label
+    texts.append(ax.text(
+        baseline_row['runtime_s'],
+        baseline_row['total_kwh'],
+        baseline_row['f1'],
+        'V0',
+        ha='center',
+        va='center',
+        fontsize=12,
+        color='black',
+        fontweight='bold'
+    ))
+    
+    # Add labels for all other points
+    for _, row in df[df['variant'] != baseline].iterrows():
+        variant_num = extract_variant_number(row['variant'])
+        texts.append(ax.text(
+            row['runtime_s'],
+            row['total_kwh'],
+            row['f1'],
+            f'V{variant_num}',
+            fontsize=10,
+            fontweight='bold'
+        ))
+    
+    # Formatting
+    ax.set_xlabel("Runtime (seconds)", fontsize=14, labelpad=10)
+    ax.set_ylabel("Energy (kWh)", fontsize=14, labelpad=10)
+    ax.set_zlabel("F1 Score", fontsize=14, labelpad=10)
+    
+    # Set tick label sizes
+    ax.tick_params(axis='both', which='major', labelsize=12)
+    
+    # Add legend
+    handles, labels = ax.get_legend_handles_labels()
+    by_label = dict(zip(labels, handles))
+    ax.legend(by_label.values(), by_label.keys(), 
+             loc='center left', bbox_to_anchor=(1.1, 0.5),
+             fontsize=12, framealpha=0.9)
+    
+    # Adjust the viewing angle for better perspective
+    ax.view_init(elev=25, azim=125)  # Changed from (20, 45) to (30, 135)
+    
+    plt.tight_layout()
+    plt.savefig(out, bbox_inches='tight', dpi=300)
+    plt.close()
+
+def plot_training_energy_f1(df_variant: pd.DataFrame, df_stage: pd.DataFrame, baseline: str, out: Path):
+    """Plot training energy vs F1 score"""
+    if df_variant.empty or df_stage.empty:
+        return
+        
+    plt.figure(figsize=(10, 7))
+    ax = plt.gca()
+    
+    # Get training energy from stage data and convert index to lowercase
+    train_energy = df_stage[df_stage['stage'] == 'train'].groupby('variant')['kwh'].mean()
+    train_energy.index = train_energy.index.str.lower()
+    
+    # Case-insensitive baseline mask
+    baseline_mask = df_variant['variant'].str.lower() == baseline.lower()
+    if not baseline_mask.any() or baseline.lower() not in train_energy.index:
+        print(f"Warning: Baseline {baseline} not found in data. Skipping plot.")
+        return
+    
+    # Baseline point
+    baseline_row = df_variant[baseline_mask].iloc[0]
+    plt.scatter(
+        train_energy[baseline.lower()], 
+        baseline_row['f1'],
+        s=200, c='red', marker='*', label='Baseline'
+    )
+    
+    # Other variants
+    other_df = df_variant[~baseline_mask]
+    other_variants = [v.lower() for v in other_df['variant'].unique() if v.lower() in train_energy.index]
+    
+    if other_variants:
+        plt.scatter(
+            train_energy[other_variants], 
+            other_df[other_df['variant'].str.lower().isin(other_variants)].groupby('variant')['f1'].mean(),
+            s=80, c='blue', alpha=0.7, label='Other Variants'
+        )
+    
+    # Add labels for all points using adjustText
+    from adjustText import adjust_text
+    texts = []
+    
+    # Add baseline label
+    texts.append(plt.text(
+        train_energy[baseline.lower()],
+        baseline_row['f1'],
+        'V0',
+        ha='center',
+        va='center',
+        fontsize=12,
+        color='black',
+        fontweight='bold'
+    ))
+    
+    # Add labels for all other points
+    for variant in other_variants:
+        variant_num = extract_variant_number(variant)
+        texts.append(plt.text(
+            train_energy[variant],
+            other_df[other_df['variant'].str.lower() == variant]['f1'].mean(),
+            f'V{variant_num}',
+            fontsize=10,
+            fontweight='bold'
+        ))
+    
+    # Adjust text positions to avoid overlap
+    adjust_text(texts, 
+               arrowprops=dict(arrowstyle='->', color='black', lw=1.5),
+               expand_text=(1.2, 1.2),
+               expand_points=(1.2, 1.2),
+               force_text=(0.5, 0.5),
+               force_points=(0.5, 0.5))
+    
+    # Formatting
+    plt.xlabel("Training Energy (kWh)")
+    plt.ylabel("F1 Score")
+    plt.grid(True, linestyle='--', alpha=0.3)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(out, bbox_inches='tight', dpi=300)
+    plt.close()
+
+def plot_eval_energy_f1(df_variant: pd.DataFrame, df_stage: pd.DataFrame, baseline: str, out: Path):
+    """Plot evaluation energy vs F1 score"""
+    if df_variant.empty or df_stage.empty:
+        return
+        
+    plt.figure(figsize=(10, 7))
+    ax = plt.gca()
+    
+    # Get evaluation energy from stage data and convert index to lowercase
+    eval_energy = df_stage[df_stage['stage'] == 'eval'].groupby('variant')['kwh'].mean()
+    eval_energy.index = eval_energy.index.str.lower()
+    
+    # Case-insensitive baseline mask
+    baseline_mask = df_variant['variant'].str.lower() == baseline.lower()
+    if not baseline_mask.any() or baseline.lower() not in eval_energy.index:
+        print(f"Warning: Baseline {baseline} not found in data. Skipping plot.")
+        return
+    
+    # Baseline point
+    baseline_row = df_variant[baseline_mask].iloc[0]
+    plt.scatter(
+        eval_energy[baseline.lower()], 
+        baseline_row['f1'],
+        s=200, c='red', marker='*', label='Baseline'
+    )
+    
+    # Other variants
+    other_df = df_variant[~baseline_mask]
+    other_variants = [v.lower() for v in other_df['variant'].unique() if v.lower() in eval_energy.index]
+    
+    if other_variants:
+        plt.scatter(
+            eval_energy[other_variants], 
+            other_df[other_df['variant'].str.lower().isin(other_variants)].groupby('variant')['f1'].mean(),
+            s=80, c='blue', alpha=0.7, label='Other Variants'
+        )
+    
+    # Add labels for all points using adjustText
+    from adjustText import adjust_text
+    texts = []
+    
+    # Add baseline label
+    texts.append(plt.text(
+        eval_energy[baseline.lower()],
+        baseline_row['f1'],
+        'V0',
+        ha='center',
+        va='center',
+        fontsize=12,
+        color='black',
+        fontweight='bold'
+    ))
+    
+    # Add labels for all other points
+    for variant in other_variants:
+        variant_num = extract_variant_number(variant)
+        texts.append(plt.text(
+            eval_energy[variant],
+            other_df[other_df['variant'].str.lower() == variant]['f1'].mean(),
+            f'V{variant_num}',
+            fontsize=10,
+            fontweight='bold'
+        ))
+    
+    # Adjust text positions to avoid overlap
+    adjust_text(texts, 
+               arrowprops=dict(arrowstyle='->', color='black', lw=1.5),
+               expand_text=(1.2, 1.2),
+               expand_points=(1.2, 1.2),
+               force_text=(0.5, 0.5),
+               force_points=(0.5, 0.5))
+    
+    # Formatting
+    plt.xlabel("Evaluation Energy (kWh)")
+    plt.ylabel("F1 Score")
+    plt.grid(True, linestyle='--', alpha=0.3)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(out, bbox_inches='tight', dpi=300)
+    plt.close()
+
+
+# ---------------------------------------------------------------
+#  Normalized stage-wise energy plot
+# ---------------------------------------------------------------
+def plot_stage_energy_normalized(
+    df_stage: pd.DataFrame,
+    out: Path,
+    *,
+    cmap: str = "viridis"          # perceptually-uniform colormap
+):
+    """
+    Creates a stacked bar chart showing energy consumption across stages for each variant.
+    Each bar represents a variant's total energy consumption, divided into colored segments
+    representing the proportion of energy from each pipeline stage.
+    """
+    if df_stage.empty:
+        return
+
+    # ---------- 1. stage-energy pivot (mean across runs) ----------
+    stage_mean = (
+        df_stage
+        .groupby(["variant", "stage"])["kwh"]
+        .mean()
+        .unstack("stage")
+        .reindex(columns=[s for s in STAGE_ORDER if s in df_stage["stage"].unique()])
+        .fillna(0.0)
+    )
+
+    # match naming convention: variant index ➝ V0 … V28
+    stage_mean.index = [f"V{extract_variant_number(v)}" for v in stage_mean.index]
+    stage_mean = stage_mean.sort_index(key=lambda x: [int(v[1:]) for v in x])
+
+    # ---------- 2. draw ----------
+    # Create figure with appropriate size
+    n_variants = len(stage_mean.index)
+    fig, ax = plt.subplots(figsize=(12, 6), dpi=300)
+
+    # Create stacked bars
+    bottom = np.zeros(n_variants)
+    for stage in stage_mean.columns:
+        values = stage_mean[stage].values
+        ax.bar(stage_mean.index, values, bottom=bottom, 
+               label=stage.replace("_", " ").title(),
+               alpha=0.8)
+        bottom += values
+
+    # Customize the plot
+    ax.set_xlabel("Variant", fontsize=11)
+    ax.set_ylabel("Energy Consumption (kWh)", fontsize=11)
+    ax.set_title("Stage-wise Energy Consumption by Variant", fontsize=12, pad=8)
+    
+    # Rotate x-axis labels for better readability
+    plt.xticks(rotation=45, ha='right')
+    
+    # Add legend
+    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., fontsize=8)
+    
+    # Add grid for better readability
+    ax.grid(True, axis='y', linestyle='--', alpha=0.3)
+    
+    # Add value labels on top of each bar
+    for i, variant in enumerate(stage_mean.index):
+        total = stage_mean.loc[variant].sum()
+        ax.text(i, total, f'{total:.1f}', 
+                ha='center', va='bottom', fontsize=8)
+
+    plt.tight_layout()
+    plt.savefig(out, bbox_inches="tight")
+    plt.close()
+
+
+# ---------------------------------------------------------------
+#  Stage-wise energy line plots
+# ---------------------------------------------------------------
+def plot_stage_energy_lines(
+    df_stage: pd.DataFrame,
+    df_variant: pd.DataFrame,
+    out: Path,
+    *,
+    cmap: str = "viridis"          # perceptually-uniform colormap
+):
+    """
+    Creates line plots showing energy consumption for each stage across variants,
+    with F1 scores on a secondary y-axis.
+    This helps visualize trends in stages with smaller energy consumption
+    and their relationship with model performance.
+    """
+    if df_stage.empty or df_variant.empty:
+        return
+
+    # ---------- 1. stage-energy pivot (mean across runs) ----------
+    stage_mean = (
+        df_stage
+        .groupby(["variant", "stage"])["kwh"]
+        .mean()
+        .unstack("stage")
+        .reindex(columns=[s for s in STAGE_ORDER if s in df_stage["stage"].unique()])
+        .fillna(0.0)
+    )
+
+    # match naming convention: variant index ➝ V0 … V28
+    stage_mean.index = [f"V{extract_variant_number(v)}" for v in stage_mean.index]
+    stage_mean = stage_mean.sort_index(key=lambda x: [int(v[1:]) for v in x])
+
+    # ---------- 2. Get F1 scores ----------
+    f1_scores = (
+        df_variant
+        .set_index("variant")["f1"]
+        .rename(lambda v: f"V{extract_variant_number(v.lower())}")
+        .reindex(stage_mean.index)    # ensure same ordering
+    )
+
+    # ---------- 3. draw ----------
+    # Create figure with appropriate size
+    fig, ax1 = plt.subplots(figsize=(12, 6), dpi=300)
+
+    # Create line plots for each stage on primary y-axis
+    for stage in stage_mean.columns:
+        values = stage_mean[stage].values
+        ax1.plot(stage_mean.index, values, 
+                marker='o', 
+                label=stage.replace("_", " ").title(),
+                alpha=0.8,
+                linewidth=2)
+
+    # Customize primary y-axis
+    ax1.set_xlabel("Variant", fontsize=16)
+    ax1.set_ylabel("Energy Consumption (kWh) - Log Scale", fontsize=16)
+    ax1.set_yscale('log')
+    ax1.grid(True, linestyle='--', alpha=0.3)
+    # Increase tick label sizes
+    ax1.tick_params(axis='both', which='major', labelsize=12)
+    ax1.tick_params(axis='both', which='minor', labelsize=10)
+
+    # Create secondary y-axis for F1 scores
+    ax2 = ax1.twinx()
+    ax2.plot(f1_scores.index, f1_scores.values,
+            marker='s',  # square markers to distinguish from energy lines
+            color='black',
+            label='F1 Score',
+            linewidth=2,
+            linestyle='--')  # dashed line to distinguish from energy lines
+    
+    # Customize secondary y-axis
+    ax2.set_ylabel("F1 Score", fontsize=16)
+    # Increase tick label sizes for secondary axis
+    ax2.tick_params(axis='y', which='major', labelsize=12)
+    ax2.tick_params(axis='y', which='minor', labelsize=10)
+    # Set y-axis limits to show variation better
+    min_f1 = f1_scores.min()
+    max_f1 = f1_scores.max()
+    margin = (max_f1 - min_f1) * 0.1  # 10% margin
+    ax2.set_ylim(min_f1 - margin, max_f1 + margin)  # Dynamic range based on actual scores
+
+    # Combine legends from both axes
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2,
+              bbox_to_anchor=(1.1, 1), loc='upper left',
+              borderaxespad=0., fontsize=11)
+
+    # Rotate x-axis labels for better readability
+    ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45, ha='right', fontsize=12)
+    
+    # Set title
+    # plt.title("Stage-wise Energy Consumption and F1 Score Trends", fontsize=12, pad=8)
+
+    plt.tight_layout()
+    plt.savefig(out, bbox_inches="tight")
+    plt.close()
+
 
 # ------------------------------------------------------------------
 # ------------------------------ main ------------------------------
@@ -1498,14 +2739,16 @@ def main():
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     
-    print(f"Starting analysis with baseline: {args.baseline}")
+    # Convert baseline to lowercase for consistent comparison
+    baseline = args.baseline.lower()
+    print(f"Starting analysis with baseline: {baseline}")
     
     # Aggregate results
-    df_variant, df_stage, df_inference = aggregate(results_root, args.baseline)
+    df_variant, df_stage, df_inference = aggregate(results_root, baseline)
     
     # Generate reports
-    generate_comprehensive_report(df_variant, df_stage, df_inference, args.baseline, out_dir)
-    generate_experiment_setup(df_variant, df_stage, df_inference, args.baseline, out_dir)
+    generate_comprehensive_report(df_variant, df_stage, df_inference, baseline, out_dir)
+    generate_experiment_setup(df_variant, df_stage, df_inference, baseline, out_dir)
     
     # Save CSVs
     df_variant.to_csv(out_dir / "by_variant.csv", index=False)
@@ -1515,18 +2758,40 @@ def main():
         df_inference.to_csv(out_dir / "inference_metrics.csv", index=False)
     
     # Combine metrics using raw results data
-    combine_variant_metrics(Path(args.results), args.baseline, out_dir)
+    combine_variant_metrics(Path(args.results), baseline, out_dir)
     
     # Create plots
     if not df_stage.empty:
         plot_stacked(df_stage, out_dir / "stage_energy.png")
+        plot_stage_energy_normalized(df_stage, out_dir / "stage_energy_normalized.png")
+        plot_stage_energy_lines(df_stage, df_variant, out_dir / "stage_energy_lines.png")
     if not df_variant.empty:
-        plot_energy_tradeoff(df_variant, args.baseline, out_dir / "energy_tradeoff.png")
-        plot_energy_time_pareto(df_variant, args.baseline, out_dir / "energy_time_pareto.png")
-        plot_delta_energy_time_pareto(df_variant, args.baseline, out_dir / "delta_energy_time_pareto.png")
+        plot_energy_tradeoff(df_variant, baseline, out_dir / "energy_tradeoff.png")
+        plot_training_energy_f1(df_variant, df_stage, baseline, out_dir / "training_energy_f1.png")
+        plot_eval_energy_f1(df_variant, df_stage, baseline, out_dir / "eval_energy_f1.png")
+        plot_energy_time_pareto(df_variant, baseline, out_dir / "energy_time_pareto.png")
+        plot_delta_energy_time_pareto(df_variant, baseline, out_dir / "delta_energy_time_pareto.png")
+        plot_delta_training_energy_time_pareto(df_variant, baseline, out_dir / "delta_training_energy_time_pareto.png")
+        plot_delta_eval_energy_time_pareto(df_variant, baseline, out_dir / "delta_eval_energy_time_pareto.png")
+        plot_total_energy_time_pareto(df_variant, baseline, out_dir / "total_energy_time_pareto.png")
+    
+    # Replace the faceted plot with the new grouped plot
+    plot_energy_tradeoff_by_type(
+        df=df_variant,
+        baseline=baseline,
+        out=out_dir / "energy_tradeoff_by_type.png"
+    )
+    
+    # Add the 3D plot
+    plot_3d_metrics(
+        df=df_variant,
+        baseline=baseline,
+        out=out_dir / "3d_metrics.png"
+    )
 
     print("\nAnalysis complete. Results saved to:", out_dir)
 
 
 if __name__ == "__main__":
     main()
+    

@@ -19,12 +19,10 @@ model:
 data:
   versions:
     default:
-      batch_size: 4
       max_length: 2048
       text_column: func_before
       label_column: vul
     dummy:
-      batch_size: 1
       max_length: 128
       text_column: func_before
       label_column: vul

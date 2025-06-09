@@ -1,232 +1,214 @@
 #!/usr/bin/env python3
 """
-Fine-tune ModernBERT-base on the BigVul dataset using Hugging Face Optimum's ORTTrainer
-(ONNX Runtime Training) as the optimization engine. All energy accounting tasks are
-partitioned exactly as in baseline so task-level emissions sum to the run total.
+Fine-tune ModernBERT-base on the BigVul dataset (binary classification).
+Uses vLLM for optimized inference.
 
 Usage:
-    python train_bigvul_modernbert_optimized.py \
-           --cfg config.yaml \
-           --out results/
+    python train_bigvul_modernbert.py --cfg config/config.yaml --out results/
 """
-
-from __future__ import annotations
-
-import json
+import os, sys, time
 from pathlib import Path
 from datetime import datetime
+import json
 
-import numpy as np
-import torch
-from datasets import load_dataset
+import torch, numpy as np
 from omegaconf import OmegaConf
+
+from datasets import load_dataset
 from sklearn.metrics import f1_score
 from transformers import (
-    DataCollatorWithPadding,
-    TrainingArguments,
-    AutoConfig,
-    AutoTokenizer,
-    AutoModelForSequenceClassification,
+    AutoTokenizer, AutoModelForSequenceClassification,
+    TrainingArguments, Trainer, DataCollatorWithPadding,
     logging as hf_logging,
 )
-from optimum.onnxruntime import ORTTrainer, ORTTrainingArguments
-from optimum.onnxruntime.modeling_ort import ORTModelForSequenceClassification
 from codecarbon import EmissionsTracker
+from vllm import LLM, SamplingParams
 
 # --------------------------------------------------------------------------- #
-# 1. Logging
+# 1.  Logging
 hf_logging.set_verbosity_info()
 logger = hf_logging.get_logger(__name__)
 
 # --------------------------------------------------------------------------- #
-# 2. Dataset & Preprocessing helpers
-
+# 2.  Dataset helpers
 def load_bigvul():
-    """
-    Load BigVul dataset from Hugging Face.
-    Returns: train_raw, val_raw, test_raw
-    """
-    ds = load_dataset("bstee615/bigvul")  # HuggingFace dataset repository :contentReference[oaicite:13]{index=13}
+    """Load BigVul splits exactly as hosted on Hugging Face."""
+    ds = load_dataset("bstee615/bigvul")          # train / validation / test :contentReference[oaicite:6]{index=6}
     return ds["train"], ds["validation"], ds["test"]
 
-def prep_dataset(dataset, tokenizer, text_col: str, label_col: str, max_len: int):
-    """
-    Tokenize one split and attach labels as int64 tensors.
-    """
+def prep_dataset(dataset, tok, text_col, label_col, max_len):
+    """Tokenise one split and attach integer labels."""
     def tok_fn(batch):
-        enc = tokenizer(batch[text_col], truncation=True, max_length=max_len)
-        enc["labels"] = np.int64(batch[label_col])
+        enc = tok(batch[text_col],
+                  truncation=True,
+                  max_length=max_len)
+        enc["labels"] = np.int64(batch[label_col])   # ensure int64 for PyTorch
         return enc
 
     keep_cols = [text_col, label_col]
-    ds_tok = dataset.map(
-        tok_fn,
-        remove_columns=[c for c in dataset.column_names if c not in keep_cols],
-        batched=False
-    )
+    ds_tok = dataset.map(tok_fn,
+                         remove_columns=[c for c in dataset.column_names if c not in keep_cols],
+                         batched=False)
     ds_tok.set_format("torch")
     return ds_tok
 
 # --------------------------------------------------------------------------- #
-# 3. Metrics
-
+# 3.  Metrics
 def compute_metrics(eval_pred):
-    """
-    Compute weighted F1 score from logits and labels.
-    """
     logits, labels = eval_pred
     preds = logits.argmax(axis=-1)
-    return {"f1": f1_score(labels, preds, average="weighted")}
+    return {"f1": f1_score(labels, preds, average="weighted")}   
 
 # --------------------------------------------------------------------------- #
-# 4. Main function
-
-def main(cfg_path: Path, out_root: Path):
-    # 4.1 Load configuration
+# 4.  Main
+def main(cfg_path: Path, output_root: Path):
     cfg = OmegaConf.load(cfg_path)
+    variant = "dummy" if cfg.dummy_mode.enabled else "default"
 
-    # 4.2 Build run name and output directory
-    run_name = f"modernbert_ort_{datetime.now():%Y%m%d_%H%M%S}"
-    output_dir = out_root / run_name
+    # Get variant name from the directory structure
+    variant_name = Path(__file__).parent.parent.name  
+
+    run_name = f"{variant}_{datetime.now():%Y%m%d_%H%M%S}" 
+
+    # Create output directory
+    output_dir = output_root / run_name
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # 4.3 Initialize CodeCarbon tracker
+    # Initialize CodeCarbon tracker
     tracker = EmissionsTracker(
-        project_name="modernbert_ort_train",
+        project_name=f"{variant_name}_train",
         output_dir=str(output_dir),
         log_level="error",
         save_to_file=True,
         measure_power_secs=1.0,
         tracking_mode="process",
-        gpu_ids=[0],
+        gpu_ids=[0]
     )
     tracker.start()
 
     try:
-        # 4.4 Task: Load dataset
+        # ---- Data
         tracker.start_task("load_dataset")
         train_raw, val_raw, test_raw = load_bigvul()
         if cfg.dummy_mode.enabled:
             n = cfg.dummy_mode.sample_size
-            train_raw = train_raw.select(range(n))
-            val_raw = val_raw.select(range(n // 2))
-            test_raw = test_raw.select(range(n // 2))
+            train_raw, val_raw, test_raw = (train_raw.select(range(n)),
+                                            val_raw.select(range(n//2)),
+                                            test_raw.select(range(n//2)))
         tracker.stop_task()
 
-        # 4.5 Task: Tokenization
         tracker.start_task("tokenize_dataset")
-        # We still use AutoTokenizer (the ONNX model will use the same tokenizer)
-        tokenizer = AutoTokenizer.from_pretrained(cfg.model.name, use_fast=False)
-        max_len = cfg.data.versions.default.max_length
-
-        train_ds = prep_dataset(
-            train_raw,
-            tokenizer,
-            cfg.data.versions.default.text_column,
-            cfg.data.versions.default.label_column,
-            max_len
-        )
-        val_ds = prep_dataset(
-            val_raw,
-            tokenizer,
-            cfg.data.versions.default.text_column,
-            cfg.data.versions.default.label_column,
-            max_len
-        )
-        test_ds = prep_dataset(
-            test_raw,
-            tokenizer,
-            cfg.data.versions.default.text_column,
-            cfg.data.versions.default.label_column,
-            max_len
-        )
-        data_collator = DataCollatorWithPadding(tokenizer, return_tensors="pt")
+        tok = AutoTokenizer.from_pretrained(cfg.model.name, use_fast=False)
+        vcfg = cfg.data.versions[variant]
+        train_ds = prep_dataset(train_raw, tok, vcfg.text_column, vcfg.label_column, vcfg.max_length)
+        val_ds   = prep_dataset(val_raw,   tok, vcfg.text_column, vcfg.label_column, vcfg.max_length)
+        test_ds  = prep_dataset(test_raw,  tok, vcfg.text_column, vcfg.label_column, vcfg.max_length)
         tracker.stop_task()
 
-        # 4.6 Task: Configure & load ONNX-optimized model
+        collator = DataCollatorWithPadding(tok, return_tensors="pt")  # dynamic padding
+
+        # ---- Model
         tracker.start_task("load_model")
-        # Ensure use_cache=False for export
-        config = AutoConfig.from_pretrained(cfg.model.name)
-        config.use_cache = False  # required to export the full graph :contentReference[oaicite:14]{index=14}
-        config.attn_implementation = "eager"
-        config.output_attentions = False
-        config.output_hidden_states = False
-
-        # Export to ONNX and then load via ORTModelForSequenceClassification
-        ort_model = ORTModelForSequenceClassification.from_pretrained(
-            cfg.model.name,
-            config=config,
-            export=True,               # perform ONNX export + graph optimize :contentReference[oaicite:15]{index=15}
-            use_io_binding=False
-        )
-        # ORTModelForSequenceClassification wraps the ONNX graph inside a PyTorch-like interface
-        # so all Trainer code can remain nearly identical
+        model = AutoModelForSequenceClassification.from_pretrained(
+                    cfg.model.name, num_labels=cfg.model.num_labels, attn_implementation="eager")
         tracker.stop_task()
 
-        # 4.8 Task: Training
+        # ---- TrainingArguments
+        tcfg = cfg.training.versions[variant]
+        training_args = TrainingArguments(
+            output_dir          = output_dir,
+            num_train_epochs    = tcfg.num_epochs,
+            per_device_train_batch_size = tcfg.batch_size,
+            per_device_eval_batch_size  = tcfg.eval_batch_size,
+            gradient_accumulation_steps = tcfg.gradient_accumulation_steps,
+            learning_rate               = tcfg.learning_rate,
+            warmup_ratio                = tcfg.warmup_ratio,
+            weight_decay                = tcfg.weight_decay,
+            eval_strategy               = tcfg.eval_strategy,
+            save_strategy               = tcfg.save_strategy,
+            save_total_limit            = tcfg.save_total_limit,
+            logging_steps               = tcfg.logging_steps,
+            fp16                        = tcfg.fp16,
+            gradient_checkpointing      = tcfg.gradient_checkpointing,
+            load_best_model_at_end      = True,
+            metric_for_best_model       = tcfg.metric_for_best_model,
+            report_to                   = "none",
+        )
+
+        # ---- Trainer
+        trainer = Trainer(
+            model               = model,
+            args                = training_args,
+            train_dataset       = train_ds,
+            eval_dataset        = val_ds,
+            data_collator       = collator,
+            compute_metrics     = compute_metrics,
+        )
+
         tracker.start_task("train_model")
-        tcfg = cfg.training.versions.default
-        # Use ORTTrainingArguments instead of standard TrainingArguments
-        ort_training_args = ORTTrainingArguments(
-            output_dir=output_dir,
-            num_train_epochs=tcfg.num_epochs,
-            per_device_train_batch_size=tcfg.batch_size,
-            per_device_eval_batch_size=tcfg.eval_batch_size,
-            gradient_accumulation_steps=tcfg.gradient_accumulation_steps,
-            learning_rate=tcfg.learning_rate,
-            warmup_ratio=tcfg.warmup_ratio,
-            weight_decay=tcfg.weight_decay,
-            eval_strategy=tcfg.eval_strategy,
-            save_strategy=tcfg.save_strategy,
-            save_total_limit=tcfg.save_total_limit,
-            logging_steps=tcfg.logging_steps,
-            fp16=tcfg.fp16,
-            gradient_checkpointing=tcfg.gradient_checkpointing,
-            load_best_model_at_end=True,
-            metric_for_best_model=tcfg.metric_for_best_model,
-            report_to="none",
-            optim="adamw_torch_fused",  # Use PyTorch's fused AdamW optimizer
-        )
-
-        ort_training_args.dispatch_batches = False
-        ort_training_args.split_batches = False
-
-        # Instantiate ORTTrainer with the ONNX-optimized model
-        print(ORTTrainingArguments().__dict__.keys())
-        ort_trainer = ORTTrainer(
-            model=ort_model,
-            args=ort_training_args,
-            train_dataset=train_ds,
-            eval_dataset=val_ds,
-            data_collator=data_collator,
-            compute_metrics=compute_metrics
-        )
-        ort_trainer.train()
+        trainer.train()
         tracker.stop_task()
 
-        # 4.9 Task: Save the fine-tuned ONNX model
         tracker.start_task("save_model")
-        # .save_model() will save the ORT-wrapped model; to re-export the graph for inference, do:
-        ort_trainer.save_model(output_dir / "model_onnx")
-        tokenizer.save_pretrained(output_dir / "model_onnx")
+        model_save_path = output_dir / "model"
+        trainer.save_model(model_save_path)
+        tok.save_pretrained(model_save_path)
+        # Initialize vLLM with the trained model
+        vllm_model = LLM(
+            model=str(model_save_path),  # Use the locally saved model
+            tensor_parallel_size=1,  # Adjust based on available GPUs
+            gpu_memory_utilization=0.9,
+            trust_remote_code=True,
+            task="classify"
+        )
+
+        # Prepare test data for vLLM
+        test_texts = [tok.decode(tok.encode(text, truncation=True, max_length=vcfg.max_length)) 
+                     for text in test_raw[vcfg.text_column]]
+        test_labels = test_raw[vcfg.label_column]
+
         tracker.stop_task()
 
-        # 4.10 Task: Evaluate on test split
+        # ---- Test set evaluation using vLLM
         tracker.start_task("evaluate_model")
-        test_metrics = ort_trainer.evaluate(test_ds)
+        # Run inference with vLLM
+        outputs = vllm_model.classify(test_texts)
+        print(outputs)
+        predictions = [int(np.argmax(out.outputs.probs)) for out in outputs]
         tracker.stop_task()
 
-        # Persist test metrics
+
+        # Calculate metrics
+        test_metrics = {
+            "f1": f1_score(test_labels, predictions, average="weighted")
+        }
+        
+        # Get emissions data
+        emissions = tracker.stop()
+        
+        # Save test metrics to file
         with open(output_dir / "test_metrics.json", "w") as f:
             json.dump(test_metrics, f, indent=2)
+            
+        # Save energy stats to file
+        with open(output_dir / "energy_stats_train.json", "w") as f:
+            json.dump(json.loads(tracker.final_emissions_data.toJSON()), f, indent=2)
+            
         logger.info(f"Test metrics: {test_metrics}")
+        logger.info(f"Energy stats: {emissions}")
+        for task_name, task in tracker._tasks.items():
+            logger.info(f"Emissions for {task_name}: {1000 * task.emissions_data.emissions} g CO₂")
 
-    finally:
-        tracker.stop()
+    except Exception as e:
+        # Ensure we stop tracking even if there's an error
+        if tracker:
+            tracker.stop()
+        logger.error(f"Pipeline failed: {str(e)}")
+        raise
 
+# --------------------------------------------------------------------------- #
 if __name__ == "__main__":
     import argparse
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--cfg", type=Path, default="config.yaml")
     parser.add_argument("--out", type=Path, default=Path("./results"))
