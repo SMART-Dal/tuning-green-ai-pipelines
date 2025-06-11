@@ -180,7 +180,7 @@ def main(cfg_path: Path, output_root: Path):
 
         # Calculate metrics
         test_metrics = {
-            "f1": f1_score(test_labels, predictions, average="weighted")
+            "eval_f1": f1_score(test_labels, predictions, average="weighted")
         }
         
         # Get emissions data

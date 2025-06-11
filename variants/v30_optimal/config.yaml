@@ -1,0 +1,89 @@
+# === Vulnerability detection on BigVul with ModernBERT ===
+
+# this is combination of : inference engine, grad cpting(optional), lora, fp16, torch compile, layer pruning, etc.
+
+task: vulnerability_detection
+
+dummy_mode:
+  enabled: true            # set to true for smoke-tests
+  sample_size: 25
+  num_epochs: 1
+  batch_size: 1
+  max_length: 128
+
+model:
+  name: answerdotai/ModernBERT-base
+  type: sequence_classification
+  num_labels: 2
+  use_cache: false          # required for ONNX export with Optimum :contentReference[oaicite:16]{index=16}
+
+
+layer_pruning:
+  enabled: true
+  num_layers: 20
+  position: "top"
+# ----- LoRA (optional if you want to combine with ORTTrainer) --------
+lora:
+  enabled: true
+  r: 8
+  alpha: 16
+  dropout: 0.05
+  load_in_4bit: true
+
+# ----- Data -----------------------------------------------------------------
+data:
+  versions:
+    default:
+      batch_size: 4
+      max_length: 2048
+      text_column: func_before
+      label_column: vul
+    dummy:
+      batch_size: 1
+      max_length: 128
+      text_column: func_before
+      label_column: vul
+
+# ----- Training -------------------------------------------------------------
+training:
+  versions:
+    default:
+      learning_rate: 5e-5
+      num_epochs: 1
+      batch_size: 2
+      eval_batch_size: 2
+      gradient_accumulation_steps: 4
+      weight_decay: 0.01
+      warmup_ratio: 0.1
+      logging_steps: 100
+      eval_strategy: epoch
+      save_strategy: epoch
+      metric_for_best_model: f1
+      gradient_checkpointing: true
+      save_total_limit: 2
+      fp16: true
+    dummy:
+      learning_rate: 5e-5
+      num_epochs: 1
+      batch_size: 1
+      eval_batch_size: 1
+      gradient_accumulation_steps: 1
+      weight_decay: 0.01
+      warmup_ratio: 0.1
+      logging_steps: 10
+      eval_strategy: "no"
+      save_strategy: "no"
+      metric_for_best_model: f1
+      gradient_checkpointing: true
+      fp16: true
+      save_total_limit: 2
+
+# ----- Inference ------------------------------------------------------------
+inference:
+  versions:
+    default:
+      batch_size: 4
+      max_length: 2048
+    dummy:
+      batch_size: 1
+      max_length: 128

@@ -1,8 +1,8 @@
 {
   "metadata": {
     "baseline": "v0_baseline",
-    "timestamp": "2025-06-08T23:15:10.947263",
-    "total_variants": 27
+    "timestamp": "2025-06-10T19:41:30.353774",
+    "total_variants": 30
   },
   "variants": [
     {
@@ -320,51 +320,58 @@
         "variant": "v2_lora_peft",
         "variant_name": "2 Lora Peft",
         "variant_number": 2,
-        "num_runs": 1,
+        "num_runs": 2,
         "run_ids": [
-          "default_20250607_235701"
+          "default_20250607_235701",
+          "default_20250609_192652"
         ]
       },
       "training_metrics": {
         "total_energy": {
-          "mean": 0.07559326723610993,
-          "std": 0.0,
+          "mean": 0.07527056992753904,
+          "std": 0.0004563629103222452,
           "raw_values": [
-            0.07559326723610993
+            0.07559326723610993,
+            0.07494787261896815
           ]
         },
         "runtime": {
-          "mean": 1701.4404883841053,
-          "std": 0.0,
+          "mean": 1696.3304593375651,
+          "std": 7.226672381737534,
           "raw_values": [
-            1701.4404883841053
+            1701.4404883841053,
+            1691.220430291025
           ]
         },
         "cpu_energy": {
-          "mean": 0.008066273314957935,
-          "std": 0.0,
+          "mean": 0.0079963939375267,
+          "std": 9.88243632934419e-05,
           "raw_values": [
-            0.008066273314957935
+            0.008066273314957935,
+            0.007926514560095464
           ]
         },
         "gpu_energy": {
-          "mean": 0.06280111524085186,
-          "std": 0.0,
+          "mean": 0.06256248935550524,
+          "std": 0.0003374679633904796,
           "raw_values": [
-            0.06280111524085186
+            0.06280111524085186,
+            0.062323863470158614
           ]
         },
         "ram_energy": {
-          "mean": 0.004725878680300148,
-          "std": 0.0,
+          "mean": 0.004711686634507108,
+          "std": 2.007058363833787e-05,
           "raw_values": [
-            0.004725878680300148
+            0.004725878680300148,
+            0.004697494588714067
           ]
         },
         "peak_memory": {
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
@@ -374,6 +381,7 @@
           "mean": 0.953678919802555,
           "std": 0.0,
           "raw_values": [
+            0.953678919802555,
             0.953678919802555
           ]
         },
@@ -381,6 +389,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
@@ -390,6 +399,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -397,6 +407,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -404,6 +415,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -411,6 +423,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
@@ -420,6 +433,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -427,6 +441,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
@@ -467,6 +482,42 @@
           "stage": "evaluate_model",
           "energy": 0.0162384547962983,
           "duration": 235.3335831919685
+        },
+        {
+          "run_id": "default_20250609_192652",
+          "stage": "load_dataset",
+          "energy": 4.5002972474613614e-05,
+          "duration": 2.6779738790355623
+        },
+        {
+          "run_id": "default_20250609_192652",
+          "stage": "tokenize_dataset",
+          "energy": 5.956667860220071e-06,
+          "duration": 0.2445485959760844
+        },
+        {
+          "run_id": "default_20250609_192652",
+          "stage": "load_model",
+          "energy": 3.545814008093414e-05,
+          "duration": 1.0692587490193546
+        },
+        {
+          "run_id": "default_20250609_192652",
+          "stage": "train_model",
+          "energy": 0.0587517644286326,
+          "duration": 1453.7897778870538
+        },
+        {
+          "run_id": "default_20250609_192652",
+          "stage": "save_model",
+          "energy": 6.776330187974189e-06,
+          "duration": 0.1964167349506169
+        },
+        {
+          "run_id": "default_20250609_192652",
+          "stage": "evaluate_model",
+          "energy": 0.0161023992519286,
+          "duration": 233.2424544449896
         }
       ]
     },
@@ -475,67 +526,76 @@
         "variant": "v3_quantization",
         "variant_name": "3 Quantization",
         "variant_number": 3,
-        "num_runs": 1,
+        "num_runs": 2,
         "run_ids": [
-          "default_20250602_080319"
+          "default_20250602_080319",
+          "default_20250609_195616"
         ]
       },
       "training_metrics": {
         "total_energy": {
-          "mean": 0.4852558757799474,
-          "std": 0.0,
+          "mean": 0.4858413341696174,
+          "std": 0.0008279631948763894,
           "raw_values": [
-            0.4852558757799474
+            0.4852558757799474,
+            0.48642679255928734
           ]
         },
         "runtime": {
-          "mean": 11629.734273629963,
-          "std": 0.0,
+          "mean": 11633.018217228586,
+          "std": 4.644197575241533,
           "raw_values": [
-            11629.734273629963
+            11629.734273629963,
+            11636.30216082721
           ]
         },
         "cpu_energy": {
-          "mean": 0.027504119602722525,
-          "std": 0.0,
+          "mean": 0.027263863115100817,
+          "std": 0.0003397739832427432,
           "raw_values": [
-            0.027504119602722525
+            0.027504119602722525,
+            0.02702360662747911
           ]
         },
         "gpu_energy": {
-          "mean": 0.42544727674643923,
-          "std": 0.0,
+          "mean": 0.42626389059417313,
+          "std": 0.0011548663786869655,
           "raw_values": [
-            0.42544727674643923
+            0.42544727674643923,
+            0.42708050444190704
           ]
         },
         "ram_energy": {
-          "mean": 0.032304479430785675,
-          "std": 0.0,
+          "mean": 0.03231358046034341,
+          "std": 1.2870799432108201e-05,
           "raw_values": [
-            0.032304479430785675
+            0.032304479430785675,
+            0.032322681489901146
           ]
         },
         "peak_memory": {
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
       },
       "test_metrics": {
         "f1_score": {
-          "mean": 0.9932314809874916,
-          "std": 0.0,
+          "mean": 0.9929473362870548,
+          "std": 0.0004018412890341711,
           "raw_values": [
-            0.9932314809874916
+            0.9932314809874916,
+            0.992663191586618
           ]
         },
         "accuracy": {
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
@@ -545,6 +605,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -552,6 +613,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -559,6 +621,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -566,6 +629,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
@@ -575,6 +639,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -582,6 +647,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
@@ -622,6 +688,42 @@
           "stage": "evaluate_model",
           "energy": 0.0437788490607022,
           "duration": 642.8092490369454
+        },
+        {
+          "run_id": "default_20250609_195616",
+          "stage": "load_dataset",
+          "energy": 3.3163719986852914e-05,
+          "duration": 1.9325894659850744
+        },
+        {
+          "run_id": "default_20250609_195616",
+          "stage": "tokenize_dataset",
+          "energy": 0.0005316255486211,
+          "duration": 17.19312808290124
+        },
+        {
+          "run_id": "default_20250609_195616",
+          "stage": "load_model",
+          "energy": 5.407567854312262e-05,
+          "duration": 1.5131638690363616
+        },
+        {
+          "run_id": "default_20250609_195616",
+          "stage": "train_model",
+          "energy": 0.4418663984874583,
+          "duration": 10971.022605463164
+        },
+        {
+          "run_id": "default_20250609_195616",
+          "stage": "save_model",
+          "energy": 7.180393916395023e-06,
+          "duration": 0.1987970490008592
+        },
+        {
+          "run_id": "default_20250609_195616",
+          "stage": "evaluate_model",
+          "energy": 0.0439339276735612,
+          "duration": 644.4418768971227
         }
       ]
     },
@@ -1397,6 +1499,161 @@
           "stage": "evaluate_model",
           "energy": 0.0216394546693461,
           "duration": 255.413112038048
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v9_inference_engine",
+        "variant_name": "9 Inference Engine",
+        "variant_number": 9,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250609_012653"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.47078733757668395,
+          "std": 0.0,
+          "raw_values": [
+            0.47078733757668395
+          ]
+        },
+        "runtime": {
+          "mean": 7445.584189715097,
+          "std": 0.0,
+          "raw_values": [
+            7445.584189715097
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.007619871517281225,
+          "std": 0.0,
+          "raw_values": [
+            0.007619871517281225
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.44248555565483016,
+          "std": 0.0,
+          "raw_values": [
+            0.44248555565483016
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.02068191040457265,
+          "std": 0.0,
+          "raw_values": [
+            0.02068191040457265
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9916981501255285,
+          "std": 0.0,
+          "raw_values": [
+            0.9916981501255285
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250609_012653",
+          "stage": "load_dataset",
+          "energy": 3.308711924699223e-05,
+          "duration": 1.975032529095188
+        },
+        {
+          "run_id": "default_20250609_012653",
+          "stage": "tokenize_dataset",
+          "energy": 5.540525549724146e-06,
+          "duration": 0.2540610420983284
+        },
+        {
+          "run_id": "default_20250609_012653",
+          "stage": "load_model",
+          "energy": 2.916828559816389e-05,
+          "duration": 0.976498612901196
+        },
+        {
+          "run_id": "default_20250609_012653",
+          "stage": "train_model",
+          "energy": 0.4656846614577787,
+          "duration": 7361.250071757007
+        },
+        {
+          "run_id": "default_20250609_012653",
+          "stage": "save_model",
+          "energy": 0.0011293662347057,
+          "duration": 25.29880203702487
+        },
+        {
+          "run_id": "default_20250609_012653",
+          "stage": "evaluate_model",
+          "energy": 0.003904771161678,
+          "duration": 55.82972373696976
         }
       ]
     },
@@ -3110,67 +3367,76 @@
         "variant": "v21_layer_pruning_20_top",
         "variant_name": "21 Layer Pruning 20 Top",
         "variant_number": 21,
-        "num_runs": 1,
+        "num_runs": 2,
         "run_ids": [
-          "default_20250604_121244"
+          "default_20250604_121244",
+          "default_20250609_151159"
         ]
       },
       "training_metrics": {
         "total_energy": {
-          "mean": 0.07921217921656434,
-          "std": 0.0,
+          "mean": 0.07904672344425764,
+          "std": 0.00023398979716905916,
           "raw_values": [
-            0.07921217921656434
+            0.07921217921656434,
+            0.07888126767195093
           ]
         },
         "runtime": {
-          "mean": 1140.6874380119843,
-          "std": 0.0,
+          "mean": 1143.0293404810946,
+          "std": 3.3119502335708573,
           "raw_values": [
-            1140.6874380119843
+            1140.6874380119843,
+            1145.371242950205
           ]
         },
         "cpu_energy": {
-          "mean": 0.013005856107176564,
-          "std": 0.0,
+          "mean": 0.013058706640429178,
+          "std": 7.474194090449705e-05,
           "raw_values": [
-            0.013005856107176564
+            0.013005856107176564,
+            0.013111557173681792
           ]
         },
         "gpu_energy": {
-          "mean": 0.06303807598597366,
-          "std": 0.0,
+          "mean": 0.06281327275057702,
+          "std": 0.00031791978436328293,
           "raw_values": [
-            0.06303807598597366
+            0.06303807598597366,
+            0.06258846951518038
           ]
         },
         "ram_energy": {
-          "mean": 0.00316824712341412,
-          "std": 0.0,
+          "mean": 0.00317474405325144,
+          "std": 9.188046289724257e-06,
           "raw_values": [
-            0.00316824712341412
+            0.00316824712341412,
+            0.00318124098308876
           ]
         },
         "peak_memory": {
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
       },
       "test_metrics": {
         "f1_score": {
-          "mean": 0.9929392972905058,
-          "std": 0.0,
+          "mean": 0.9927625084039678,
+          "std": 0.00025001724101878946,
           "raw_values": [
-            0.9929392972905058
+            0.9929392972905058,
+            0.9925857195174299
           ]
         },
         "accuracy": {
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
@@ -3180,6 +3446,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -3187,6 +3454,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -3194,6 +3462,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -3201,6 +3470,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
@@ -3210,6 +3480,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -3217,6 +3488,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
@@ -3257,6 +3529,42 @@
           "stage": "evaluate_model",
           "energy": 0.0064528160637626,
           "duration": 74.13782808394171
+        },
+        {
+          "run_id": "default_20250609_151159",
+          "stage": "load_dataset",
+          "energy": 8.056685966894669e-05,
+          "duration": 4.845706473104656
+        },
+        {
+          "run_id": "default_20250609_151159",
+          "stage": "tokenize_dataset",
+          "energy": 7.432420529410562e-06,
+          "duration": 0.2781299040652811
+        },
+        {
+          "run_id": "default_20250609_151159",
+          "stage": "load_model",
+          "energy": 2.780768457475638e-05,
+          "duration": 0.8252361738123
+        },
+        {
+          "run_id": "default_20250609_151159",
+          "stage": "train_model",
+          "energy": 0.0722905666280253,
+          "duration": 1065.1436010890177
+        },
+        {
+          "run_id": "default_20250609_151159",
+          "stage": "save_model",
+          "energy": 1.6271424033889592e-05,
+          "duration": 0.3594117180909961
+        },
+        {
+          "run_id": "default_20250609_151159",
+          "stage": "evaluate_model",
+          "energy": 0.0064581765445096,
+          "duration": 73.91915759211406
         }
       ]
     },
@@ -3265,67 +3573,76 @@
         "variant": "v22_layer_pruning_20_bottom",
         "variant_name": "22 Layer Pruning 20 Bottom",
         "variant_number": 22,
-        "num_runs": 1,
+        "num_runs": 2,
         "run_ids": [
-          "default_20250604_123256"
+          "default_20250604_123256",
+          "default_20250609_153214"
         ]
       },
       "training_metrics": {
         "total_energy": {
-          "mean": 0.07902808485646744,
-          "std": 0.0,
+          "mean": 0.07927857214083857,
+          "std": 0.0003542425147596603,
           "raw_values": [
-            0.07902808485646744
+            0.07902808485646744,
+            0.0795290594252097
           ]
         },
         "runtime": {
-          "mean": 1143.379990989226,
-          "std": 0.0,
+          "mean": 1143.4314848111826,
+          "std": 0.07282326138956649,
           "raw_values": [
-            1143.379990989226
+            1143.379990989226,
+            1143.4829786331393
           ]
         },
         "cpu_energy": {
-          "mean": 0.012987198936695282,
-          "std": 0.0,
+          "mean": 0.01300172040025689,
+          "std": 2.0536450714332008e-05,
           "raw_values": [
-            0.012987198936695282
+            0.012987198936695282,
+            0.013016241863818497
           ]
         },
         "gpu_energy": {
-          "mean": 0.0628651611254245,
-          "std": 0.0,
+          "mean": 0.06310099048075113,
+          "std": 0.0003335130727086128,
           "raw_values": [
-            0.0628651611254245
+            0.0628651611254245,
+            0.06333681983607775
           ]
         },
         "ram_energy": {
-          "mean": 0.003175724794347641,
-          "std": 0.0,
+          "mean": 0.0031758612598305463,
+          "std": 1.9299133672037281e-07,
           "raw_values": [
-            0.003175724794347641
+            0.003175724794347641,
+            0.0031759977253134515
           ]
         },
         "peak_memory": {
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
       },
       "test_metrics": {
         "f1_score": {
-          "mean": 0.9944183476431729,
-          "std": 0.0,
+          "mean": 0.9943074285631586,
+          "std": 0.00015686326728227016,
           "raw_values": [
-            0.9944183476431729
+            0.9944183476431729,
+            0.9941965094831442
           ]
         },
         "accuracy": {
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
@@ -3335,6 +3652,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -3342,6 +3660,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -3349,6 +3668,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -3356,6 +3676,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
@@ -3365,6 +3686,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         },
@@ -3372,6 +3694,7 @@
           "mean": 0,
           "std": 0.0,
           "raw_values": [
+            0,
             0
           ]
         }
@@ -3412,6 +3735,42 @@
           "stage": "evaluate_model",
           "energy": 0.0064740009329109,
           "duration": 74.71967033110559
+        },
+        {
+          "run_id": "default_20250609_153214",
+          "stage": "load_dataset",
+          "energy": 3.280901274471396e-05,
+          "duration": 1.7196591461542994
+        },
+        {
+          "run_id": "default_20250609_153214",
+          "stage": "tokenize_dataset",
+          "energy": 6.850258492384612e-06,
+          "duration": 0.2993983149062842
+        },
+        {
+          "run_id": "default_20250609_153214",
+          "stage": "load_model",
+          "energy": 2.7526936189831177e-05,
+          "duration": 0.8279545749537647
+        },
+        {
+          "run_id": "default_20250609_153214",
+          "stage": "train_model",
+          "energy": 0.0729061189440056,
+          "duration": 1065.4725157502107
+        },
+        {
+          "run_id": "default_20250609_153214",
+          "stage": "save_model",
+          "energy": 1.8546818662590336e-05,
+          "duration": 0.3574065850116312
+        },
+        {
+          "run_id": "default_20250609_153214",
+          "stage": "evaluate_model",
+          "energy": 0.0065366715329615,
+          "duration": 74.80604426190257
         }
       ]
     },
@@ -3567,6 +3926,161 @@
           "stage": "evaluate_model",
           "energy": 0.0372171688103727,
           "duration": 408.0114646939328
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16",
+        "variant_name": "24 Inference Engine Plus Grad Cpting Plus Lora Plus Fp16",
+        "variant_number": 24,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250609_033211"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.06884730236371882,
+          "std": 0.0,
+          "raw_values": [
+            0.06884730236371882
+          ]
+        },
+        "runtime": {
+          "mean": 1692.4703102081548,
+          "std": 0.0,
+          "raw_values": [
+            1692.4703102081548
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.006768557956508705,
+          "std": 0.0,
+          "raw_values": [
+            0.006768557956508705
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.05737772617991865,
+          "std": 0.0,
+          "raw_values": [
+            0.05737772617991865
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.004701018227291449,
+          "std": 0.0,
+          "raw_values": [
+            0.004701018227291449
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9530365455431422,
+          "std": 0.0,
+          "raw_values": [
+            0.9530365455431422
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250609_033211",
+          "stage": "load_dataset",
+          "energy": 6.249039335028436e-05,
+          "duration": 3.6921272499021134
+        },
+        {
+          "run_id": "default_20250609_033211",
+          "stage": "tokenize_dataset",
+          "energy": 4.529401151902979e-06,
+          "duration": 0.1943941270001232
+        },
+        {
+          "run_id": "default_20250609_033211",
+          "stage": "load_model",
+          "energy": 3.1888918358026944e-05,
+          "duration": 1.0428912960924208
+        },
+        {
+          "run_id": "default_20250609_033211",
+          "stage": "train_model",
+          "energy": 0.0639422862647128,
+          "duration": 1608.8142653310206
+        },
+        {
+          "run_id": "default_20250609_033211",
+          "stage": "save_model",
+          "energy": 0.0010702916997553,
+          "duration": 24.67677259701304
+        },
+        {
+          "run_id": "default_20250609_033211",
+          "stage": "evaluate_model",
+          "energy": 0.0037350277754699,
+          "duration": 54.04985960712656
         }
       ]
     },
@@ -4187,6 +4701,161 @@
           "stage": "evaluate_model",
           "energy": 0.0173512569648011,
           "duration": 210.28277180006265
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v29_attention_plus_pin_memory_plus_optimizer",
+        "variant_name": "29 Attention Plus Pin Memory Plus Optimizer",
+        "variant_number": 29,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250610_162806"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.3559546983172056,
+          "std": 0.0,
+          "raw_values": [
+            0.3559546983172056
+          ]
+        },
+        "runtime": {
+          "mean": 5535.841994711198,
+          "std": 0.0,
+          "raw_values": [
+            5535.841994711198
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.021087492843314105,
+          "std": 0.0,
+          "raw_values": [
+            0.021087492843314105
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.3194901894808382,
+          "std": 0.0,
+          "raw_values": [
+            0.3194901894808382
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.015377015993053402,
+          "std": 0.0,
+          "raw_values": [
+            0.015377015993053402
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.9935241486929396,
+          "std": 0.0,
+          "raw_values": [
+            0.9935241486929396
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250610_162806",
+          "stage": "load_dataset",
+          "energy": 2.735851308689733e-05,
+          "duration": 1.505157419946045
+        },
+        {
+          "run_id": "default_20250610_162806",
+          "stage": "tokenize_dataset",
+          "energy": 6.203654721799052e-06,
+          "duration": 0.2915242998860776
+        },
+        {
+          "run_id": "default_20250610_162806",
+          "stage": "load_model",
+          "energy": 2.6992618505143628e-05,
+          "duration": 0.8285471161361784
+        },
+        {
+          "run_id": "default_20250610_162806",
+          "stage": "train_model",
+          "energy": 0.3268101467639244,
+          "duration": 5189.882102345116
+        },
+        {
+          "run_id": "default_20250610_162806",
+          "stage": "save_model",
+          "energy": 3.638552380769156e-05,
+          "duration": 0.8258342060726136
+        },
+        {
+          "run_id": "default_20250610_162806",
+          "stage": "evaluate_model",
+          "energy": 0.0290471875586773,
+          "duration": 342.50882932404056
         }
       ]
     }

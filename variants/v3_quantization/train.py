@@ -135,21 +135,22 @@ def main(cfg_path: Path, output_root: Path):
         
         # Configure LoRA
         lora_config = LoraConfig(
-            r=16,                     # rank
-            lora_alpha=32,           # alpha scaling
+            r=8,                     # rank
+            lora_alpha=16,           # alpha scaling
             target_modules=["Wqkv", "Wo", "Wi", "Wo"],  # ModernBERT attention and MLP module names
             lora_dropout=0.05,
             bias="none",
             task_type="SEQ_CLS"
         )
         
-        # Get PEFT model
+        # # Get PEFT model
         model = get_peft_model(model, lora_config)
-        model.print_trainable_parameters()  # Print trainable parameters info
+        # model.print_trainable_parameters()  # Print trainable parameters info
         
         tracker.stop_task()
 
         
+        tracker.start_task("train_model")
 
         # ---- TrainingArguments
         tcfg = cfg.training.versions[variant]
@@ -171,7 +172,7 @@ def main(cfg_path: Path, output_root: Path):
             load_best_model_at_end      = True,
             metric_for_best_model       = tcfg.metric_for_best_model,
             report_to                   = "none",
-            optim                       = "adamw_torch",
+            # optim                       = "adamw_torch",
             lr_scheduler_type          = "cosine",
             group_by_length            = True,
         )
@@ -186,7 +187,6 @@ def main(cfg_path: Path, output_root: Path):
             compute_metrics     = compute_metrics,
         )
 
-        tracker.start_task("train_model")
         trainer.train()
         tracker.stop_task()
 

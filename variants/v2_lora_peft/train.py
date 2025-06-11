@@ -101,6 +101,14 @@ def main(cfg_path: Path, out_root: Path):
         # Load tokenizer
         tok = AutoTokenizer.from_pretrained(model_name)
 
+        train_ds = prep_dataset(train_raw, tok, cfg.data.versions.default.text_column,
+                                cfg.data.versions.default.label_column, max_len)
+        val_ds   = prep_dataset(val_raw,  tok, cfg.data.versions.default.text_column,
+                                cfg.data.versions.default.label_column, max_len)
+        test_ds  = prep_dataset(test_raw, tok, cfg.data.versions.default.text_column,
+                                cfg.data.versions.default.label_column, max_len)
+        collator = DataCollatorWithPadding(tok, return_tensors="pt")
+
         tracker.stop_task()
 
         tracker.start_task("load_model")
@@ -111,14 +119,6 @@ def main(cfg_path: Path, out_root: Path):
             num_labels=NUM_LABELS,
             torch_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
         )
-
-        train_ds = prep_dataset(train_raw, tok, cfg.data.versions.default.text_column,
-                                cfg.data.versions.default.label_column, max_len)
-        val_ds   = prep_dataset(val_raw,  tok, cfg.data.versions.default.text_column,
-                                cfg.data.versions.default.label_column, max_len)
-        test_ds  = prep_dataset(test_raw, tok, cfg.data.versions.default.text_column,
-                                cfg.data.versions.default.label_column, max_len)
-        collator = DataCollatorWithPadding(tok, return_tensors="pt")
 
         # ------------------------------ 3. Inject LoRA adapters
        

@@ -2,10 +2,8 @@
 
 # List of variants to run
 variants=(
-    "v11_torch_compile"
-    "v26_pruning_plus_seq_lngth_torch_compile"
-    "v28_pruning_plus_torch_compile_fp16"
-    "v29_attention_plus_pin_memory_optimizer_gradient_accumulation"
+    "v2_lora_peft"
+    "v3_quantization"
     # Add more variants here
 )
 

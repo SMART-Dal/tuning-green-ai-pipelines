@@ -104,12 +104,12 @@
     "variant_name": "2 Lora Peft",
     "variant_number": 2,
     "description": "",
-    "total_kwh": 0.07559326723610993,
+    "total_kwh": 0.07527056992753904,
     "runtime_s": 1701.4404883841053,
     "eval_time_s": 235.3335831919685,
     "f1": 0.953678919802555,
     "\u0394f1": -0.03984852212894996,
-    "percent_diff_energy": -85.24530029564541,
+    "percent_diff_energy": -85.30828608865916,
     "stages": [
       {
         "stage": "load_dataset",
@@ -154,12 +154,12 @@
     "variant_name": "3 Quantization",
     "variant_number": 3,
     "description": "",
-    "total_kwh": 0.4852558757799474,
+    "total_kwh": 0.4858413341696174,
     "runtime_s": 11629.734273629963,
     "eval_time_s": 642.8092490369454,
-    "f1": 0.9932314809874916,
-    "\u0394f1": -0.000295960944013407,
-    "percent_diff_energy": -5.285153179798393,
+    "f1": 0.9929473362870548,
+    "\u0394f1": -0.0005801056444502128,
+    "percent_diff_energy": -5.170880268402795,
     "stages": [
       {
         "stage": "load_dataset",
@@ -454,44 +454,50 @@
     "variant_name": "9 Inference Engine",
     "variant_number": 9,
     "description": "",
-    "total_kwh": 0.0,
-    "runtime_s": 0.0,
-    "eval_time_s": 0.0,
-    "f1": 0.0,
-    "\u0394f1": 0.0,
-    "percent_diff_energy": 0.0,
+    "total_kwh": 0.47078733757668395,
+    "runtime_s": 7445.584189715097,
+    "eval_time_s": 55.82972373696976,
+    "f1": 0.9916981501255285,
+    "\u0394f1": -0.001829291805976463,
+    "percent_diff_energy": -8.109200137358101,
     "stages": [
       {
         "stage": "load_dataset",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 3.308711924699223e-05,
+        "duration": 1.975032529095188
       },
       {
         "stage": "tokenize_dataset",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 5.540525549724146e-06,
+        "duration": 0.2540610420983284
       },
       {
         "stage": "load_model",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 2.916828559816389e-05,
+        "duration": 0.976498612901196
       },
       {
         "stage": "train_model",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 0.4656846614577787,
+        "duration": 7361.250071757007
       },
       {
         "stage": "save_model",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 0.0011293662347057,
+        "duration": 25.29880203702487
       },
       {
         "stage": "evaluate_model",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 0.003904771161678,
+        "duration": 55.82972373696976
       }
-    ]
+    ],
+    "inference": {
+      "variant": "v9_inference_engine",
+      "run_id": "default_20250609_012653",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
   },
   {
     "variant": "v10_dataloader_pin_memory",
@@ -1048,12 +1054,12 @@
     "variant_name": "21 Layer Pruning 20 Top",
     "variant_number": 21,
     "description": "",
-    "total_kwh": 0.07921217921656434,
+    "total_kwh": 0.07904672344425764,
     "runtime_s": 1140.6874380119843,
     "eval_time_s": 74.13782808394171,
-    "f1": 0.9929392972905058,
-    "\u0394f1": -0.0005881446409992108,
-    "percent_diff_energy": -84.5389416279969,
+    "f1": 0.9927625084039678,
+    "\u0394f1": -0.0007649335275371483,
+    "percent_diff_energy": -84.57123617384728,
     "stages": [
       {
         "stage": "load_dataset",
@@ -1098,12 +1104,12 @@
     "variant_name": "22 Layer Pruning 20 Bottom",
     "variant_number": 22,
     "description": "",
-    "total_kwh": 0.07902808485646744,
+    "total_kwh": 0.07927857214083857,
     "runtime_s": 1143.379990989226,
     "eval_time_s": 74.71967033110559,
-    "f1": 0.9944183476431729,
-    "\u0394f1": 0.0008909057116679442,
-    "percent_diff_energy": -84.5748741534692,
+    "f1": 0.9943074285631586,
+    "\u0394f1": 0.0007799866316535731,
+    "percent_diff_energy": -84.5259827006218,
     "stages": [
       {
         "stage": "load_dataset",
@@ -1198,44 +1204,50 @@
     "variant_name": "24 Inference Engine Plus Grad Cpting Plus Lora Plus Fp16",
     "variant_number": 24,
     "description": "",
-    "total_kwh": 0.0,
-    "runtime_s": 0.0,
-    "eval_time_s": 0.0,
-    "f1": 0.0,
-    "\u0394f1": 0.0,
-    "percent_diff_energy": 0.0,
+    "total_kwh": 0.06884730236371882,
+    "runtime_s": 1692.4703102081548,
+    "eval_time_s": 54.04985960712656,
+    "f1": 0.9530365455431422,
+    "\u0394f1": -0.040490896388362785,
+    "percent_diff_energy": -86.56201393361222,
     "stages": [
       {
         "stage": "load_dataset",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 6.249039335028436e-05,
+        "duration": 3.6921272499021134
       },
       {
         "stage": "tokenize_dataset",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 4.529401151902979e-06,
+        "duration": 0.1943941270001232
       },
       {
         "stage": "load_model",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 3.1888918358026944e-05,
+        "duration": 1.0428912960924208
       },
       {
         "stage": "train_model",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 0.0639422862647128,
+        "duration": 1608.8142653310206
       },
       {
         "stage": "save_model",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 0.0010702916997553,
+        "duration": 24.67677259701304
       },
       {
         "stage": "evaluate_model",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 0.0037350277754699,
+        "duration": 54.04985960712656
       }
-    ]
+    ],
+    "inference": {
+      "variant": "v24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16",
+      "run_id": "default_20250609_033211",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
   },
   {
     "variant": "v25_gradient_accumulation_plus_fp16_plus_checkpointing",
@@ -1436,5 +1448,99 @@
       "throughput_qps": 0.0,
       "latency_ms": 0.0
     }
+  },
+  {
+    "variant": "v29_attention_plus_pin_memory_plus_optimizer",
+    "variant_name": "29 Attention Plus Pin Memory Plus Optimizer",
+    "variant_number": 29,
+    "description": "",
+    "total_kwh": 0.3559546983172056,
+    "runtime_s": 5535.841994711198,
+    "eval_time_s": 342.50882932404056,
+    "f1": 0.9935241486929396,
+    "\u0394f1": -3.2932385654049767e-06,
+    "percent_diff_energy": -30.52285112085107,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 2.735851308689733e-05,
+        "duration": 1.505157419946045
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 6.203654721799052e-06,
+        "duration": 0.2915242998860776
+      },
+      {
+        "stage": "load_model",
+        "kwh": 2.6992618505143628e-05,
+        "duration": 0.8285471161361784
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.3268101467639244,
+        "duration": 5189.882102345116
+      },
+      {
+        "stage": "save_model",
+        "kwh": 3.638552380769156e-05,
+        "duration": 0.8258342060726136
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0290471875586773,
+        "duration": 342.50882932404056
+      }
+    ],
+    "inference": {
+      "variant": "v29_attention_plus_pin_memory_plus_optimizer",
+      "run_id": "default_20250610_162806",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
+  },
+  {
+    "variant": "v30_optimal",
+    "variant_name": "30 Optimal",
+    "variant_number": 30,
+    "description": "",
+    "total_kwh": 0.0,
+    "runtime_s": 0.0,
+    "eval_time_s": 0.0,
+    "f1": 0.0,
+    "\u0394f1": 0.0,
+    "percent_diff_energy": 0.0,
+    "stages": [
+      {
+        "stage": "load_dataset",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "tokenize_dataset",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "load_model",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "train_model",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "save_model",
+        "kwh": 0.0,
+        "duration": 0.0
+      },
+      {
+        "stage": "evaluate_model",
+        "kwh": 0.0,
+        "duration": 0.0
+      }
+    ]
   }
 ]

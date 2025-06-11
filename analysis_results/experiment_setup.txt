@@ -53,7 +53,7 @@ Energy Metrics: Total Energy, CPU Energy, GPU Energy
 
 7. VARIANT INFORMATION
 =====================
-Total Number of Variants: 27
+Total Number of Variants: 30
 Baseline Variant: v0_baseline
 
 Variant Types:
@@ -81,10 +81,13 @@ Individual Optimizations:
 - v6_optimizer
 - v7_f16
 - v8_sequence_length_trimming
+- v9_inference_engine
 
 Combined Optimizations:
 - v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation
+- v24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16
 - v25_gradient_accumulation_plus_fp16_plus_checkpointing
 - v26_pruning_plus_seq_lngth_plus_torch_compile
 - v27_torch_compile_plus_fp16
 - v28_pruning_plus_torch_compile_plus_fp16
+- v29_attention_plus_pin_memory_plus_optimizer
