@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "How to Tune Your AI Green?" 
+version: "0.1.0"
+url: "https://github.com/SMART-Dal/tuning-green-ai-pipelines"
+date-released: 2025-06-12   
+authors:
+  - family-names: Rajput
+    given-names: Saurabhsingh
+    email: saurabh@dal.ca
+    affiliation: "Dalhousie University, Halifax, Canada"
+    orcid: "https://orcid.org/0000-0002-4630-2288"
+
+  - family-names: Saad
+    given-names: Mootez
+    email: mootez@dal.ca
+    affiliation: "Dalhousie University, Halifax, Canada"
+    orcid: "https://orcid.org/0009-0008-8159-3632"
+
+  - family-names: Sharma
+    given-names: Tushar
+    email: tushar@dal.ca
+    affiliation: "Dalhousie University, Halifax, Canada"
+    orcid: "https://orcid.org/0000-0002-0538-052X"
