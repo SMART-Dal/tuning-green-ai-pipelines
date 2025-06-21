@@ -1,4 +1,4 @@
-# ♻️ Green-Pipeline Study
+# ♻️ Tu(r)ning AI Green
 
 *Quantifying how energy-efficient techniques applied at different stages of an AI pipeline interact, stack, and occasionally collide.*
 
@@ -6,12 +6,11 @@
 
 ## Table of Contents
 1. [Project Goals](#project-goals)
-2. [Research Questions](#research-questions)
-3. [Supported Tasks & Models](#supported-tasks--models)
-4. [Repository Layout](#repository-layout)
-5. [Running an Experiment](#running-an-experiment)
-6. [Energy & Carbon Instrumentation](#energy--carbon-instrumentation)
-7. [Result Files](#result-files)
+2. [Supported Tasks & Models](#supported-tasks--models)
+3. [Repository Layout](#repository-layout)
+4. [Running an Experiment](#running-an-experiment)
+5. [Energy & Carbon Instrumentation](#energy--carbon-instrumentation)
+6. [Result Files](#result-files)
 
 ---
 
@@ -20,7 +19,7 @@
 Large-scale AI systems burn substantial energy across **five canonical stages**:
 
 1. **Data preparation**
-2. **Architecture design / selection**
+2. **Model Architecture design / selection**
 3. **Training or fine-tuning**
 4. **System-level deployment**
 5. **Inference**
@@ -28,18 +27,7 @@ Large-scale AI systems burn substantial energy across **five canonical stages**:
 This study builds *multiple variants* of the **same end-to-end pipeline**, each enabling energy-saving techniques in **one or more** of those stages. By comparing energy usage, carbon footprint, latency and task accuracy across variants, we ask:
 
 *Do savings add up linearly, cancel one another out, or compound super-linearly?*  
-*Does “optimise everywhere” always beat “optimise the bottleneck”?*  
-
----
-
-## Research Questions
-
-| ID | Question | Metric Highlights |
-|----|----------|-------------------|
-| **RQ1** | *Stage-wise contribution* – How much energy does each individual stage save? | Δ kWh, Δ CO₂, Δ accuracy |
-| **RQ2** | *Additive vs. synergistic effects* – Do multi-stage optimisations add (linear) or compound (sub / super-linear)? | *Synergy factor* |
-| **RQ3** | *Performance / energy trade-off* – What price (accuracy / latency) do we pay for greener pipelines? | Accuracy, latency |
-| **RQ4** | *Return on investment* – Which stage yields the biggest bang-for-buck? | kWh-saved ÷ Δ accuracy |
+*Does "optimise everywhere" always beat "optimise the bottleneck"?*  
 
 ---
 
@@ -47,8 +35,7 @@ This study builds *multiple variants* of the **same end-to-end pipeline**, each 
 
 | Task | Dataset | Model(s) | Notes |
 |------|---------|----------|-------|
-| **Software Generation (Translation)** | CodexGLUE `icse24-lost-in-translation` | **SmalLm (Qwen-2.5 B)** | Treat as code-to-code translation |
-| **Vulnerability Classification** | **BigVul** | **ModernBERT** | Binary vulnerability label |
+| **Vulnerability Detection** | **BigVul** | **ModernBERT** | Binary vulnerability classification |
 
 > Each pipeline variant re-uses the same datasets & model checkpoints so that only the *energy-efficiency knobs* differ.
 
@@ -59,51 +46,52 @@ This study builds *multiple variants* of the **same end-to-end pipeline**, each 
 ```
 green-pipeline-study/
 ├── variants/                # One folder per experimental pipeline
-│   ├── V0_baseline/
-│   │   ├── run.sh
-│   │   └── README.md
-│   ├── V1_data/
-│   ├── V2_training/
-│   ├── ...
-│   └── V7_all_optimised/
+│   ├── v0_baseline/        # Baseline implementation
+│   ├── v1_gradient_checkpointing/
+│   ├── v2_lora_peft/       # Parameter efficient fine-tuning
+│   ├── v3_quantization/    # Model quantization
+│   ├── v4_tokenizer/       # Tokenizer optimizations
+│   ├── v5_power_limit_100W/ # Power limiting
+│   ├── v6_optimizer/       # Optimizer configurations
+│   ├── v7_f16/            # FP16 precision
+│   ├── v8_sequence_length_trimming/
+│   ├── v9_inference_engine/
+│   ├── v10_dataloader_pin_memory/
+│   ├── v11_torch_compile/
+│   ├── v12_attention/
+│   ├── v13_layer_pruning_4_top/
+│   └── ...                 # Additional variants
 │
-├── common/                  # Shared dataloaders, utils, energy loggers
-│   ├── data.py
-│   ├── models.py
-│   └── energy.py
+├── common/                 # Shared components
+│   ├── layer_drop.py      # Layer pruning utilities
+│   └── generate_configs.py # Configuration generation
 │
-├── results/                 # Auto-generated CSV + JSON logs
-│
-├── requirements.txt
-└── README.md                # ← you are here
+├── analysis_results/      # Analysis outputs
+├── energy_modelling.py    # Energy modeling utilities
+├── analysis.py           # Analysis scripts
+├── requirements.txt      # Project dependencies
+└── README.md             # This file
 ```
 
-*Every* folder inside **`variants/`** is **self-contained**:
-
-* `run.sh` – launches the full pipeline with the variant’s flags  
-* `README.md` – documents exactly **which stages are optimised, and how**  
-* `config.yaml` *(optional)* – structured hyper-parameters  
+Each variant in **`variants/`** is **self-contained** with:
+* `config.yaml` – structured hyper-parameters
+* `train_all_variants.sh` – pipeline execution script
 
 ---
 
 ## Running an Experiment
 
 ```bash
-# 1. Set up environment (choose one)
-conda env create -f environment.yml      # with conda
-# or
+# 1. Set up environment
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-# 2. Download / cache data once
-python common/data.py --prepare-all
-
-# 3. Run a pipeline variant, e.g. baseline
-cd variants/V0_baseline
-bash run.sh        # logs go to ../../results/V0_baseline_YYYY-MM-DD.json
+# 2. Run a pipeline variant
+cd variants/v0_baseline  # or any other variant
+python3 train.py
 ```
 
-All energy, carbon and performance numbers are printed to stdout **and** saved under `results/`.
+All energy, carbon and performance numbers are saved under `analysis_results/`.
 
 ---
 
@@ -111,25 +99,23 @@ All energy, carbon and performance numbers are printed to stdout **and** saved u
 
 | Layer | Tool | What it Measures |
 |-------|------|------------------|
-| GPU power | **NVIDIA-SMI + pynvml** | Instantaneous W, integrated kWh |
-| CPU / system | **CodeCarbon** | Process-level energy + g CO₂/kWh |
-| Carbon intensity | **ElectricityMap API** *(opt)* | Regional real-time grid mix |
-| Job metadata | **MLflow** *(opt)* | Params, metrics, artefacts |
+| CPU/GPU/RAM system | **CodeCarbon** | Process-level energy + g CO₂/kWh |
 
-Each stage starts an **energy session**; deltas are aggregated into the final CSV.
+Each stage starts an **energy session**; deltas are aggregated into the final analysis.
 
-
-https://huggingface.co/docs/transformers/en/perf_train_gpu_one
 ---
 
 ## Result Files
 
 A run produces:
 
-* `results/<VARIANT>/<timestamp>.json`
+* `<VARIANT>/results/*`
+
+You can also find the analyzed and combined result along with plots in `analysis_results/`.
+
   ```jsonc
   {
-    "variant": "V2_training",
+    "variant": "v2_lora_peft",
     "energy_kwh": {
       "data": 0.14,
       "architecture": 0.00,
@@ -143,7 +129,7 @@ A run produces:
     "latency_ms": 23.5
   }
   ```
-* `results/summary.csv` – convenience table across all variants  
-* (optional) per-epoch power traces under `results/traces/`
+* `analysis_results/aggregated_metrics.json` – comprehensive analysis across all variants
+* Training progress logs under `training_progress.log`
 
 

@@ -53,7 +53,7 @@ Energy Metrics: Total Energy, CPU Energy, GPU Energy
 
 7. VARIANT INFORMATION
 =====================
-Total Number of Variants: 30
+Total Number of Variants: 31
 Baseline Variant: v0_baseline
 
 Variant Types:
@@ -75,6 +75,7 @@ Individual Optimizations:
 - v21_layer_pruning_20_top
 - v22_layer_pruning_20_bottom
 - v2_lora_peft
+- v30_optimal
 - v3_quantization
 - v4_tokenizer
 - v5_power_limit_100w

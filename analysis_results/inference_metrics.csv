@@ -33,3 +33,4 @@ v26_pruning_plus_seq_lngth_plus_torch_compile,default_20250604_150503,0,0
 v27_torch_compile_plus_fp16,default_20250601_132031,0,0
 v28_pruning_plus_torch_compile_plus_fp16,default_20250604_153021,0,0
 v29_attention_plus_pin_memory_plus_optimizer,default_20250610_162806,0,0
+v30_optimal,default_20250611_132302,0,0

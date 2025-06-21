@@ -1,0 +1,167 @@
+Modelling Calculations - Multiplicative Cascade Framework
+========================================================
+
+Baseline: v0_baseline
+Baseline Energy: 0.512333 kWh
+
+Variant: V23 (Attention+PinMem+Optim+GradAcc)
+--------------------------------------------------
+Observed Savings: 0.129 (12.9%)
+Expected Savings: 0.444 (44.4%)
+Delta: 0.315 (31.5%)
+
+Calculation Steps:
+  S_combined = 1 - ∏(1 - s_i)
+  s1 = 0.268 (from v12_attention)
+  s2 = 0.204 (from v10_dataloader_pin_memory)
+  s3 = 0.046 (from v6_optimizer)
+  = 1 - [(1 - 0.268) [v12_attention] * (1 - 0.204) [v10_dataloader_pin_memory] * (1 - 0.046) [v6_optimizer]]
+  = 0.444
+
+Deviation Analysis:
+  Observed: 12.9%
+  Expected: 44.4%
+  Difference: 31.5 percentage points
+==================================================
+
+Variant: V24 (InfEngine+GradCkpt+LoRA+FP16)
+--------------------------------------------------
+Observed Savings: 0.866 (86.6%)
+Expected Savings: 0.860 (86.0%)
+Delta: -0.006 (-0.6%)
+
+Calculation Steps:
+  S_combined = 1 - ∏(1 - s_i)
+  s1 = 0.081 (from v9_inference_engine)
+  s2 = -0.307 (from v1_gradient_checkpointing)
+  s3 = 0.853 (from v2_lora_peft)
+  s4 = 0.205 (from v7_f16)
+  = 1 - [(1 - 0.081) [v9_inference_engine] * (1 - -0.307) [v1_gradient_checkpointing] * (1 - 0.853) [v2_lora_peft] * (1 - 0.205) [v7_f16]]
+  = 0.860
+
+Deviation Analysis:
+  Observed: 86.6%
+  Expected: 86.0%
+  Difference: -0.6 percentage points
+==================================================
+
+Variant: V25 (GradAcc+FP16+Ckpt)
+--------------------------------------------------
+Observed Savings: -0.344 (-34.4%)
+Expected Savings: -0.039 (-3.9%)
+Delta: 0.305 (30.5%)
+
+Calculation Steps:
+  S_combined = 1 - ∏(1 - s_i)
+  s1 = -0.307 (from v1_gradient_checkpointing)
+  s2 = 0.205 (from v7_f16)
+  = 1 - [(1 - -0.307) [v1_gradient_checkpointing] * (1 - 0.205) [v7_f16]]
+  = -0.039
+
+Deviation Analysis:
+  Observed: -34.4%
+  Expected: -3.9%
+  Difference: 30.5 percentage points
+==================================================
+
+Variant: V26 (Prune+SeqLen+Compile)
+--------------------------------------------------
+Observed Savings: 0.808 (80.8%)
+Expected Savings: 0.832 (83.2%)
+Delta: 0.024 (2.4%)
+
+Calculation Steps:
+  S_combined = 1 - ∏(1 - s_i)
+  s1 = 0.488 (from v18_layer_pruning_12_bottom)
+  s2 = 0.466 (from v8_sequence_length_trimming)
+  s3 = 0.384 (from v11_torch_compile)
+  = 1 - [(1 - 0.488) [v18_layer_pruning_12_bottom] * (1 - 0.466) [v8_sequence_length_trimming] * (1 - 0.384) [v11_torch_compile]]
+  = 0.832
+
+Deviation Analysis:
+  Observed: 80.8%
+  Expected: 83.2%
+  Difference: 2.4 percentage points
+==================================================
+
+Variant: V27 (Compile+FP16)
+--------------------------------------------------
+Observed Savings: 0.460 (46.0%)
+Expected Savings: 0.511 (51.1%)
+Delta: 0.051 (5.1%)
+
+Calculation Steps:
+  S_combined = 1 - ∏(1 - s_i)
+  s1 = 0.384 (from v11_torch_compile)
+  s2 = 0.205 (from v7_f16)
+  = 1 - [(1 - 0.384) [v11_torch_compile] * (1 - 0.205) [v7_f16]]
+  = 0.511
+
+Deviation Analysis:
+  Observed: 46.0%
+  Expected: 51.1%
+  Difference: 5.1 percentage points
+==================================================
+
+Variant: V28 (Prune+Compile+FP16)
+--------------------------------------------------
+Observed Savings: 0.737 (73.7%)
+Expected Savings: 0.749 (74.9%)
+Delta: 0.012 (1.2%)
+
+Calculation Steps:
+  S_combined = 1 - ∏(1 - s_i)
+  s1 = 0.488 (from v18_layer_pruning_12_bottom)
+  s2 = 0.384 (from v11_torch_compile)
+  s3 = 0.205 (from v7_f16)
+  = 1 - [(1 - 0.488) [v18_layer_pruning_12_bottom] * (1 - 0.384) [v11_torch_compile] * (1 - 0.205) [v7_f16]]
+  = 0.749
+
+Deviation Analysis:
+  Observed: 73.7%
+  Expected: 74.9%
+  Difference: 1.2 percentage points
+==================================================
+
+Variant: V29
+--------------------------------------------------
+Observed Savings: 0.305 (30.5%)
+Expected Savings: 0.444 (44.4%)
+Delta: 0.139 (13.9%)
+
+Calculation Steps:
+  S_combined = 1 - ∏(1 - s_i)
+  s1 = 0.268 (from v12_attention)
+  s2 = 0.204 (from v10_dataloader_pin_memory)
+  s3 = 0.046 (from v6_optimizer)
+  = 1 - [(1 - 0.268) [v12_attention] * (1 - 0.204) [v10_dataloader_pin_memory] * (1 - 0.046) [v6_optimizer]]
+  = 0.444
+
+Deviation Analysis:
+  Observed: 30.5%
+  Expected: 44.4%
+  Difference: 13.9 percentage points
+==================================================
+
+Variant: V30 (Optimal)
+--------------------------------------------------
+Observed Savings: 0.946 (94.6%)
+Expected Savings: 0.990 (99.0%)
+Delta: 0.043 (4.3%)
+
+Calculation Steps:
+  S_combined = 1 - ∏(1 - s_i)
+  s1 = 0.081 (from v9_inference_engine)
+  s2 = 0.853 (from v2_lora_peft)
+  s3 = 0.205 (from v7_f16)
+  s4 = 0.384 (from v11_torch_compile)
+  s5 = 0.846 (from v21_layer_pruning_20_top)
+  = 1 - [(1 - 0.081) [v9_inference_engine] * (1 - 0.853) [v2_lora_peft] * (1 - 0.205) [v7_f16] * (1 - 0.384) [v11_torch_compile] * (1 - 0.846) [v21_layer_pruning_20_top]]
+  = 0.990
+
+Deviation Analysis:
+  Observed: 94.6%
+  Expected: 99.0%
+  Difference: 4.3 percentage points
+==================================================
+

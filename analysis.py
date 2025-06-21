@@ -931,11 +931,19 @@ def plot_delta_training_energy_time_pareto(df: pd.DataFrame, baseline: str, out:
         
         # Plot each group with different colors
         for _, row in better_both.iterrows():
-            plt.scatter(
-                row['Δtotal_kwh'], 
-                row['percent_diff_time'],
-                s=100, c='green', marker='o', zorder=4, edgecolor='black', linewidth=1.5
-            )
+            # Special handling for V30 optimal
+            if row['variant'] == 'v30_optimal':
+                plt.scatter(
+                    row['Δtotal_kwh'], 
+                    row['percent_diff_time'],
+                    s=150, c='green', marker='*', zorder=6, edgecolor='gold', linewidth=2
+                )
+            else:
+                plt.scatter(
+                    row['Δtotal_kwh'], 
+                    row['percent_diff_time'],
+                    s=100, c='green', marker='o', zorder=4, edgecolor='black', linewidth=1.5
+                )
             
         for _, row in worse_both.iterrows():
             plt.scatter(
@@ -984,10 +992,13 @@ def plot_delta_training_energy_time_pareto(df: pd.DataFrame, baseline: str, out:
     # Add labels for all other points
     for _, row in df[df['variant'] != baseline].iterrows():
         variant_num = extract_variant_number(row['variant'])
+        label = f'V{variant_num}'
+        if row['variant'] == 'v30_optimal':
+            label += ' (optimal)'
         texts.append(plt.text(
             row['Δtotal_kwh'],
             row['percent_diff_time'],
-            f'V{variant_num}',
+            label,
             fontsize=12,
             fontweight='bold'
         ))
@@ -1004,13 +1015,21 @@ def plot_delta_training_energy_time_pareto(df: pd.DataFrame, baseline: str, out:
                 avoid_self=True)
     
     # Formatting
-    plt.xlabel("Δ Training Energy (%)", fontsize=16)
-    plt.ylabel("Δ Training Time (%)", fontsize=16)
+    plt.xlabel("Δ Training Energy (%)", fontsize=18)
+    plt.ylabel("Δ Training Time (%)", fontsize=18)
     plt.grid(True, linestyle='--', alpha=0.3)
     
     # Increase tick label sizes
     plt.xticks(fontsize=14)
     plt.yticks(fontsize=14)
+    
+    # Print variant colors for the report
+    print("\nVariant Colors in Plot:")
+    print("V0 (Baseline): Red star with black border")
+    print("V30 (Optimal): Green star with gold border")
+    print("Better Energy & Time: Green circles")
+    print("Worse Energy & Time: Red circles")
+    print("Mixed Results: Gray circles")
     
     plt.tight_layout()
     plt.savefig(out, bbox_inches='tight', dpi=300)
@@ -1057,11 +1076,19 @@ def plot_delta_eval_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Pat
         
         # Plot each group with different colors
         for _, row in better_both.iterrows():
-            plt.scatter(
-                row['Δtotal_kwh'], 
-                row['percent_diff_eval_time'],
-                s=100, c='green', marker='o', zorder=4, edgecolor='black', linewidth=1.5
-            )
+            # Special handling for V30 optimal
+            if row['variant'] == 'v30_optimal':
+                plt.scatter(
+                    row['Δtotal_kwh'], 
+                    row['percent_diff_eval_time'],
+                    s=150, c='green', marker='*', zorder=6, edgecolor='gold', linewidth=2
+                )
+            else:
+                plt.scatter(
+                    row['Δtotal_kwh'], 
+                    row['percent_diff_eval_time'],
+                    s=100, c='green', marker='o', zorder=4, edgecolor='black', linewidth=1.5
+                )
             
         for _, row in worse_both.iterrows():
             plt.scatter(
@@ -1110,10 +1137,13 @@ def plot_delta_eval_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Pat
     # Add labels for all other points
     for _, row in df[df['variant'] != baseline].iterrows():
         variant_num = extract_variant_number(row['variant'])
+        label = f'V{variant_num}'
+        if row['variant'] == 'v30_optimal':
+            label += ' (optimal)'
         texts.append(plt.text(
             row['Δtotal_kwh'],
             row['percent_diff_eval_time'],
-            f'V{variant_num}',
+            label,
             fontsize=12,
             fontweight='bold'
         ))
@@ -1130,13 +1160,21 @@ def plot_delta_eval_energy_time_pareto(df: pd.DataFrame, baseline: str, out: Pat
                 avoid_self=True)
     
     # Formatting
-    plt.xlabel("Δ Evaluation Energy (%)", fontsize=16)
-    plt.ylabel("Δ Evaluation Time (%)", fontsize=16)
+    plt.xlabel("Δ Evaluation Energy (%)", fontsize=18)
+    plt.ylabel("Δ Evaluation Time (%)", fontsize=18)
     plt.grid(True, linestyle='--', alpha=0.3)
     
     # Increase tick label sizes
     plt.xticks(fontsize=14)
     plt.yticks(fontsize=14)
+    
+    # Print variant colors for the report
+    print("\nVariant Colors in Plot:")
+    print("V0 (Baseline): Red star with black border")
+    print("V30 (Optimal): Green star with gold border")
+    print("Better Energy & Time: Green circles")
+    print("Worse Energy & Time: Red circles")
+    print("Mixed Results: Gray circles")
     
     plt.tight_layout()
     plt.savefig(out, bbox_inches='tight', dpi=300)

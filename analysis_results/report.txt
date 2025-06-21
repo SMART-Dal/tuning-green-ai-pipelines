@@ -2,7 +2,7 @@
 
 1. OVERALL STATISTICS
 ===================
-Total number of variants analyzed: 30
+Total number of variants analyzed: 31
 Baseline variant: v0_baseline
 
 2. INDIVIDUAL VARIANT ANALYSIS
@@ -487,6 +487,22 @@ Energy: -30.522851%
 Time: -30.092326%
 F1 Score: -0.000331%
 
+
+Variant: v30_optimal
+--------------------
+Total Energy: 0.027455 kWh (±0.000000)
+Runtime: 537.160865 s (±0.000000)
+F1 Score: 0.953679 (±0.000000)
+Accuracy: 0.000000
+GPU Utilization: 0.000000%
+GPU Memory Utilization: 0.000000%
+Peak Memory: 0.000000 GB
+
+Differences from baseline:
+Energy: -94.641181%
+Time: -93.216630%
+F1 Score: -4.010812%
+
 3. COMBINED VARIANTS ANALYSIS
 ===========================
 
@@ -530,131 +546,131 @@ This combination is recommended as it improves both efficiency and performance
 
 Stage: load_dataset
 -------------------
-Average Energy: 0.000052 kWh
-Std Dev: 0.000025 kWh
+Average Energy: 0.000053 kWh
+Std Dev: 0.000026 kWh
 Min Energy: 0.000027 kWh
 Max Energy: 0.000114 kWh
-Average Duration: 3.055210 s
-Duration Std Dev: 1.577763 s
+Average Duration: 3.127002 s
+Duration Std Dev: 1.611370 s
 Min Duration: 1.439471 s
 Max Duration: 6.866096 s
 
 Stage: tokenize_dataset
 -----------------------
-Average Energy: 0.000156 kWh
-Std Dev: 0.000616 kWh
+Average Energy: 0.000152 kWh
+Std Dev: 0.000608 kWh
 Min Energy: 0.000004 kWh
 Max Energy: 0.003533 kWh
-Average Duration: 5.066328 s
-Duration Std Dev: 19.938820 s
+Average Duration: 4.927037 s
+Duration Std Dev: 19.660691 s
 Min Duration: 0.134016 s
 Max Duration: 114.430325 s
 
 Stage: load_model
 -----------------
-Average Energy: 0.000028 kWh
-Std Dev: 0.000007 kWh
+Average Energy: 0.000133 kWh
+Std Dev: 0.000624 kWh
 Min Energy: 0.000024 kWh
-Max Energy: 0.000054 kWh
-Average Duration: 0.828093 s
-Duration Std Dev: 0.193713 s
+Max Energy: 0.003721 kWh
+Average Duration: 4.130482 s
+Duration Std Dev: 19.538134 s
 Min Duration: 0.696562 s
-Max Duration: 1.513164 s
+Max Duration: 116.411741 s
 
 Stage: train_model
 ------------------
-Average Energy: 0.295681 kWh
-Std Dev: 0.175387 kWh
-Min Energy: 0.058752 kWh
+Average Energy: 0.287809 kWh
+Std Dev: 0.178955 kWh
+Min Energy: 0.020151 kWh
 Max Energy: 0.643630 kWh
-Average Duration: 5218.762797 s
-Duration Std Dev: 3841.567223 s
-Min Duration: 1063.468317 s
+Average Duration: 5079.730018 s
+Duration Std Dev: 3873.002002 s
+Min Duration: 352.615531 s
 Max Duration: 19116.853700 s
 
 Stage: save_model
 -----------------
-Average Energy: 0.000092 kWh
-Std Dev: 0.000256 kWh
+Average Energy: 0.000118 kWh
+Std Dev: 0.000296 kWh
 Min Energy: 0.000007 kWh
 Max Energy: 0.001129 kWh
-Average Duration: 2.075599 s
-Duration Std Dev: 5.819330 s
+Average Duration: 2.719024 s
+Duration Std Dev: 6.881746 s
 Min Duration: 0.196417 s
 Max Duration: 25.298802 s
 
 Stage: evaluate_model
 ---------------------
-Average Energy: 0.027146 kWh
-Std Dev: 0.014944 kWh
-Min Energy: 0.003735 kWh
+Average Energy: 0.026441 kWh
+Std Dev: 0.015301 kWh
+Min Energy: 0.002478 kWh
 Max Energy: 0.055553 kWh
-Average Duration: 348.864239 s
-Duration Std Dev: 251.654599 s
-Min Duration: 54.049860 s
+Average Duration: 339.976090 s
+Duration Std Dev: 253.441040 s
+Min Duration: 37.779037 s
 Max Duration: 1382.855488 s
 
 Stage-wise Energy Distribution:
-load_dataset: 0.000473%
-tokenize_dataset: 0.001420%
-load_model: 0.000255%
-train_model: 2.691127%
-save_model: 0.000837%
-evaluate_model: 0.247068%
+load_dataset: 0.000481%
+tokenize_dataset: 0.001380%
+load_model: 0.001207%
+train_model: 2.612951%
+save_model: 0.001071%
+evaluate_model: 0.240052%
 
 Stage-wise Time Distribution:
-load_dataset: 0.001611%
-tokenize_dataset: 0.002671%
-load_model: 0.000437%
-train_model: 2.751436%
-save_model: 0.001094%
-evaluate_model: 0.183928%
+load_dataset: 0.001644%
+tokenize_dataset: 0.002590%
+load_model: 0.002172%
+train_model: 2.670572%
+save_model: 0.001429%
+evaluate_model: 0.178736%
 
 5. STATISTICAL ANALYSIS
 =====================
 
 Energy Consumption Statistics:
-Mean: 0.342262 kWh
-Median: 0.347674 kWh
-Std Dev: 0.180970 kWh
-Min: 0.068847 kWh
+Mean: 0.332107 kWh
+Median: 0.339393 kWh
+Std Dev: 0.186696 kWh
+Min: 0.027455 kWh
 Max: 0.688727 kWh
 
 Runtime Statistics:
-Mean: 5801.945585 s
-Median: 5403.242032 s
-Std Dev: 3959.759606 s
-Min: 1143.029340 s
+Mean: 5632.113819 s
+Median: 5270.642069 s
+Std Dev: 4006.390805 s
+Min: 537.160865 s
 Max: 20506.253786 s
 
 Evaluation Time Statistics:
-Mean: 361.165820 s
-Median: 341.568023 s
-Std Dev: 251.472501 s
-Min: 54.049860 s
+Mean: 350.733988 s
+Median: 340.627217 s
+Std Dev: 253.976353 s
+Min: 37.779037 s
 Max: 1382.855488 s
 
 F1 Score Statistics:
-Mean: 0.990695
-Median: 0.993408
-Std Dev: 0.010210
+Mean: 0.989500
+Median: 0.993385
+Std Dev: 0.012040
 Min: 0.953037
 Max: 0.994696
 
 6. BEST PERFORMERS
 ================
 
-Most Energy Efficient: v24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16
-Energy Savings: -86.562014%
-F1 Impact: -4.075468%
+Most Energy Efficient: v30_optimal
+Energy Savings: -94.641181%
+F1 Impact: -4.010812%
 
-Fastest Runtime: v21_layer_pruning_20_top
-Time Savings: -85.565606%
-F1 Impact: -0.076992%
+Fastest Runtime: v30_optimal
+Time Savings: -93.216630%
+F1 Impact: -4.010812%
 
-Fastest Evaluation: v24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16
-Evaluation Time Savings: -89.541115%
-F1 Impact: -4.075468%
+Fastest Evaluation: v30_optimal
+Evaluation Time Savings: -92.689591%
+F1 Impact: -4.010812%
 
 Best F1 Score: v25_gradient_accumulation_plus_fp16_plus_checkpointing
 F1 Score: 0.994696
@@ -665,9 +681,9 @@ Time Impact: 29.812449%
 ================
 
 For Energy Efficiency:
+- v30_optimal: -94.641181% energy savings, F1 impact: -4.010812%
 - v24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16: -86.562014% energy savings, F1 impact: -4.075468%
 - v2_lora_peft: -85.308286% energy savings, F1 impact: -4.010812%
-- v21_layer_pruning_20_top: -84.571236% energy savings, F1 impact: -0.076992%
 
 For Performance:
 - v25_gradient_accumulation_plus_fp16_plus_checkpointing: F1 score 0.994696, Energy impact: 34.429508%
@@ -675,8 +691,7 @@ For Performance:
 - v23_attention_plus_pin_memory_plus_optimizer_plus_gradient_accumulation: F1 score 0.994586, Energy impact: -12.876122%
 
 For Balanced Approach:
-- v24_inference_engine_plus_grad_cpting_plus_lora_plus_fp16: Energy 0.068847 kWh, F1: 0.953037
-- v2_lora_peft: Energy 0.075271 kWh, F1: 0.953679
+- v30_optimal: Energy 0.027455 kWh, F1: 0.953679
 - v21_layer_pruning_20_top: Energy 0.079047 kWh, F1: 0.992763
 - v22_layer_pruning_20_bottom: Energy 0.079279 kWh, F1: 0.994307
 - v19_layer_pruning_16_top: Energy 0.162196 kWh, F1: 0.994578

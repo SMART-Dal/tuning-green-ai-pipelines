@@ -62,7 +62,7 @@ def prep_dataset(ds, tok, text_col, label_col, max_len):
 def compute_metrics(pred):
     logits, labels = pred
     preds = logits.argmax(axis=-1)
-    return {"f1": f1_score(labels, preds, average="weighted")}
+    return {"f1": f1_score(labels, preds, average="weighted")}   
 
 # --------------------------------------------------------------------------- #
 # 3. Main
@@ -112,8 +112,8 @@ def main(cfg_path: Path, out_root: Path):
         max_len      = cfg.data.versions.default.max_length
 
         # Load tokenizer
-        tok = AutoTokenizer.from_pretrained(model_name)
-
+        tok = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+        
         tracker.stop_task()
 
         tracker.start_task("load_model")
@@ -122,8 +122,9 @@ def main(cfg_path: Path, out_root: Path):
         model = AutoModelForSequenceClassification.from_pretrained(
             model_name,
             num_labels=NUM_LABELS,
-            torch_dtype="auto",
-            device_map="auto",
+            torch_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16,
+                    device_map="auto",
+            attn_implementation="sdpa"
         )
 
         vcfg = cfg.data.versions[variant]
@@ -152,10 +153,10 @@ def main(cfg_path: Path, out_root: Path):
                 model.model.layers, 
                 N=cfg.layer_pruning.num_layers,
                 position=cfg.layer_pruning.position
-                )
+        )
         model = get_peft_model(model, lora_config)
         logger.info(model.print_trainable_parameters())
-
+        
         
         tracker.stop_task()
 
@@ -175,13 +176,15 @@ def main(cfg_path: Path, out_root: Path):
             save_strategy               = tcfg.save_strategy,
             save_total_limit            = tcfg.save_total_limit,
             logging_steps               = tcfg.logging_steps,
-            fp16                        = tcfg.fp16,
+            fp16                        = not torch.cuda.is_bf16_supported(),  # Use fp16 only if bf16 is not supported
+            bf16                        = torch.cuda.is_bf16_supported(),      # Use bf16 if supported
             gradient_checkpointing      = tcfg.gradient_checkpointing,
             load_best_model_at_end      = True,
             metric_for_best_model       = tcfg.metric_for_best_model,
+            optim                       = tcfg.optimizer,
             report_to                   = "none",
-            # torch_compile=True,
-            # torch_compile_backend="inductor",
+            dataloader_pin_memory       = True,
+            dataloader_num_workers      = 4,
         )
 
         trainer = Trainer(model=model, tokenizer=tok,
@@ -229,11 +232,11 @@ def main(cfg_path: Path, out_root: Path):
         
         # Get emissions data
         emissions = tracker.stop()
-
+        
         with open(out_dir / "test_metrics.json", "w") as f:
             json.dump(test_metrics, f, indent=2)
         logger.info(f"Test metrics: {test_metrics}")
-
+            
         with open(out_dir / "energy_stats_train.json", "w") as f:
             json.dump(json.loads(tracker.final_emissions_data.toJSON()), f, indent=2)
 
@@ -243,7 +246,7 @@ def main(cfg_path: Path, out_root: Path):
             tracker.stop()
         logger.error(f"Pipeline failed: {str(e)}")
         raise
-        
+
 # --------------------------------------------------------------------------- #
 if __name__ == "__main__":
     import argparse

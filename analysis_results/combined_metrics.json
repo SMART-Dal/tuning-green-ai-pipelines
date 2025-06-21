@@ -1504,43 +1504,49 @@
     "variant_name": "30 Optimal",
     "variant_number": 30,
     "description": "",
-    "total_kwh": 0.0,
-    "runtime_s": 0.0,
-    "eval_time_s": 0.0,
-    "f1": 0.0,
-    "\u0394f1": 0.0,
-    "percent_diff_energy": 0.0,
+    "total_kwh": 0.02745502561148453,
+    "runtime_s": 537.1608654248994,
+    "eval_time_s": 37.77903685788624,
+    "f1": 0.953678919802555,
+    "\u0394f1": -0.03984852212894996,
+    "percent_diff_energy": -94.64118071510855,
     "stages": [
       {
         "stage": "load_dataset",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 9.344150747027624e-05,
+        "duration": 5.567936768056825
       },
       {
         "stage": "tokenize_dataset",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 4.355345688748983e-06,
+        "duration": 0.1911529470235109
       },
       {
         "stage": "load_model",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 0.0037205714785192,
+        "duration": 116.41174052399585
       },
       {
         "stage": "train_model",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 0.0201511271700264,
+        "duration": 352.6155306799337
       },
       {
         "stage": "save_model",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 0.0010065576180908,
+        "duration": 24.59546764800325
       },
       {
         "stage": "evaluate_model",
-        "kwh": 0.0,
-        "duration": 0.0
+        "kwh": 0.0024782498565124,
+        "duration": 37.77903685788624
       }
-    ]
+    ],
+    "inference": {
+      "variant": "v30_optimal",
+      "run_id": "default_20250611_132302",
+      "throughput_qps": 0.0,
+      "latency_ms": 0.0
+    }
   }
 ]

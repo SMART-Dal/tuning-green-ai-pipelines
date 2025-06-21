@@ -1,8 +1,8 @@
 {
   "metadata": {
     "baseline": "v0_baseline",
-    "timestamp": "2025-06-10T19:41:30.353774",
-    "total_variants": 30
+    "timestamp": "2025-06-11T16:36:30.568045",
+    "total_variants": 31
   },
   "variants": [
     {
@@ -4856,6 +4856,161 @@
           "stage": "evaluate_model",
           "energy": 0.0290471875586773,
           "duration": 342.50882932404056
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "variant": "v30_optimal",
+        "variant_name": "30 Optimal",
+        "variant_number": 30,
+        "num_runs": 1,
+        "run_ids": [
+          "default_20250611_132302"
+        ]
+      },
+      "training_metrics": {
+        "total_energy": {
+          "mean": 0.02745502561148453,
+          "std": 0.0,
+          "raw_values": [
+            0.02745502561148453
+          ]
+        },
+        "runtime": {
+          "mean": 537.1608654248994,
+          "std": 0.0,
+          "raw_values": [
+            537.1608654248994
+          ]
+        },
+        "cpu_energy": {
+          "mean": 0.0160640097753642,
+          "std": 0.0,
+          "raw_values": [
+            0.0160640097753642
+          ]
+        },
+        "gpu_energy": {
+          "mean": 0.009899183752676066,
+          "std": 0.0,
+          "raw_values": [
+            0.009899183752676066
+          ]
+        },
+        "ram_energy": {
+          "mean": 0.0014918320834442663,
+          "std": 0.0,
+          "raw_values": [
+            0.0014918320834442663
+          ]
+        },
+        "peak_memory": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "test_metrics": {
+        "f1_score": {
+          "mean": 0.953678919802555,
+          "std": 0.0,
+          "raw_values": [
+            0.953678919802555
+          ]
+        },
+        "accuracy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "inference_metrics": {
+        "energy": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "time": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "throughput": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "latency": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "hardware_metrics": {
+        "gpu_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        },
+        "memory_utilization": {
+          "mean": 0,
+          "std": 0.0,
+          "raw_values": [
+            0
+          ]
+        }
+      },
+      "stage_data": [
+        {
+          "run_id": "default_20250611_132302",
+          "stage": "load_dataset",
+          "energy": 9.344150747027624e-05,
+          "duration": 5.567936768056825
+        },
+        {
+          "run_id": "default_20250611_132302",
+          "stage": "tokenize_dataset",
+          "energy": 4.355345688748983e-06,
+          "duration": 0.1911529470235109
+        },
+        {
+          "run_id": "default_20250611_132302",
+          "stage": "load_model",
+          "energy": 0.0037205714785192,
+          "duration": 116.41174052399585
+        },
+        {
+          "run_id": "default_20250611_132302",
+          "stage": "train_model",
+          "energy": 0.0201511271700264,
+          "duration": 352.6155306799337
+        },
+        {
+          "run_id": "default_20250611_132302",
+          "stage": "save_model",
+          "energy": 0.0010065576180908,
+          "duration": 24.59546764800325
+        },
+        {
+          "run_id": "default_20250611_132302",
+          "stage": "evaluate_model",
+          "energy": 0.0024782498565124,
+          "duration": 37.77903685788624
         }
       ]
     }
