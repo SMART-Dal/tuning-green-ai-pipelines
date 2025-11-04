@@ -841,6 +841,8 @@ tokenizer:
 - Storage and memory requirements
 
 **Relevant Literature:**
+- [Want et al. Efficient sampling of training set in large and noisy multimedia data](https://dl.acm.org/doi/abs/10.1145/1236471.1236473)
+- [Rong Zhu. Gradient-based Sampling: An Adaptive Importance Sampling for Least-squares](https://dl.acm.org/doi/pdf/10.5555/3157096.3157142)
 - [Bengio et al. Curriculum learning](https://doi.org/10.1145/1553374.1553380)
 - [Settles. Active learning](https://minds.wisconsin.edu/handle/1793/60660)
 - [Sener & Savarese. Active learning for convolutional neural networks: A core-set approach](https://arxiv.org/abs/1708.00489)
