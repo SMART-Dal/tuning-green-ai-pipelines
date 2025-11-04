@@ -547,32 +547,38 @@ V30 combines green-highlighted (most efficient) techniques from Table 1:
    - Removes 20 of 28 ModernBERT encoder layers
    - Provides ~85% baseline energy reduction
 
-2. **FP16 Mixed Precision** - from V7
-   - Half-precision arithmetic
+2. **LoRA with 4-bit Quantization** - from V2
+   - Parameter-efficient fine-tuning with low-rank adapters
+   - 4-bit model loading reduces memory footprint
+   - Enables training pruned model efficiently
+
+3. **FP16 Mixed Precision** - from V7
+   - Half-precision arithmetic (or bf16 if supported)
    - Complements pruning with reduced precision
 
-3. **Sequence-Length Trimming (256 tokens)** - from V8
-   - Reduces from 512 to 256 tokens
-   - Creates cascading savings across stages
+4. **Gradient Checkpointing** - from V1
+   - Reduces memory during backpropagation
+   - Enables training larger effective batch sizes
 
-4. **Torch Compile** - from V11
-   - Graph optimization and kernel fusion
-   - Optimizes execution of pruned+FP16 model
+5. **8-bit Optimizer (AdamW-BNB)** - Training optimization
+   - Reduces optimizer memory overhead
+   - Maintains training stability with quantized weights
 
-5. **Optimized Evaluation (V9)**
+6. **Optimized Evaluation (V9)**
    - vLLM-based evaluation after training
-   - Dramatic latency reduction
+   - Dramatic latency reduction during inference
 
 ### 5.2 Why This Combination
 
 **Orthogonality Across All Five Stages:**
 
 ```
-Data (V8):      Reduces input tokens
-Model (V21):    Reduces layers/parameters
-Training (V7):  Reduces precision
-System (V11):   Optimizes execution
-Inference (V9): Optimizes deployment
+Model (V21):    Reduces layers/parameters (pruning)
+Model (V2):     Reduces trainable parameters (LoRA + 4-bit)
+Training (V7):  Reduces precision (FP16/BF16)
+Training (V1):  Reduces memory (gradient checkpointing)
+Training:       Reduces optimizer memory (8-bit AdamW)
+Inference (V9): Optimizes deployment (vLLM)
 ```
 
 Each technique targets a different stage and constraint, enabling compound savings.
@@ -583,22 +589,28 @@ Each technique targets a different stage and constraint, enabling compound savin
 # V30 Configuration (simplified)
 model:
   name: "answerdotai/ModernBERT-base"
-  num_layers: 8  # Pruned from 28
 
-  pruning:
-    enabled: true
-    method: "top"
-    layers_to_remove: [8-27]  # Remove top 20 layers
+layer_pruning:
+  enabled: true
+  num_layers: 20
+  position: "top"  # Remove top 20 layers
+
+lora:
+  enabled: true
+  r: 8
+  alpha: 16
+  load_in_4bit: true  # 4-bit quantization
 
 training:
-  precision: "fp16"
-  compile: true
+  fp16: true  # or bf16 if supported
+  gradient_checkpointing: true
+  optimizer: adamw_bnb_8bit  # 8-bit optimizer
 
 data:
-  max_sequence_length: 256  # Reduced from 512
+  max_length: 512  # Standard length (not reduced)
 
 inference:
-  # Uses standard Transformers-based evaluation in this repository
+  # Uses vLLM for evaluation after training
   batch_size: 4
 ```
 
