@@ -11,6 +11,11 @@
 4. [Running an Experiment](#running-an-experiment)
 5. [Energy & Carbon Instrumentation](#energy--carbon-instrumentation)
 6. [Result Files](#result-files)
+7. [Appendix](#appendix)
+
+---
+
+> 📖 **For detailed methodology, experimental results, variant descriptions, and comprehensive analysis, see [APPENDIX.md](APPENDIX.md).**
 
 ---
 
@@ -131,5 +136,11 @@ You can also find the analyzed and combined result along with plots in `analysis
   ```
 * `analysis_results/aggregated_metrics.json` – comprehensive analysis across all variants
 * Training progress logs under `training_progress.log`
+
+---
+
+## Appendix
+
+For detailed methodology, experimental results, variant descriptions, and comprehensive analysis, see [APPENDIX.md](APPENDIX.md).
 
 

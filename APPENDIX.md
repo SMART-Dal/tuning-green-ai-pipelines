@@ -473,12 +473,7 @@ Shorter sequences (Data)
 - Validation: Test combination experimentally
 
 **Step 4: Measure Synergy**
-```python
-orthogonality_score = actual_reduction / expected_reduction
-# Score > 1: Synergistic
-# Score = 1: Independent
-# Score < 1: Antagonistic
-```
+Qualitatively study the effect of orthogonality; describe whether combined techniques appear synergistic, independent, or antagonistic.
 
 ---
 
